@@ -12,6 +12,6 @@ public class ConsoleReporter : IErrorReporter
     private void Report(int line, string atLocation, string message)
     {
         HadError = true;
-        Console.WriteLine($"[Line {line}] Error {atLocation}: {message}");
+        Console.WriteLine($"[Line {line}] Error{atLocation}: {message}.");
     }
 }

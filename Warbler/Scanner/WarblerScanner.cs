@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using Warbler.ErrorReporting;
 
 namespace Warbler.Scanner;
@@ -15,9 +16,9 @@ public class WarblerScanner
         { 'f', '\f' },
         { 'n', '\n' },
         { '0', '\0' },
-        // { '\'', '\'' },
+        { '\'', '\'' },
         { '"', '\"' },
-        // { '\\', '\\' }
+        { '\\', '\\' }
     };
 
     private static readonly Dictionary<string, TokenKind> keywords = new()
@@ -87,6 +88,12 @@ public class WarblerScanner
         var ch = ReadNextChar();
         switch (ch)
         {
+            case '%':
+                AddToken(TokenKind.Modulo);
+                break;
+            case '^':
+                AddToken(TokenKind.Hat);
+                break;
             case ',':
                 AddToken(TokenKind.Comma);
                 break;
@@ -126,7 +133,7 @@ public class WarblerScanner
             case '-':
                 if (NextCharMatching('-'))
                 {
-                    SkipUntilLineEnd();
+                    SkipUntil('\n');
                     break;
                 }
 
@@ -140,7 +147,7 @@ public class WarblerScanner
             case '/':
                 if (NextCharMatching('/'))
                 {
-                    SkipUntilLineEnd();
+                    SkipUntil('\n');
                     break;
                 }
 
@@ -186,7 +193,7 @@ public class WarblerScanner
                 {
                     _errorReporter.ErrorAtLine(
                         _currentLine,
-                        $"Unexpected character: {_input[_currentChar]}"
+                        $"Unexpected character: {_input[_currentChar - 1]} at position {_currentLinePos - 1}"
                     );
                 }
 
@@ -194,9 +201,9 @@ public class WarblerScanner
         }
     }
 
-    private void SkipUntilLineEnd()
+    private void SkipUntil(char terminator)
     {
-        while (Peek() != '\n' && !InputEnded())
+        while (Peek() != terminator && !InputEnded())
             ReadNextChar();
     }
 
@@ -224,59 +231,73 @@ public class WarblerScanner
                 ReadNextChar();
         }
 
-        var value = _input.Substring(_tokenStart, _currentChar);
-        var number = double.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
-        AddToken(
-            isDouble ? TokenKind.DoubleLiteral : TokenKind.IntLiteral,
-            isDouble ? number : (int)number
-        );
+        var value = _input.Substring(_tokenStart, _currentChar - _tokenStart);
+        if (isDouble)
+            AddToken(TokenKind.DoubleLiteral, double.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture));
+        else
+            AddToken(TokenKind.IntLiteral, int.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture));
     }
 
     private void AddStringToken()
     {
-        // todo handle escaped quotes
+        var builder = new StringBuilder();
         while (Peek() != '"' && !InputEnded())
         {
             if (Peek() == '\n')
+            {
                 StartNewLine();
+            }
+            else if (Peek() == '\\')
+            {
+                // read the \
+                ReadNextChar();
+                // read the (possibly) escaped char
+                var esc = ReadNextChar();
+                if (!escapedChars.ContainsKey(esc))
+                {
+                    _errorReporter.ErrorAtLine(_currentLine, $"Unknown escape sequence at position {_currentLinePos}");
+                    SkipUntil('"');
+                    return;
+                }
 
-            ReadNextChar();
+                builder.Append(escapedChars[esc]);
+            }
+
+            builder.Append(ReadNextChar());
         }
 
         if (InputEnded())
         {
-            _errorReporter.ErrorAtLine(_currentLine, "Expected a \" at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, $"Expected a \" at position {_currentLinePos}");
             return;
         }
 
-        // read the terminating "
+        // read the terminating " without adding it to the builder
         ReadNextChar();
-        // get string value without the quotes
-        var value = _input.Substring(_tokenStart + 1, _currentChar - _tokenStart - 2);
-        AddToken(TokenKind.StringLiteral, value);
+        AddToken(TokenKind.StringLiteral, builder.ToString());
     }
 
     private void AddCharToken()
     {
         if (InputEnded())
         {
-            _errorReporter.ErrorAtLine(_currentLine, $"Unexpected character (\') at position {_currentLinePos}");
-            return;
-        }
-
-        if (Peek() == '\'')
-        {
-            _errorReporter.ErrorAtLine(_currentLine, $"Empty character literal at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, $"Unexpected character \' at position {_currentLinePos}");
             return;
         }
 
         var ch = ReadNextChar();
-        if (ch == '\\')
+        if (ch == '\'')
+        {
+            _errorReporter.ErrorAtLine(_currentLine, $"Empty character literal at position {_currentLinePos}");
+            return;
+        }
+        else if (ch == '\\')
         {
             var esc = ReadNextChar();
             if (!escapedChars.ContainsKey(esc))
             {
                 _errorReporter.ErrorAtLine(_currentLine, $"Unknown escape sequence at position {_currentLinePos}");
+                SkipUntil('\'');
                 return;
             }
 

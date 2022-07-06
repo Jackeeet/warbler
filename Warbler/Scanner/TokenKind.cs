@@ -9,11 +9,13 @@ public enum TokenKind
     Minus,          // -
     Asterisk,       // *
     Slash,          // /
+    Modulo,         // %
     Comma,          // ,
     Dot,            // . 
     Colon,          // :
     Semicolon,      // ;
     Question,       // ? Option / Ternary
+    Hat,            // ^ Raise to power
     LeftBracket,    // (
     RightBracket,   // )
     LessThan,       // <
