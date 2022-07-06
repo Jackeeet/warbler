@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warbler", "Warbler\Warbler.csproj", "{7479D921-9C45-4BCF-92AB-54852F7DEF4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{46942903-5945-4FAB-8A5B-1E719E34C842}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7479D921-9C45-4BCF-92AB-54852F7DEF4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7479D921-9C45-4BCF-92AB-54852F7DEF4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7479D921-9C45-4BCF-92AB-54852F7DEF4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7479D921-9C45-4BCF-92AB-54852F7DEF4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46942903-5945-4FAB-8A5B-1E719E34C842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46942903-5945-4FAB-8A5B-1E719E34C842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46942903-5945-4FAB-8A5B-1E719E34C842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46942903-5945-4FAB-8A5B-1E719E34C842}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
