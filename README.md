@@ -2,15 +2,11 @@
 
 **warbler** is a programming language with bird-inspired syntax.
 
----
-
 ## Versions
 
 The latest **warbler** version is **0.0.1**.
 
 This language is not meant to be used in any kind of serious project (*at least for now*).
-
----
 
 ## Features
 
@@ -24,13 +20,9 @@ This language is not meant to be used in any kind of serious project (*at least 
 
 More features are to come in the future.
 
---- 
-
 ## License
 
 **warbler** is licensed under the **MIT License**.
-
---- 
 
 ## Disclaimer
 
