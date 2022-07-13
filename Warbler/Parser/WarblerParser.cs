@@ -50,7 +50,7 @@ public class WarblerParser : IExpressionVisitor<object>
     {
         var expression = ParseRelational();
 
-        while (Matching(TokenKind.DoubleEqual, TokenKind.NotEqual))
+        if (Matching(TokenKind.DoubleEqual, TokenKind.NotEqual))
         {
             var op = PreviousToken;
             var rightExpression = ParseRelational();
@@ -64,7 +64,7 @@ public class WarblerParser : IExpressionVisitor<object>
     {
         var expression = ParseAdditive();
 
-        while (Matching(TokenKind.GreaterThan, TokenKind.GreaterEqual, TokenKind.LessThan, TokenKind.LessEqual))
+        if (Matching(TokenKind.GreaterThan, TokenKind.GreaterEqual, TokenKind.LessThan, TokenKind.LessEqual))
         {
             var op = PreviousToken;
             var rightExpression = ParseAdditive();
@@ -118,7 +118,7 @@ public class WarblerParser : IExpressionVisitor<object>
     {
         var expression = ParsePrimary();
 
-        if (Matching(TokenKind.Hat))
+        while (Matching(TokenKind.Hat))
         {
             var op = PreviousToken;
             var rightExpression = ParsePrimary();
@@ -150,7 +150,8 @@ public class WarblerParser : IExpressionVisitor<object>
         {
             var expression = ParseExpression();
             Consume(TokenKind.RightBracket, "Expected a ) after an expression");
-            return new LiteralExpression(expression);
+            // could probably return the expression itself without wrapping it into a GroupingExpression here
+            return new GroupingExpression(expression); 
         }
 
         throw HandleParseError(CurrentToken, "Expected an expression");

@@ -14,7 +14,7 @@ This language is not meant to be used in any kind of serious project (*at least 
 
 - ```:>``` bird-inspired syntax ```<:```
 - static typing
-- implicit type variables
+- local variable type inference (like ```var``` in C#)
 - optional types
 - pattern matching
 

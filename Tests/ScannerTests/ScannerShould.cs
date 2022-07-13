@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using Tests.Mocks;
 using Warbler.Scanner;
 
 namespace Tests.ScannerTests;
@@ -81,7 +82,9 @@ public class ScannerShould
         "asteriskEqual",
         "slashEqual",
         "leadingWhiteSpace",
-        "trailingWhiteSpace"
+        "trailingWhiteSpace",
+        "true",
+        "false"
     };
 
     private static readonly List<string> invalidInputNames = new()
@@ -137,11 +140,27 @@ public class ScannerShould
         { "asteriskEqual", "x *= 1" },
         { "slashEqual", "x /= 1" },
         { "leadingWhiteSpace", "    \t    def x" },
-        { "trailingWhiteSpace", "def x     \t    " }
+        { "trailingWhiteSpace", "def x     \t    " },
+        { "true", "true" },
+        { "false", "false" },
     };
 
     private static readonly Dictionary<string, List<Token>> outputs = new()
     {
+        {
+            "false", new List<Token>
+            {
+                new(TokenKind.False, "false", null, 1),
+                new(TokenKind.Eof, "", null, 1)
+            }
+        },
+        {
+            "true", new List<Token>
+            {
+                new(TokenKind.True, "true", null, 1),
+                new(TokenKind.Eof, "", null, 1)
+            }
+        },
         {
             "trailingWhiteSpace", new List<Token>
             {

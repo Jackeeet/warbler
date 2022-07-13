@@ -7,7 +7,7 @@ namespace Warbler;
 
 internal class Program
 {
-    private static IErrorReporter _errorReporter = new ConsoleReporter();
+    private static readonly IErrorReporter errorReporter = new ConsoleReporter();
 
     private static void Main(string[] args)
     {
@@ -30,7 +30,7 @@ internal class Program
         var bytes = File.ReadAllBytes(Path.GetFullPath(path));
         Run(Encoding.Default.GetString(bytes));
 
-        if (_errorReporter.HadError)
+        if (errorReporter.HadError)
         {
             Environment.Exit(1);
         }
@@ -48,19 +48,19 @@ internal class Program
             }
 
             Run(input);
-            _errorReporter.HadError = false;
+            errorReporter.HadError = false;
         }
     }
 
     private static void Run(string input)
     {
-        var scanner = new WarblerScanner(input, _errorReporter);
+        var scanner = new WarblerScanner(input, errorReporter);
         var tokens = scanner.Scan();
 
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, errorReporter);
         var expression = parser.Parse();
 
-        if (_errorReporter.HadError)
+        if (errorReporter.HadError)
             return;
         
         Console.WriteLine($":> Successfully parsed {tokens.Count} tokens");
