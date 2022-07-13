@@ -17,7 +17,10 @@ public class Token
 
     public override string ToString()
     {
-        return $"[{LineNumber}] {Kind} {Lexeme} {Literal}";
+        if (Literal is null)
+            return $"{Kind} \"{Lexeme}\" (line {LineNumber})";
+
+        return $"{Kind} \"{Lexeme}\" {Literal} (line {LineNumber})";
     }
 
     public override bool Equals(object? obj)

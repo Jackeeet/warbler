@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Warbler.ErrorReporting;
+using Warbler.Parser;
 using Warbler.Scanner;
 
 namespace Warbler;
@@ -56,9 +57,12 @@ internal class Program
         var scanner = new WarblerScanner(input, _errorReporter);
         var tokens = scanner.Scan();
 
-        foreach (var token in tokens)
-        {
-            Console.WriteLine(token);
-        }
+        var parser = new WarblerParser(tokens, _errorReporter);
+        var expression = parser.Parse();
+
+        if (_errorReporter.HadError)
+            return;
+        
+        Console.WriteLine($":> Successfully parsed {tokens.Count} tokens");
     }
 }
