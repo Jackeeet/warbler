@@ -3,7 +3,7 @@ using Warbler.Scanner;
 
 namespace Warbler.Parser;
 
-public class WarblerParser : IExpressionVisitor<object>
+public class WarblerParser
 {
     private readonly List<Token> _tokens;
     private readonly IErrorReporter _errorReporter;
@@ -239,29 +239,4 @@ public class WarblerParser : IExpressionVisitor<object>
     private Token PreviousToken => _tokens[_current - 1];
 
     private bool IsAtEnd => CurrentToken.Kind == TokenKind.Eof;
-
-    public object VisitUnaryExpression(UnaryExpression expression)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object VisitBinaryExpression(BinaryExpression expression)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object VisitTernaryExpression(TernaryExpression expression)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object VisitLiteralExpression(LiteralExpression expression)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object VisitGroupingExpression(GroupingExpression expression)
-    {
-        throw new NotImplementedException();
-    }
 }

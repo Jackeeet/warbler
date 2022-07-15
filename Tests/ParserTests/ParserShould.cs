@@ -101,14 +101,26 @@ public class ParserShould
 
     private static readonly List<string> invalidInputNames = new()
     {
-        // todo add invalid input tests
-        // "empty",
-        // "chainComparison",
-        // "chainEquality",
+        "empty",
+        "chainComparison",
+        "chainEquality",
+        "unsupportedUnary",
+        "unsupportedBinary",
+        "unsupportedTernaryCondition",
+        "unsupportedTernaryBranch",
+        "noBinaryArg",
+        "noBinaryArgs",
+        "noTernaryCondition",
+        "noTernaryThen",
+        "noTernaryElse",
+        "noClosingBracket",
+        "noOpeningBracket"
     };
 
     private static readonly Dictionary<string, string> inputs = new()
     {
+        #region validInputs
+
         { "intLiteral", "2" },
         { "doubleLiteral", "3.4" },
         { "stringLiteral", "\"hello birds\"" },
@@ -147,11 +159,45 @@ public class ParserShould
         { "equalityPrecedence", "2 < 3 == \"a\" < \"b\"" },
         { "ternary", "true ? 1 : 0" },
         { "nestedTernary", "true ? false ? 1 : 2 : true ? 3 : 4" },
-        { "ternaryPrecedence", "2 != 3 ? 2 + 3 : 2 - 3" }
+        { "ternaryPrecedence", "2 != 3 ? 2 + 3 : 2 - 3" },
+
+        #endregion
+
+        { "empty", "" },
+        { "chainComparison", "x < y <= z" },
+        { "chainEquality", "x == y != z" },
+        { "unsupportedUnary", "/2" },
+        { "unsupportedBinary", "2 _ 2" },
+        { "unsupportedTernaryCondition", "x # y : z" },
+        { "unsupportedTernaryBranch", "x ? y < z" },
+        { "noBinaryArg", "+" },
+        { "noBinaryArgs", "2 +" },
+        { "noTernaryCondition", "? y : z" },
+        { "noTernaryThen", "x ? : z" },
+        { "noTernaryElse", "x ? y :" },
+        { "noClosingBracket", "(2 + 3" },
+        { "noOpeningBracket", "2 + 3)" },
     };
 
     private static readonly Dictionary<string, Expression?> outputs = new()
     {
+        { "empty", null },
+        { "chainComparison", null },
+        { "chainEquality", null },
+        { "unsupportedUnary", null },
+        { "unsupportedBinary", null },
+        { "unsupportedTernaryCondition", null },
+        { "unsupportedTernaryBranch", null },
+        { "noBinaryArg", null },
+        { "noBinaryArgs", null },
+        { "noTernaryCondition", null },
+        { "noTernaryThen", null },
+        { "noTernaryElse", null },
+        { "noClosingBracket", null },
+        { "noOpeningBracket", null },
+
+        #region validOutputs
+
         {
             "ternaryPrecedence",
             new TernaryExpression(
@@ -172,6 +218,7 @@ public class ParserShould
                 )
             )
         },
+
         {
             "nestedTernary",
             new TernaryExpression(
@@ -535,5 +582,7 @@ public class ParserShould
                 )
             )
         }
+
+        #endregion
     };
 }
