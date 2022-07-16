@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Tests.Mocks;
+using Warbler.Expressions;
 using Warbler.Scanner;
 
 namespace Tests.ScannerTests;

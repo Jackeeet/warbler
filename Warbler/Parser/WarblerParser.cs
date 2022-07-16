@@ -1,5 +1,6 @@
-﻿using Warbler.ErrorReporting;
-using Warbler.Scanner;
+﻿using System.Diagnostics;
+using Warbler.ErrorReporting;
+using Warbler.Expressions;
 
 namespace Warbler.Parser;
 
@@ -40,7 +41,10 @@ public class WarblerParser
             Consume(TokenKind.Colon, "Expected a : ");
             var elseExpression = ParseExpression();
 
-            expression = new TernaryExpression(expression, thenExpression, elseExpression);
+            expression = new TernaryExpression(expression, thenExpression, elseExpression)
+            {
+                Line = expression.Line
+            };
         }
 
         return expression;
@@ -54,7 +58,7 @@ public class WarblerParser
         {
             var op = PreviousToken;
             var rightExpression = ParseRelational();
-            expression = new BinaryExpression(expression, op, rightExpression);
+            expression = new BinaryExpression(expression, op, rightExpression) { Line = op.LineNumber };
         }
 
         return expression;
@@ -68,7 +72,7 @@ public class WarblerParser
         {
             var op = PreviousToken;
             var rightExpression = ParseAdditive();
-            expression = new BinaryExpression(expression, op, rightExpression);
+            expression = new BinaryExpression(expression, op, rightExpression) { Line = op.LineNumber };
         }
 
         return expression;
@@ -82,7 +86,7 @@ public class WarblerParser
         {
             var op = PreviousToken;
             var rightExpression = ParseMultiplicative();
-            expression = new BinaryExpression(expression, op, rightExpression);
+            expression = new BinaryExpression(expression, op, rightExpression) { Line = op.LineNumber };
         }
 
         return expression;
@@ -96,7 +100,7 @@ public class WarblerParser
         {
             var op = PreviousToken;
             var rightExpression = ParseUnary();
-            expression = new BinaryExpression(expression, op, rightExpression);
+            expression = new BinaryExpression(expression, op, rightExpression) { Line = op.LineNumber };
         }
 
         return expression;
@@ -108,7 +112,7 @@ public class WarblerParser
         {
             var op = PreviousToken;
             var rightExpression = ParseUnary();
-            return new UnaryExpression(op, rightExpression);
+            return new UnaryExpression(op, rightExpression) { Line = op.LineNumber };
         }
 
         return ParsePower();
@@ -121,8 +125,11 @@ public class WarblerParser
         while (Matching(TokenKind.Hat))
         {
             var op = PreviousToken;
-            var rightExpression = ParsePrimary();
-            expression = new BinaryExpression(expression, op, rightExpression);
+            var rightExpression = ParsePower();
+            expression = new BinaryExpression(expression, op, rightExpression)
+            {
+                Line = op.LineNumber
+            };
         }
 
         return expression;
@@ -132,26 +139,46 @@ public class WarblerParser
     {
         if (Matching(TokenKind.True))
         {
-            return new LiteralExpression(true);
+            return new LiteralExpression(true)
+            {
+                Type = ExpressionType.Boolean,
+                Line = PreviousToken.LineNumber
+            };
         }
 
         if (Matching(TokenKind.False))
         {
-            return new LiteralExpression(false);
+            return new LiteralExpression(false)
+            {
+                Type = ExpressionType.Boolean,
+                Line = PreviousToken.LineNumber
+            };
         }
 
         if (Matching(TokenKind.IntLiteral, TokenKind.DoubleLiteral,
                 TokenKind.StringLiteral, TokenKind.CharLiteral))
         {
-            return new LiteralExpression(PreviousToken.Literal);
+            var type = PreviousToken.Kind switch
+            {
+                TokenKind.IntLiteral => ExpressionType.Integer,
+                TokenKind.DoubleLiteral => ExpressionType.Double,
+                TokenKind.StringLiteral => ExpressionType.String,
+                TokenKind.CharLiteral => ExpressionType.Char,
+                _ => throw new ArgumentException() // unreachable
+            };
+            Debug.Assert(PreviousToken.Literal != null, "PreviousToken.Literal != null");
+            return new LiteralExpression(PreviousToken.Literal)
+            {
+                Type = type,
+                Line = PreviousToken.LineNumber
+            };
         }
 
         if (Matching(TokenKind.LeftBracket))
         {
             var expression = ParseExpression();
             Consume(TokenKind.RightBracket, "Expected a ) after an expression");
-            // could probably return the expression itself without wrapping it into a GroupingExpression here
-            return new GroupingExpression(expression); 
+            return expression;
         }
 
         throw HandleParseError(CurrentToken, "Expected an expression");

@@ -1,4 +1,4 @@
-﻿namespace Warbler.Scanner;
+﻿namespace Warbler.Expressions;
 
 public enum TokenKind
 {

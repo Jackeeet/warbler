@@ -1,4 +1,6 @@
-﻿namespace Warbler.Scanner;
+﻿using Warbler.Scanner;
+
+namespace Warbler.Expressions;
 
 public class Token
 {

@@ -1,5 +1,5 @@
 ﻿using Warbler.ErrorReporting;
-using Warbler.Scanner;
+using Warbler.Expressions;
 
 namespace Tests.Mocks;
 
@@ -21,6 +21,11 @@ public class TestReporter : IErrorReporter
             token.Kind == TokenKind.Eof ? " at the end of input" : $" at \"{token.Lexeme}\"",
             message
         );
+    }
+
+    public void ErrorAtExpression(Expression expression, string message)
+    {
+        Report(expression.Line, "", message);
     }
 
     public void Reset()

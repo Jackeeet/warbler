@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Tests.Mocks;
+using Warbler.Expressions;
 using Warbler.Parser;
 using Warbler.Scanner;
-using BinaryExpression = Warbler.Parser.BinaryExpression;
-using Expression = Warbler.Parser.Expression;
-using UnaryExpression = Warbler.Parser.UnaryExpression;
 
 namespace Tests.ParserTests;
 
@@ -53,7 +51,6 @@ public class ParserShould
 
         Assert.IsNull(actual);
         Assert.IsTrue(_errorReporter.HadError);
-        // maybe check error msg as well
     }
 
     private static readonly List<string> validInputNames = new()
@@ -202,385 +199,375 @@ public class ParserShould
             "ternaryPrecedence",
             new TernaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.NotEqual, "!=", null, 1),
-                    new LiteralExpression(3)
-                ),
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new BinaryExpression(
-                    new LiteralExpression(2),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(3)
-                ),
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new BinaryExpression(
-                    new LiteralExpression(2),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(3)
-                )
-            )
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
 
         {
             "nestedTernary",
             new TernaryExpression(
-                new LiteralExpression(true),
+                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
                 new TernaryExpression(
-                    new LiteralExpression(false),
-                    new LiteralExpression(1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new TernaryExpression(
-                    new LiteralExpression(true),
-                    new LiteralExpression(3),
-                    new LiteralExpression(4)
-                )
-            )
+                    new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
         {
             "ternary",
             new TernaryExpression(
-                new LiteralExpression(true),
-                new LiteralExpression(1),
-                new LiteralExpression(0)
-            )
+                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
+                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "equalityPrecedence",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(3)
-                ),
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.DoubleEqual, "==", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression("a"),
+                    new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression("b")
-                )
-            )
+                    new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
         {
             "inequality",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.NotEqual, "!=", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "equality",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.DoubleEqual, "==", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "relationalPrecedence",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(3)
-                ),
+                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.LessEqual, "<=", null, 1),
-                new LiteralExpression(5)
-            )
+                new LiteralExpression(5) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "lessEqual",
             new BinaryExpression(
-                new LiteralExpression("a"),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
                 new Token(TokenKind.LessEqual, "<=", null, 1),
-                new LiteralExpression("b")
-            )
+                new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "greaterEqual",
             new BinaryExpression(
-                new LiteralExpression(3),
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.GreaterEqual, ">=", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "lessThan",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.LessThan, "<", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "greaterThan",
             new BinaryExpression(
-                new LiteralExpression(3),
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.GreaterThan, ">", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "arithmeticPrecedence",
             new BinaryExpression(
                 new UnaryExpression(
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(5)
-                ),
+                    new LiteralExpression(5) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Plus, "+", null, 1),
                 new BinaryExpression(
                     new BinaryExpression(
-                        new GroupingExpression(
-                            new BinaryExpression(
-                                new LiteralExpression(1),
-                                new Token(TokenKind.Plus, "+", null, 1),
-                                new LiteralExpression(2)
-                            )
-                        ),
+                        new BinaryExpression(
+                            new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                            new Token(TokenKind.Plus, "+", null, 1),
+                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        ) { Line = 1 },
                         new Token(TokenKind.Hat, "^", null, 1),
-                        new LiteralExpression(3)
-                    ),
+                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Line = 1 },
                     new Token(TokenKind.Asterisk, "*", null, 1),
-                    new LiteralExpression(4)
-                )
-            )
+                    new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainConcatenation",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression("a"),
+                    new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
                     new Token(TokenKind.DoublePlus, "++", null, 1),
-                    new LiteralExpression("b")
-                ),
+                    new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.DoublePlus, "++", null, 1),
-                new LiteralExpression("c")
-            )
+                new LiteralExpression("c") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "concatenation",
             new BinaryExpression(
-                new LiteralExpression("a"),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
                 new Token(TokenKind.DoublePlus, "++", null, 1),
-                new LiteralExpression("b")
-            )
+                new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "unarySubtraction",
             new BinaryExpression(
                 new UnaryExpression(
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(1)
-                ),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Minus, "-", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainSubtraction",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(1),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Minus, "-", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "subtraction",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Minus, "-", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainAddition",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(1),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Plus, "+", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "addition",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Plus, "+", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainModulo",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(1),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Modulo, "%", null, 1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Modulo, "%", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "modulo",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Modulo, "%", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainDivision",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(1),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Slash, "/", null, 1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Slash, "/", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "division",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Slash, "/", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainMultiplication",
             new BinaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(1),
+                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Asterisk, "*", null, 1),
-                    new LiteralExpression(2)
-                ),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Asterisk, "*", null, 1),
-                new LiteralExpression(3)
-            )
+                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "multiplication",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Asterisk, "*", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         /* ------------------ */
         {
-            "intLiteral", new LiteralExpression(2)
+            "intLiteral", new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
         },
         {
-            "doubleLiteral", new LiteralExpression(3.4d)
+            "doubleLiteral", new LiteralExpression(3.4d) { Type = ExpressionType.Double, Line = 1 }
         },
         {
-            "stringLiteral", new LiteralExpression("hello birds")
+            "stringLiteral", new LiteralExpression("hello birds") { Type = ExpressionType.String, Line = 1 }
         },
         {
-            "charLiteral", new LiteralExpression('a')
+            "charLiteral", new LiteralExpression('a') { Type = ExpressionType.Char, Line = 1 }
         },
         {
-            "true", new LiteralExpression(true)
+            "true", new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
         },
         {
-            "false", new LiteralExpression(false)
+            "false", new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
         },
         {
             "grouping",
-            new GroupingExpression(
-                new BinaryExpression(
-                    new LiteralExpression(2),
-                    new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2)
-                )
-            )
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Plus, "+", null, 1),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "raiseToPower", new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Hat, "^", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "raiseGroupingToPower",
             new BinaryExpression(
-                new GroupingExpression(
-                    new BinaryExpression(
-                        new LiteralExpression(2),
-                        new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2)
-                    )
-                ),
+                new BinaryExpression(
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new Token(TokenKind.Plus, "+", null, 1),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 },
                 new Token(TokenKind.Hat, "^", null, 1),
-                new LiteralExpression(2)
-            )
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "raiseToGrouping",
             new BinaryExpression(
-                new LiteralExpression(2),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Hat, "^", null, 1),
-                new GroupingExpression(
-                    new BinaryExpression(
-                        new LiteralExpression(2),
-                        new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2)
-                    )
-                )
-            )
+                new BinaryExpression(
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new Token(TokenKind.Plus, "+", null, 1),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
         {
             "chainPower",
             new BinaryExpression(
-                new BinaryExpression(
-                    new BinaryExpression(
-                        new LiteralExpression(2),
-                        new Token(TokenKind.Hat, "^", null, 1),
-                        new LiteralExpression(2)
-                    ),
-                    new Token(TokenKind.Hat, "^", null, 1),
-                    new LiteralExpression(2)
-                ),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Hat, "^", null, 1),
-                new LiteralExpression(2)
-            )
+                new BinaryExpression(
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new Token(TokenKind.Hat, "^", null, 1),
+                    new BinaryExpression(
+                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new Token(TokenKind.Hat, "^", null, 1),
+                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         },
         {
             "unaryMinus",
             new UnaryExpression(
                 new Token(TokenKind.Minus, "-", null, 1),
-                new LiteralExpression(123)
-            )
+                new LiteralExpression(123) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "unaryNot",
             new UnaryExpression(
                 new Token(TokenKind.Not, "!", null, 1),
-                new LiteralExpression(false)
-            )
+                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
+            ) { Line = 1 }
         },
         {
             "unaryGrouping",
             new UnaryExpression(
                 new Token(TokenKind.Minus, "-", null, 1),
-                new GroupingExpression(
-                    new BinaryExpression(
-                        new LiteralExpression(2),
-                        new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2)
-                    )
-                )
-            )
+                new BinaryExpression(
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new Token(TokenKind.Plus, "+", null, 1),
+                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Line = 1 }
+            ) { Line = 1 }
         }
 
         #endregion

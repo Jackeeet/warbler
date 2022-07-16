@@ -2,6 +2,7 @@
 using Warbler.ErrorReporting;
 using Warbler.Parser;
 using Warbler.Scanner;
+using Warbler.TypeChecker;
 
 namespace Warbler;
 
@@ -59,10 +60,15 @@ internal class Program
 
         var parser = new WarblerParser(tokens, errorReporter);
         var expression = parser.Parse();
+        if (expression is null || errorReporter.HadError)
+            return;
+        
+        var checker = new WarblerChecker(errorReporter);
+        checker.CheckTypes(expression);
 
         if (errorReporter.HadError)
             return;
-        
+
         Console.WriteLine($":> Successfully parsed {tokens.Count} tokens");
     }
 }

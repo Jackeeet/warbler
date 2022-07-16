@@ -1,4 +1,6 @@
-﻿using Warbler.Scanner;
+﻿using Warbler.Expressions;
+using Warbler.Parser;
+using Warbler.Scanner;
 
 namespace Warbler.ErrorReporting;
 
@@ -18,6 +20,11 @@ public class ConsoleReporter : IErrorReporter
             token.Kind == TokenKind.Eof ? " at the end of input" : $" at \"{token.Lexeme}\"",
             message
         );
+    }
+
+    public void ErrorAtExpression(Expression expression, string message)
+    {
+        Report(expression.Line, "", message);
     }
 
     private void Report(int line, string atLocation, string message)
