@@ -25,10 +25,29 @@ public static class BinaryExpressionsData
         "compareBooleans",
     };
 
-    public static readonly List<string> InvalidNames = new() { };
+    public static readonly List<string> InvalidNames = new()
+    {
+        "addStrings",
+        "mismatchedAddition",
+        "booleanPower",
+        "mismatchedPower",
+        "mismatchedMultiplication",
+        "mismatchedDivision",
+        "divideByZero",
+        "moduloByZero",
+        "mismatchedConcatenation",
+        "concatIntegers",
+        "concatDoubles",
+        "concatBooleans",
+        "concatChars",
+        "mismatchedComparison",
+        "mismatchedEquality",
+    };
 
     public static readonly Dictionary<string, Expression> Inputs = new()
     {
+        #region valid
+
         {
             "addIntegers",
             new BinaryExpression(
@@ -159,6 +178,130 @@ public static class BinaryExpressionsData
                 new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
                 new Token(TokenKind.NotEqual, "!=", null, 1),
                 new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
+            ) { Line = 1 }
+        },
+
+        #endregion
+
+        {
+            "addStrings",
+            new BinaryExpression(
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
+                new Token(TokenKind.Plus, "+", null, 1),
+                new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedAddition",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Plus, "+", null, 1),
+                new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "booleanPower",
+            new BinaryExpression(
+                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
+                new Token(TokenKind.Hat, "^", null, 1),
+                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedPower",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Hat, "^", null, 1),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedMultiplication",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Asterisk, "*", null, 1),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedDivision",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Slash, "/", null, 1),
+                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "divideByZero",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Slash, "/", null, 1),
+                new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
+        },
+
+        {
+            "moduloByZero",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.Modulo, "%", null, 1),
+                new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedConcatenation",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.DoublePlus, "++", null, 1),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "concatIntegers",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.DoublePlus, "++", null, 1),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "concatDoubles",
+            new BinaryExpression(
+                new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 },
+                new Token(TokenKind.DoublePlus, "++", null, 1),
+                new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "concatBooleans",
+            new BinaryExpression(
+                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
+                new Token(TokenKind.DoublePlus, "++", null, 1),
+                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "concatChars",
+            new BinaryExpression(
+                new LiteralExpression('s') { Type = ExpressionType.Char, Line = 1 },
+                new Token(TokenKind.DoublePlus, "++", null, 1),
+                new LiteralExpression('k') { Type = ExpressionType.Char, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedComparison",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.LessEqual, "<=", null, 1),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "mismatchedEquality",
+            new BinaryExpression(
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new Token(TokenKind.DoubleEqual, "==", null, 1),
+                new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 }
             ) { Line = 1 }
         },
     };

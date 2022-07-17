@@ -15,6 +15,17 @@ public static class UnaryExpressionsData
         "notEquality"
     };
 
+    public static readonly List<string> InvalidNames = new()
+    {
+        "notInteger",
+        "notDouble",
+        "notString",
+        "notChar",
+        "minusString",
+        "minusChar",
+        "minusBoolean",
+    };
+
     public static readonly Dictionary<string, Expression> Inputs = new()
     {
         {
@@ -70,6 +81,58 @@ public static class UnaryExpressionsData
                     new LiteralExpression(2) { Type = ExpressionType.Integer }
                 )
             )
+        },
+
+        /* ---- invalid inputs ---- */
+
+        {
+            "notInteger",
+            new UnaryExpression(
+                new Token(TokenKind.Not, "!", null, 1),
+                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "notDouble",
+            new UnaryExpression(
+                new Token(TokenKind.Not, "!", null, 1),
+                new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "notString",
+            new UnaryExpression(
+                new Token(TokenKind.Not, "!", null, 1),
+                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "notChar",
+            new UnaryExpression(
+                new Token(TokenKind.Not, "!", null, 1),
+                new LiteralExpression('2') { Type = ExpressionType.Char, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "minusString",
+            new UnaryExpression(
+                new Token(TokenKind.Minus, "-", null, 1),
+                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "minusChar",
+            new UnaryExpression(
+                new Token(TokenKind.Minus, "-", null, 1),
+                new LiteralExpression('2') { Type = ExpressionType.Char, Line = 1 }
+            ) { Line = 1 }
+        },
+        {
+            "minusBoolean",
+            new UnaryExpression(
+                new Token(TokenKind.Minus, "-", null, 1),
+                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
+            ) { Line = 1 }
         },
     };
 
