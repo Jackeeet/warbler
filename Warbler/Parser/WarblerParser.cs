@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Warbler.ErrorReporting;
+using Warbler.Errors;
 using Warbler.Expressions;
 
 namespace Warbler.Parser;

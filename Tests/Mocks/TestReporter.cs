@@ -9,23 +9,23 @@ public class TestReporter : IErrorReporter
 
     public string? ErrorMessage { get; set; }
 
-    public void ErrorAtLine(int line, string message)
+    public void ErrorAtLine(int line, string messageKey)
     {
-        Report(line, "", message);
+        Report(line, "", messageKey);
     }
 
-    public void ErrorAtToken(Token token, string message)
+    public void ErrorAtToken(Token token, string messageKey)
     {
         Report(
             token.LineNumber,
             token.Kind == TokenKind.Eof ? " at the end of input" : $" at \"{token.Lexeme}\"",
-            message
+            messageKey
         );
     }
 
-    public void ErrorAtExpression(Expression expression, string message)
+    public void ErrorAtExpression(Expression expression, string messageKey)
     {
-        Report(expression.Line, "", message);
+        Report(expression.Line, "", messageKey);
     }
 
     public void Reset()

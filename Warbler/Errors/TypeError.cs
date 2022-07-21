@@ -1,4 +1,4 @@
-﻿namespace Warbler.TypeChecker;
+﻿namespace Warbler.Errors;
 
 public class TypeError : Exception
 {
