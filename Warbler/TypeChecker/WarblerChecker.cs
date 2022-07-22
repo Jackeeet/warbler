@@ -1,48 +1,73 @@
-﻿using Warbler.ErrorReporting;
+﻿using Warbler.Environment;
+using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
+using Type = Warbler.Resources.Errors.Type;
 
 namespace Warbler.TypeChecker;
 
 public class WarblerChecker : IExpressionVisitor<object?>
 {
-    private readonly IErrorReporter _errorReporter;
+    private static readonly HashSet<TokenKind> numericOperators = new()
+    {
+        TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Modulo
+    };
 
-    public WarblerChecker(IErrorReporter errorReporter)
+    private static readonly HashSet<TokenKind> relationalOperators = new()
+    {
+        TokenKind.LessEqual, TokenKind.LessThan, TokenKind.GreaterEqual, TokenKind.GreaterThan, TokenKind.DoubleEqual,
+        TokenKind.NotEqual
+    };
+
+    private static readonly Dictionary<ExpressionType, TokenKind> types = new()
+    {
+        { ExpressionType.Integer, TokenKind.Int },
+        { ExpressionType.Double, TokenKind.Double },
+        { ExpressionType.Boolean, TokenKind.Bool },
+        { ExpressionType.Char, TokenKind.Char },
+        { ExpressionType.String, TokenKind.String }
+    };
+
+    private readonly IErrorReporter _errorReporter;
+    private readonly WarblerEnvironment _environment;
+
+    public WarblerChecker(IErrorReporter errorReporter, WarblerEnvironment environment)
     {
         _errorReporter = errorReporter;
+        _environment = environment;
     }
 
     public bool CheckTypes(Expression expression)
     {
         try
         {
-            TypeExpession(expression);
+            TypeExpression(expression);
             return true;
         }
-        catch (TypeError te)
+        catch (TypeError)
         {
             return false;
         }
-        catch (SyntaxError se)
+        catch (RuntimeError error)
         {
+            _errorReporter.ReportRuntimeError(error);
             return false;
         }
     }
 
-    private void TypeExpession(Expression expression)
+    private void TypeExpression(Expression expression)
     {
         expression.Accept(this);
     }
 
+    private static bool IsNumeric(ExpressionType innerType)
+    {
+        return innerType == ExpressionType.Double || innerType == ExpressionType.Integer;
+    }
+
     private bool CheckNumericOperands(Expression left, Expression right)
     {
-        if (!(left.Type == ExpressionType.Double || left.Type == ExpressionType.Integer))
-            return false;
-        if (!(right.Type == ExpressionType.Double || right.Type == ExpressionType.Integer))
-            return false;
-
-        return true;
+        return IsNumeric(left.Type) && IsNumeric(right.Type);
     }
 
     private ExpressionType CoerceNumeric(Expression left, Expression right)
@@ -68,140 +93,94 @@ public class WarblerChecker : IExpressionVisitor<object?>
         return new TypeError();
     }
 
-    private SyntaxError HandleSyntaxError(Expression expression, string message)
-    {
-        _errorReporter.ErrorAtExpression(expression, message);
-        return new SyntaxError();
-    }
-
     public object? VisitUnaryExpression(UnaryExpression expression)
     {
-        TypeExpession(expression.Expression);
+        TypeExpression(expression.Expression);
         var innerType = expression.Expression.Type;
-        switch (expression.Op.Kind)
-        {
-            case TokenKind.Not:
-                if (innerType != ExpressionType.Boolean)
-                {
-                    throw HandleTypeError(expression, "The '!' operator can only be used with Boolean expressions");
-                }
-
-                break;
-            case TokenKind.Minus:
-                if (!(innerType == ExpressionType.Double || innerType == ExpressionType.Integer))
-                {
-                    throw HandleTypeError(expression,
-                        "The '-' operator can only be used with Double or Integer expressions");
-                }
-
-                break;
-            default:
-                // unreachable
-                throw new ArgumentException($"Unexpected operator {expression.Op.Lexeme}");
-        }
-
-        expression.Type = innerType;
+        TypeUnary(expression, innerType);
         return null;
+    }
+
+    private void TypeUnary(UnaryExpression expression, ExpressionType innerType)
+    {
+        if (expression.Op.Kind == TokenKind.Not && innerType != ExpressionType.Boolean)
+            throw HandleTypeError(expression, Type.NegateNonBoolean);
+
+        if (expression.Op.Kind == TokenKind.Minus && !IsNumeric(innerType))
+            throw HandleTypeError(expression, Type.NegateNonNumeric);
+        expression.Type = innerType;
     }
 
     public object? VisitBinaryExpression(BinaryExpression expression)
     {
-        var left = expression.Left;
-        TypeExpession(left);
-        var right = expression.Right;
-        TypeExpession(right);
+        TypeExpression(expression.Left);
+        TypeExpression(expression.Right);
 
-        switch (expression.Op.Kind)
-        {
-            case TokenKind.Hat:
-            case TokenKind.Asterisk:
-            case TokenKind.Plus:
-            case TokenKind.Minus:
-                if (!CheckNumericOperands(left, right))
-                {
-                    throw HandleTypeError(expression, "Both operands must be either Integer or Double");
-                }
-
-                expression.Type = CoerceNumeric(left, right);
-                break;
-            case TokenKind.Slash:
-            case TokenKind.Modulo:
-                if (!CheckNumericOperands(left, right))
-                {
-                    throw HandleTypeError(expression, "Both operands must be either Integer or Double");
-                }
-
-                // at this point only literal expressions have actual values
-                // so it seems like checking division by 0 is possible here
-                // but maybe it should be moved to the interpreter/compilation stage
-                if (right is LiteralExpression literal)
-                {
-                    if (literal.Type == ExpressionType.Double && (double)literal.Value == 0 ||
-                        literal.Type == ExpressionType.Integer && (int)literal.Value == 0)
-                    {
-                        throw HandleSyntaxError(expression, "Division by zero");
-                    }
-                }
-
-                expression.Type = CoerceNumeric(left, right);
-                break;
-            case TokenKind.DoublePlus:
-                if (left.Type != ExpressionType.String || right.Type != ExpressionType.String)
-                    throw HandleTypeError(expression,
-                        "The '++' operator can only be used with expressions of type String");
-                expression.Type = ExpressionType.String;
-                break;
-            case TokenKind.GreaterThan:
-            case TokenKind.LessThan:
-            case TokenKind.GreaterEqual:
-            case TokenKind.LessEqual:
-            case TokenKind.NotEqual:
-            case TokenKind.DoubleEqual:
-                var numeric = CheckNumericOperands(left, right);
-                if (!(left.Type == right.Type || numeric))
-                {
-                    throw HandleTypeError(expression,
-                        $"Cannot compare expressions of types {left.Type} and {right.Type}");
-                }
-
-                if (numeric)
-                {
-                    CoerceNumeric(left, right);
-                }
-
-                expression.Type = ExpressionType.Boolean;
-                break;
-            default:
-                // unreachable
-                throw new ArgumentException($"Unexpected operator {expression.Op.Lexeme}");
-        }
+        var opKind = expression.Op.Kind;
+        if (opKind == TokenKind.DoublePlus)
+            TypeStringBinary(expression);
+        else if (numericOperators.Contains(opKind))
+            TypeNumericBinary(expression);
+        else if (relationalOperators.Contains(opKind))
+            TypeRelationalBinary(expression);
+        else
+            // unreachable
+            throw new ArgumentException($"Unexpected operator {expression.Op.Lexeme}");
 
         return null;
     }
 
-    public object? VisitTernaryExpression(TernaryExpression expression)
+    private void TypeRelationalBinary(BinaryExpression expression)
     {
-        TypeExpession(expression.Condition);
-        if (expression.Condition.Type != ExpressionType.Boolean)
+        var left = expression.Left;
+        var right = expression.Right;
+        var numeric = CheckNumericOperands(left, right);
+        if (!(left.Type == right.Type || numeric))
         {
-            throw HandleTypeError(expression, "A ternary condition must be Boolean");
-        }
-
-        var thenBranch = expression.ThenBranch;
-        var elseBranch = expression.ElseBranch;
-        TypeExpession(thenBranch);
-        TypeExpession(elseBranch);
-        var numeric = CheckNumericOperands(thenBranch, elseBranch);
-
-        if (!(thenBranch.Type == elseBranch.Type || numeric))
-        {
-            throw HandleTypeError(expression, "Ternary branches must have the same type");
+            throw HandleTypeError(expression,
+                string.Format(Type.ComparisonOperandsMismatch, left.Type, right.Type));
         }
 
         if (numeric)
-        {
+            CoerceNumeric(left, right);
+
+        expression.Type = ExpressionType.Boolean;
+    }
+
+    private void TypeNumericBinary(BinaryExpression expression)
+    {
+        var left = expression.Left;
+        var right = expression.Right;
+        if (!CheckNumericOperands(left, right))
+            throw HandleTypeError(expression, Type.NonNumericBinaryOperands);
+
+        expression.Type = CoerceNumeric(left, right);
+    }
+
+    private void TypeStringBinary(BinaryExpression expression)
+    {
+        if (expression.Left.Type != ExpressionType.String || expression.Right.Type != ExpressionType.String)
+            throw HandleTypeError(expression, Type.NonStringConcatenation);
+        expression.Type = ExpressionType.String;
+    }
+
+    public object? VisitTernaryExpression(TernaryExpression expression)
+    {
+        TypeExpression(expression.Condition);
+        if (expression.Condition.Type != ExpressionType.Boolean)
+            throw HandleTypeError(expression, Type.NonBooleanTernaryCondition);
+
+        var thenBranch = expression.ThenBranch;
+        var elseBranch = expression.ElseBranch;
+        TypeExpression(thenBranch);
+        TypeExpression(elseBranch);
+        var numeric = CheckNumericOperands(thenBranch, elseBranch);
+
+        if (!(thenBranch.Type == elseBranch.Type || numeric))
+            throw HandleTypeError(expression, Type.TernaryBranchesMismatch);
+
+        if (numeric)
             CoerceNumeric(thenBranch, elseBranch);
-        }
 
         expression.Type = thenBranch.Type;
         return null;
@@ -209,9 +188,52 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     public object? VisitLiteralExpression(LiteralExpression expression)
     {
+        // type of a literal expression is known at parsing stage
+        // so at this point we just check that it's defined
         if (expression.Type == ExpressionType.Undefined)
-            throw HandleTypeError(expression, "Undefined literal type");
+            throw new Exception("Undefined literal type");
 
+        return null;
+    }
+
+    public object? VisitVariableDeclarationExpression(VariableDeclarationExpression expression)
+    {
+        TypeExpression(expression.Initializer);
+        if (!types.ContainsKey(expression.Initializer.Type))
+        {
+            throw new ArgumentException("Unsupported expression type");
+        }
+
+        if (expression.VarType.Kind != types[expression.Initializer.Type])
+        {
+            throw HandleTypeError(expression,
+                string.Format(Type.VariableAssignmentMismatch, expression.VarType.Kind));
+        }
+
+
+        expression.Type = expression.Initializer.Type;
+        _environment.Define(expression.Name.Lexeme, expression.Type);
+        return null;
+    }
+
+    public object? VisitVariableExpression(VariableExpression expression)
+    {
+        var storedType = _environment.Get(expression.Name, typeOnly: true).Item1;
+        expression.Type = storedType;
+        return null;
+    }
+
+    public object? VisitAssignmentExpression(AssignmentExpression expression)
+    {
+        TypeExpression(expression.Value);
+        var storedType = _environment.Get(expression.Name, typeOnly: true).Item1;
+        if (expression.Value.Type != storedType)
+        {
+            throw HandleTypeError(expression,
+                string.Format(Type.VariableAssignmentMismatch, expression.Value.Type));
+        }
+
+        expression.Type = expression.Value.Type;
         return null;
     }
 }

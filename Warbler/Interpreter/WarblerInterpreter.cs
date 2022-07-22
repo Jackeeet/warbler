@@ -1,33 +1,44 @@
-﻿using Warbler.ErrorReporting;
+﻿using Warbler.Environment;
+using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
 using Warbler.Utils;
+using Warbler.Resources.Errors;
 
 namespace Warbler.Interpreter;
 
 public class WarblerInterpreter : IExpressionVisitor<object?>
 {
-    private readonly HashSet<TokenKind> _numericOperators = new()
+    private static readonly HashSet<TokenKind> numericOperators = new()
     {
         TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Modulo
     };
 
-    private readonly HashSet<TokenKind> _relationalOperators = new()
+    private static readonly HashSet<TokenKind> relationalOperators = new()
     {
         TokenKind.LessEqual, TokenKind.LessThan, TokenKind.GreaterEqual, TokenKind.GreaterThan, TokenKind.DoubleEqual,
         TokenKind.NotEqual
     };
 
     private readonly IErrorReporter _errorReporter;
+    private WarblerEnvironment _environment;
 
-    public WarblerInterpreter(IErrorReporter errorReporter)
+    public WarblerInterpreter(IErrorReporter errorReporter, WarblerEnvironment environment)
     {
         _errorReporter = errorReporter;
+        _environment = environment;
     }
 
     public void Interpret(Expression expression)
     {
-        Console.WriteLine(Evaluate(expression));
+        try
+        {
+            Console.WriteLine(Evaluate(expression));
+        }
+        catch (RuntimeError error)
+        {
+            _errorReporter.ReportRuntimeError(error);
+        }
     }
 
 
@@ -69,57 +80,62 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
         var opKind = expression.Op.Kind;
         if (opKind == TokenKind.DoublePlus)
-            return (string)left + (string)right;
-
-        if (_numericOperators.Contains(opKind))
         {
-            if (left is double dLeft)
-            {
-                var dRight = (double)right;
-                try
-                {
-                    return EvaluateNumeric(opKind, dLeft, dRight, new DoubleMathProvider());
-                }
-                catch (DivideByZeroException)
-                {
-                    throw HandleRuntimeError(expression, "runtime.divideByZero");
-                }
-            }
+            return EvaluateStringBinary(left, right);
+        }
 
-            var iLeft = (int)left;
-            var iRight = (int)right;
+        if (numericOperators.Contains(opKind))
+        {
             try
             {
-                return EvaluateNumeric(opKind, iLeft, iRight, new IntMathProvider());
+                return EvaluateNumericBinary(left, right, opKind);
             }
             catch (DivideByZeroException)
             {
-                throw HandleRuntimeError(expression, "runtime.divideByZero");
+                throw HandleRuntimeError(expression, Runtime.DivideByZero);
             }
         }
 
-        if (_relationalOperators.Contains(opKind))
+        if (relationalOperators.Contains(opKind))
         {
-            var comparableLeft = (IComparable)left;
-            var comparableRight = (IComparable)right;
-            var comparisonResult = comparableLeft.CompareTo(comparableRight);
-            return opKind switch
-            {
-                TokenKind.GreaterThan => comparisonResult > 0,
-                TokenKind.LessThan => comparisonResult < 0,
-                TokenKind.GreaterEqual => comparisonResult >= 0,
-                TokenKind.LessEqual => comparisonResult <= 0,
-                TokenKind.NotEqual => comparisonResult != 0,
-                TokenKind.DoubleEqual => comparisonResult == 0,
-                _ => throw new ArgumentException("Unexpected operator")
-            };
+            return EvaluateRelationalBinary(left, right, opKind);
         }
 
         // unreachable
         return null;
     }
 
-    private static object? EvaluateNumeric<T>(TokenKind opKind, T left, T right, MathProvider<T> mathProvider)
+    private static object? EvaluateRelationalBinary(object left, object right, TokenKind opKind)
+    {
+        var comparableLeft = (IComparable)left;
+        var comparableRight = (IComparable)right;
+        var comparisonResult = comparableLeft.CompareTo(comparableRight);
+        return opKind switch
+        {
+            TokenKind.GreaterThan => comparisonResult > 0,
+            TokenKind.LessThan => comparisonResult < 0,
+            TokenKind.GreaterEqual => comparisonResult >= 0,
+            TokenKind.LessEqual => comparisonResult <= 0,
+            TokenKind.NotEqual => comparisonResult != 0,
+            TokenKind.DoubleEqual => comparisonResult == 0,
+            _ => throw new ArgumentException("Unexpected operator")
+        };
+    }
+
+    private static object EvaluateStringBinary(object left, object right)
+    {
+        return (string)left + (string)right;
+    }
+
+    private object EvaluateNumericBinary(object left, object right, TokenKind opKind)
+    {
+        if (left is double dLeft)
+            return EvaluateNumeric(opKind, dLeft, (double)right, new DoubleMathProvider());
+
+        return EvaluateNumeric(opKind, (int)left, (int)right, new IntMathProvider());
+    }
+
+    private static object EvaluateNumeric<T>(TokenKind opKind, T left, T right, MathProvider<T> mathProvider)
         where T : struct
     {
         return opKind switch
@@ -147,7 +163,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         return result;
     }
 
-    public object? VisitLiteralExpression(LiteralExpression expression)
+    public object VisitLiteralExpression(LiteralExpression expression)
     {
         // an int expression might have had its type set to Double 
         // as a result of coercion
@@ -158,6 +174,50 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
 
         return expression.Value;
+    }
+
+    public object VisitVariableDeclarationExpression(VariableDeclarationExpression expression)
+    {
+        if (!_environment.Defined(expression.Name.Lexeme))
+            throw new Exception(
+                $"Variable name {expression.Name.Lexeme} should be defined before the interpreting stage");
+
+        var initializerValue = Evaluate(expression.Initializer);
+        if (initializerValue is null)
+            throw new ArgumentNullException();
+
+        _environment.Define(expression.Name.Lexeme, expression.Initializer.Type, initializerValue);
+        return initializerValue;
+    }
+
+    public object VisitVariableExpression(VariableExpression expression)
+    {
+        if (!_environment.DefinedValue(expression.Name.Lexeme))
+            throw new ArgumentException();
+
+        var stored = _environment.Get(expression.Name);
+        var storedType = stored.Item1;
+        var storedValue = stored.Item2!;
+
+        return storedType switch
+        {
+            ExpressionType.Integer => (int)storedValue,
+            ExpressionType.Double => (double)storedValue,
+            ExpressionType.Boolean => (bool)storedValue,
+            ExpressionType.Char => (char)storedValue,
+            ExpressionType.String => (string)storedValue,
+            _ => throw new ArgumentException()
+        };
+    }
+
+    public object? VisitAssignmentExpression(AssignmentExpression expression)
+    {
+        if (!_environment.Defined(expression.Name.Lexeme))
+            throw new ArgumentException();
+
+        var value = Evaluate(expression.Value);
+        _environment.Assign(expression.Name, value);
+        return value;
     }
 
     private RuntimeError HandleRuntimeError(Expression expression, string message)

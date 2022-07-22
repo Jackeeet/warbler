@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
+using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Interpreter;
-using Warbler.Localisation;
 using Warbler.Parser;
 using Warbler.Scanner;
 using Warbler.TypeChecker;
@@ -10,7 +11,8 @@ namespace Warbler;
 
 public class Warbler
 {
-    private readonly IErrorReporter _errorReporter = new ConsoleReporter(Language.En);
+    private readonly IErrorReporter _errorReporter = new ConsoleReporter();
+    private readonly WarblerEnvironment _environment = new();
 
     public void RunFile(string path)
     {
@@ -19,7 +21,7 @@ public class Warbler
 
         if (_errorReporter.HadError)
         {
-            Environment.Exit(1);
+            System.Environment.Exit(1);
         }
     }
 
@@ -35,7 +37,7 @@ public class Warbler
             }
 
             Run(input);
-            _errorReporter.HadError = false;
+            _errorReporter.Reset();
         }
     }
 
@@ -45,17 +47,25 @@ public class Warbler
         var tokens = scanner.Scan();
 
         var parser = new WarblerParser(tokens, _errorReporter);
-        var expression = parser.Parse();
-        if (expression is null || _errorReporter.HadError)
-            return;
-
-        var checker = new WarblerChecker(_errorReporter);
-        checker.CheckTypes(expression);
-
+        var expressions = parser.Parse();
         if (_errorReporter.HadError)
             return;
 
-        var interpreter = new WarblerInterpreter(_errorReporter);
-        interpreter.Interpret(expression);
+        var checker = new WarblerChecker(_errorReporter, _environment);
+        foreach (var expression in expressions)
+        {
+            Debug.Assert(expression != null, nameof(expression) + " != null");
+            checker.CheckTypes(expression);
+        }
+
+        if (_errorReporter.HadError || _errorReporter.HadRuntimeError)
+            return;
+
+        var interpreter = new WarblerInterpreter(_errorReporter, _environment);
+        foreach (var expression in expressions)
+        {
+            Debug.Assert(expression != null, nameof(expression) + " != null");
+            interpreter.Interpret(expression);
+        }
     }
 }

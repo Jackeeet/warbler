@@ -53,7 +53,7 @@ public enum TokenKind
     For,
     ForEach,
     In,
-    Fun,
+    Func,
     Def,
     Type,
     Inst,

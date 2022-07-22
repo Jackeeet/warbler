@@ -2,6 +2,7 @@
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
+using Syntax = Warbler.Resources.Errors.Syntax;
 
 namespace Warbler.Parser;
 
@@ -18,19 +19,63 @@ public class WarblerParser
         _current = 0;
     }
 
-    public Expression? Parse()
+    public List<Expression?> Parse()
+    {
+        var expressions = new List<Expression?>();
+        while (!IsAtEnd)
+        {
+            expressions.Add(ParseProgram());
+        }
+
+        return expressions;
+    }
+
+    private Expression? ParseProgram()
     {
         try
         {
-            var expression = ParseExpression();
-            if (!IsAtEnd)
-                throw HandleParseError(CurrentToken, $"Unexpected token {CurrentToken}");
-            return expression;
+            if (Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
+                    TokenKind.Char, TokenKind.String, TokenKind.Def))
+            {
+                return ParseVariableDeclaration();
+            }
+
+            return ParseAssignment();
         }
         catch (ParseError)
         {
+            Synchronise();
             return null;
         }
+    }
+
+    private Expression ParseAssignment()
+    {
+        var expression = ParseExpression();
+        if (Matching(TokenKind.Equal))
+        {
+            var equals = PreviousToken;
+            var value = ParseExpression();
+            if (expression is VariableExpression varExpr)
+            {
+                var name = varExpr.Name;
+                return new AssignmentExpression(name, value);
+            }
+
+            _errorReporter.ErrorAtToken(equals, "Invalid assignment target");
+        }
+
+        return expression;
+    }
+
+    private Expression ParseVariableDeclaration()
+    {
+        var type = PreviousToken;
+        var name = Consume(TokenKind.Identifier, Syntax.ExpectedIdentifier);
+        Consume(TokenKind.Equal, Syntax.ExpectedAssignment);
+        var initializer = ParseExpression();
+
+        return new VariableDeclarationExpression(type, name, initializer);
     }
 
     private Expression ParseExpression()
@@ -39,7 +84,7 @@ public class WarblerParser
         if (Matching(TokenKind.Question))
         {
             var thenExpression = ParseExpression();
-            Consume(TokenKind.Colon, "Expected a : ");
+            Consume(TokenKind.Colon, Syntax.ExpectedColon);
             var elseExpression = ParseExpression();
 
             expression = new TernaryExpression(expression, thenExpression, elseExpression)
@@ -178,11 +223,16 @@ public class WarblerParser
         if (Matching(TokenKind.LeftBracket))
         {
             var expression = ParseExpression();
-            Consume(TokenKind.RightBracket, "Expected a ) after an expression");
+            Consume(TokenKind.RightBracket, Syntax.ExpectedClosingBracket);
             return expression;
         }
 
-        throw HandleParseError(CurrentToken, "Expected an expression");
+        if (Matching(TokenKind.Identifier))
+        {
+            return new VariableExpression(PreviousToken);
+        }
+
+        throw HandleParseError(CurrentToken, Syntax.ExpectedExpression);
     }
 
     private bool Matching(params TokenKind[] kinds)
@@ -246,7 +296,7 @@ public class WarblerParser
                 case TokenKind.Double:
                 case TokenKind.For:
                 case TokenKind.ForEach:
-                case TokenKind.Fun:
+                case TokenKind.Func:
                 case TokenKind.In:
                 case TokenKind.Inst:
                 case TokenKind.Int:

@@ -23,10 +23,13 @@ internal class Program
                 var expressionsDir = @"C:\dev\Warbler\Warbler\Expressions\";
                 var exprTypes = new List<string>
                 {
-                    "Unary      : Token Op, Expression Expression",
-                    "Binary     : Expression Left, Token Op, Expression Right",
-                    "Ternary    : Expression Condition, Expression ThenBranch, Expression ElseBranch",
-                    "Literal    : object Value",
+                    "Unary                  : Token Op, Expression Expression",
+                    "Binary                 : Expression Left, Token Op, Expression Right",
+                    "Ternary                : Expression Condition, Expression ThenBranch, Expression ElseBranch",
+                    "Literal                : object Value",
+                    "VariableDeclaration    : Token VarType, Token Name, Expression Initializer",
+                    "Variable               : Token Name",
+                    "Assignment             : Token Name, Expression Value"
                 };
 
                 ExpressionsGenerator.DefineAst(expressionsDir, exprTypes);

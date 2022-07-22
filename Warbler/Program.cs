@@ -1,9 +1,12 @@
-﻿namespace Warbler;
+﻿using Warbler.Resources.Common;
+
+namespace Warbler;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        // Resources.ErrorMessages.Culture = new CultureInfo("ru");
         var warbler = new Warbler();
         switch (args.Length)
         {
@@ -14,7 +17,7 @@ internal class Program
                 warbler.RunFile(args[0]);
                 break;
             default:
-                Console.WriteLine("Usage: warbler [file path]");
+                Console.WriteLine(Common.Usage);
                 break;
         }
     }

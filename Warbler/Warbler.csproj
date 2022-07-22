@@ -8,16 +8,49 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Update="Localisation\En.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Localisation\Ru.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <EmbeddedResource Update="Resources\Errors\Syntax.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Syntax.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Errors\Type.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Type.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Errors\Runtime.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Runtime.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Common\Common.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Common.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Errors\Syntax.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Syntax.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Errors\Type.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Type.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Errors\Runtime.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Runtime.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Common\Common.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Common.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

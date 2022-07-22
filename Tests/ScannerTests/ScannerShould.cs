@@ -386,7 +386,7 @@ public class ScannerShould
         {
             "functionParams", new List<Token>
             {
-                new(TokenKind.Fun, "fun", null, 1),
+                new(TokenKind.Func, "fun", null, 1),
                 new(TokenKind.Identifier, "Run", null, 1),
                 new(TokenKind.LeftBracket, "(", null, 1),
                 new(TokenKind.Int, "int", null, 1),

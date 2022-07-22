@@ -9,17 +9,17 @@ public class TestReporter : IErrorReporter
 
     public string? ErrorMessage { get; set; }
 
-    public void ErrorAtLine(int line, string messageKey)
+    public void ErrorAtLine(int line, string message)
     {
-        Report(line, "", messageKey);
+        Report(line, "", message);
     }
 
-    public void ErrorAtToken(Token token, string messageKey)
+    public void ErrorAtToken(Token token, string message)
     {
         Report(
             token.LineNumber,
             token.Kind == TokenKind.Eof ? " at the end of input" : $" at \"{token.Lexeme}\"",
-            messageKey
+            message
         );
     }
 

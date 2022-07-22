@@ -139,4 +139,100 @@ public class LiteralExpression : Expression
 	}
 }
 
+public class VariableDeclarationExpression : Expression
+{
+	public readonly Token VarType;
+	public readonly Token Name;
+	public readonly Expression Initializer;
+
+	public VariableDeclarationExpression(Token vartype, Token name, Expression initializer)
+	{
+		VarType = vartype;
+		Name = name;
+		Initializer = initializer;
+	}
+
+	public override T Accept<T>(IExpressionVisitor<T> visitor)
+	{
+		return visitor.VisitVariableDeclarationExpression(this);
+	}
+
+	protected bool Equals(VariableDeclarationExpression other)
+	{
+		return Type.Equals(other.Type) && Line.Equals(other.Line) && VarType.Equals(other.VarType) && Name.Equals(other.Name) && Initializer.Equals(other.Initializer);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is VariableDeclarationExpression other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(VarType, Name, Initializer);
+	}
+}
+
+public class VariableExpression : Expression
+{
+	public readonly Token Name;
+
+	public VariableExpression(Token name)
+	{
+		Name = name;
+	}
+
+	public override T Accept<T>(IExpressionVisitor<T> visitor)
+	{
+		return visitor.VisitVariableExpression(this);
+	}
+
+	protected bool Equals(VariableExpression other)
+	{
+		return Type.Equals(other.Type) && Line.Equals(other.Line) && Name.Equals(other.Name);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is VariableExpression other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return Name.GetHashCode();
+	}
+}
+
+public class AssignmentExpression : Expression
+{
+	public readonly Token Name;
+	public readonly Expression Value;
+
+	public AssignmentExpression(Token name, Expression value)
+	{
+		Name = name;
+		Value = value;
+	}
+
+	public override T Accept<T>(IExpressionVisitor<T> visitor)
+	{
+		return visitor.VisitAssignmentExpression(this);
+	}
+
+	protected bool Equals(AssignmentExpression other)
+	{
+		return Type.Equals(other.Type) && Line.Equals(other.Line) && Name.Equals(other.Name) && Value.Equals(other.Value);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is AssignmentExpression other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(Name, Value);
+	}
+}
+
 

@@ -2,11 +2,48 @@
 using System.Text;
 using Warbler.ErrorReporting;
 using Warbler.Expressions;
+using Syntax = Warbler.Resources.Errors.Syntax;
 
 namespace Warbler.Scanner;
 
 public class WarblerScanner
 {
+    private delegate void TokenHandler(char ch);
+
+    private delegate bool TokenPredicate(char ch);
+
+    private readonly List<Tuple<TokenPredicate, TokenHandler>> _tokenHandlers;
+
+    private static readonly Dictionary<char, TokenKind> singleTokenChars = new()
+    {
+        { '%', TokenKind.Modulo },
+        { '^', TokenKind.Hat },
+        { ',', TokenKind.Comma },
+        { '.', TokenKind.Dot },
+        { ';', TokenKind.Semicolon },
+        { '?', TokenKind.Question },
+        { '(', TokenKind.LeftBracket },
+        { ')', TokenKind.RightBracket },
+    };
+
+    private static readonly Dictionary<char, Tuple<char, TokenKind, TokenKind>> doubleTokenChars = new()
+    {
+        { '!', Tuple.Create('=', TokenKind.NotEqual, TokenKind.Not) },
+        { '=', Tuple.Create('=', TokenKind.DoubleEqual, TokenKind.Equal) },
+        { '*', Tuple.Create('=', TokenKind.AsteriskEqual, TokenKind.Asterisk) },
+        { '/', Tuple.Create('=', TokenKind.SlashEqual, TokenKind.Slash) },
+        { '>', Tuple.Create('=', TokenKind.GreaterEqual, TokenKind.GreaterThan) },
+        { ':', Tuple.Create('>', TokenKind.GreaterEqual, TokenKind.GreaterThan) },
+    };
+
+    private static readonly Dictionary<char, Tuple<char, TokenKind, char, TokenKind, TokenKind>> tripleTokenChars =
+        new()
+        {
+            { '+', Tuple.Create('=', TokenKind.PlusEqual, '+', TokenKind.DoublePlus, TokenKind.Plus) },
+            { '-', Tuple.Create('=', TokenKind.MinusEqual, '>', TokenKind.RightArrow, TokenKind.Minus) },
+            { '<', Tuple.Create('=', TokenKind.LessEqual, ':', TokenKind.LeftBird, TokenKind.LessThan) },
+        };
+
     private static readonly Dictionary<char, char> escapedChars = new()
     {
         { 'a', '\a' },
@@ -33,7 +70,7 @@ public class WarblerScanner
         { "for", TokenKind.For },
         { "foreach", TokenKind.ForEach },
         { "in", TokenKind.In },
-        { "fun", TokenKind.Fun },
+        { "func", TokenKind.Func },
         { "def", TokenKind.Def },
         { "type", TokenKind.Type },
         { "inst", TokenKind.Inst },
@@ -69,6 +106,30 @@ public class WarblerScanner
         _currentChar = 0;
         _currentLinePos = 0;
         _currentLine = 1;
+
+        _tokenHandlers = new List<Tuple<TokenPredicate, TokenHandler>>()
+        {
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                singleTokenChars.ContainsKey, (ch) => AddToken(singleTokenChars[ch])),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                doubleTokenChars.ContainsKey, AddDoubleToken),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                tripleTokenChars.ContainsKey, AddTripleToken),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                IsAlpha, (_) => AddIdentifierToken()),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                IsDigit, (_) => AddNumberToken()),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                IsBlankChar, (_) => { }),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                CommentChar, (_) => SkipUntil('\n')),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                (ch) => ch == '\'', (_) => AddCharToken()),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                (ch) => ch == '"', (_) => AddStringToken()),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                (ch) => ch == '\n', (_) => StartNewLine())
+        };
     }
 
     public List<Token> Scan()
@@ -85,121 +146,54 @@ public class WarblerScanner
 
     private void NextToken()
     {
-        TokenKind tk;
         var ch = ReadNextChar();
-        switch (ch)
+        var handled = false;
+        foreach (var handler in _tokenHandlers)
         {
-            case '%':
-                AddToken(TokenKind.Modulo);
+            var matchesPredicate = handler.Item1;
+            var addToken = handler.Item2;
+            if (matchesPredicate(ch))
+            {
+                handled = true;
+                addToken(ch);
                 break;
-            case '^':
-                AddToken(TokenKind.Hat);
-                break;
-            case ',':
-                AddToken(TokenKind.Comma);
-                break;
-            case '.':
-                AddToken(TokenKind.Dot);
-                break;
-            case ';':
-                AddToken(TokenKind.Semicolon);
-                break;
-            case '?':
-                AddToken(TokenKind.Question);
-                break;
-            case '(':
-                AddToken(TokenKind.LeftBracket);
-                break;
-            case ')':
-                AddToken(TokenKind.RightBracket);
-                break;
-            case '!':
-                AddToken(NextCharMatching('=') ? TokenKind.NotEqual : TokenKind.Not);
-                break;
-            case '=':
-                AddToken(NextCharMatching('=') ? TokenKind.DoubleEqual : TokenKind.Equal);
-                break;
-            case '*':
-                AddToken(NextCharMatching('=') ? TokenKind.AsteriskEqual : TokenKind.Asterisk);
-                break;
-            case '+':
-                tk = TokenKind.Plus;
-                if (NextCharMatching('='))
-                    tk = TokenKind.PlusEqual;
-                else if (NextCharMatching('+'))
-                    tk = TokenKind.DoublePlus;
-
-                AddToken(tk);
-                break;
-            case '-':
-                if (NextCharMatching('-'))
-                {
-                    SkipUntil('\n');
-                    break;
-                }
-
-                tk = TokenKind.Minus;
-                if (NextCharMatching('='))
-                    tk = TokenKind.MinusEqual;
-                else if (NextCharMatching('>'))
-                    tk = TokenKind.RightArrow;
-                AddToken(tk);
-                break;
-            case '/':
-                if (NextCharMatching('/'))
-                {
-                    SkipUntil('\n');
-                    break;
-                }
-
-                AddToken(NextCharMatching('=') ? TokenKind.SlashEqual : TokenKind.Slash);
-                break;
-            case '<':
-                tk = TokenKind.LessThan;
-                if (NextCharMatching(':'))
-                    tk = TokenKind.LeftBird;
-                else if (NextCharMatching('='))
-                    tk = TokenKind.LessEqual;
-                AddToken(tk);
-                break;
-            case '>':
-                AddToken(NextCharMatching('=') ? TokenKind.GreaterEqual : TokenKind.GreaterThan);
-                break;
-            case ':':
-                AddToken(NextCharMatching('>') ? TokenKind.RightBird : TokenKind.Colon);
-                break;
-            case '\'':
-                AddCharToken();
-                break;
-            case '"':
-                AddStringToken();
-                break;
-            case ' ':
-            case '\r':
-            case '\t':
-                break;
-            case '\n':
-                StartNewLine();
-                break;
-            default:
-                if (IsDigit(ch))
-                {
-                    AddNumberToken();
-                }
-                else if (IsAlpha(ch))
-                {
-                    AddIdentifierToken();
-                }
-                else
-                {
-                    _errorReporter.ErrorAtLine(
-                        _currentLine,
-                        $"Unexpected character: {_input[_currentChar - 1]} at position {_currentLinePos - 1}"
-                    );
-                }
-
-                break;
+            }
         }
+
+        if (!handled)
+        {
+            _errorReporter.ErrorAtLine(_currentLine,
+                string.Format(Syntax.UnexpectedChar, _input[_currentChar - 1], _currentLinePos - 1));
+        }
+    }
+
+    private static bool IsBlankChar(char ch)
+    {
+        return ch == ' ' || ch == '\r' || ch == '\t';
+    }
+
+    private void AddDoubleToken(char ch)
+    {
+        var tokens = doubleTokenChars[ch];
+        var nextChar = tokens.Item1;
+        AddToken(NextCharMatching(nextChar) ? tokens.Item2 : tokens.Item3);
+    }
+
+    private bool CommentChar(char ch)
+    {
+        return (ch == '-' || ch == '/') && NextCharMatching(ch);
+    }
+
+    private void AddTripleToken(char ch)
+    {
+        var tokens = tripleTokenChars[ch];
+        var tk = tokens.Item5;
+        if (NextCharMatching(tokens.Item1))
+            tk = tokens.Item2;
+        else if (NextCharMatching(tokens.Item3))
+            tk = tokens.Item4;
+
+        AddToken(tk);
     }
 
     private void SkipUntil(char terminator)
@@ -250,18 +244,7 @@ public class WarblerScanner
             }
             else if (Peek() == '\\')
             {
-                // read the \
-                ReadNextChar();
-                // read the (possibly) escaped char
-                var esc = ReadNextChar();
-                if (!escapedChars.ContainsKey(esc))
-                {
-                    _errorReporter.ErrorAtLine(_currentLine, $"Unknown escape sequence at position {_currentLinePos}");
-                    SkipUntil('"');
-                    return;
-                }
-
-                builder.Append(escapedChars[esc]);
+                if (!ReadEscapedChar(builder)) return;
             }
 
             builder.Append(ReadNextChar());
@@ -269,7 +252,7 @@ public class WarblerScanner
 
         if (InputEnded())
         {
-            _errorReporter.ErrorAtLine(_currentLine, $"Expected a \" at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.UnterminatedString, _currentLinePos));
             return;
         }
 
@@ -278,18 +261,35 @@ public class WarblerScanner
         AddToken(TokenKind.StringLiteral, builder.ToString());
     }
 
+    private bool ReadEscapedChar(StringBuilder builder)
+    {
+        // read the \
+        ReadNextChar();
+        // read the (possibly) escaped char
+        var esc = ReadNextChar();
+        if (!escapedChars.ContainsKey(esc))
+        {
+            _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.UnknownEscape, _currentLinePos));
+            SkipUntil('"');
+            return false;
+        }
+
+        builder.Append(escapedChars[esc]);
+        return true;
+    }
+
     private void AddCharToken()
     {
         if (InputEnded())
         {
-            _errorReporter.ErrorAtLine(_currentLine, $"Unexpected character \' at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, Syntax.ApostropheAtEof);
             return;
         }
 
         var ch = ReadNextChar();
         if (ch == '\'')
         {
-            _errorReporter.ErrorAtLine(_currentLine, $"Empty character literal at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.EmptyChar, _currentLinePos));
             return;
         }
         else if (ch == '\\')
@@ -297,7 +297,7 @@ public class WarblerScanner
             var esc = ReadNextChar();
             if (!escapedChars.ContainsKey(esc))
             {
-                _errorReporter.ErrorAtLine(_currentLine, $"Unknown escape sequence at position {_currentLinePos}");
+                _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.UnknownEscape, _currentLinePos));
                 SkipUntil('\'');
                 return;
             }
@@ -307,7 +307,7 @@ public class WarblerScanner
 
         if (Peek() != '\'' || InputEnded())
         {
-            _errorReporter.ErrorAtLine(_currentLine, $"Expected a closing ' at position {_currentLinePos}");
+            _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.UnterminatedChar, _currentLinePos));
             return;
         }
 
