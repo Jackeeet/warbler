@@ -1,4 +1,5 @@
-﻿using Warbler.Environment;
+﻿using System.Diagnostics;
+using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
@@ -29,7 +30,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     };
 
     private readonly IErrorReporter _errorReporter;
-    private readonly WarblerEnvironment _environment;
+    private WarblerEnvironment _environment;
 
     public WarblerChecker(IErrorReporter errorReporter, WarblerEnvironment environment)
     {
@@ -235,5 +236,33 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
         expression.Type = expression.Value.Type;
         return null;
+    }
+
+    public object? VisitBlockExpression(BlockExpression expression)
+    {
+        _environment.NewSubEnvironment(expression.BlockId);
+        TypeBlock(expression);
+        return null;
+    }
+
+    private void TypeBlock(BlockExpression expression)
+    {
+        var previousEnvironment = _environment;
+        try
+        {
+            _environment = _environment.GetSubEnvironment(expression.BlockId);
+            var expressions = expression.Expressions;
+            foreach (var expr in expressions)
+            {
+                Debug.Assert(expr != null, nameof(expr) + " != null");
+                TypeExpression(expr);
+            }
+
+            expression.Type = expressions[^1]!.Type;
+        }
+        finally
+        {
+            _environment = previousEnvironment;
+        }
     }
 }

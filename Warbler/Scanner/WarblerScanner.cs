@@ -33,7 +33,7 @@ public class WarblerScanner
         { '*', Tuple.Create('=', TokenKind.AsteriskEqual, TokenKind.Asterisk) },
         { '/', Tuple.Create('=', TokenKind.SlashEqual, TokenKind.Slash) },
         { '>', Tuple.Create('=', TokenKind.GreaterEqual, TokenKind.GreaterThan) },
-        { ':', Tuple.Create('>', TokenKind.GreaterEqual, TokenKind.GreaterThan) },
+        { ':', Tuple.Create('>', TokenKind.RightBird, TokenKind.Colon) },
     };
 
     private static readonly Dictionary<char, Tuple<char, TokenKind, char, TokenKind, TokenKind>> tripleTokenChars =
@@ -110,6 +110,10 @@ public class WarblerScanner
         _tokenHandlers = new List<Tuple<TokenPredicate, TokenHandler>>()
         {
             Tuple.Create<TokenPredicate, TokenHandler>(
+                IsBlankChar, (_) => { }),
+            Tuple.Create<TokenPredicate, TokenHandler>(
+                CommentChar, (_) => SkipUntil('\n')),
+            Tuple.Create<TokenPredicate, TokenHandler>(
                 singleTokenChars.ContainsKey, (ch) => AddToken(singleTokenChars[ch])),
             Tuple.Create<TokenPredicate, TokenHandler>(
                 doubleTokenChars.ContainsKey, AddDoubleToken),
@@ -119,10 +123,6 @@ public class WarblerScanner
                 IsAlpha, (_) => AddIdentifierToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(
                 IsDigit, (_) => AddNumberToken()),
-            Tuple.Create<TokenPredicate, TokenHandler>(
-                IsBlankChar, (_) => { }),
-            Tuple.Create<TokenPredicate, TokenHandler>(
-                CommentChar, (_) => SkipUntil('\n')),
             Tuple.Create<TokenPredicate, TokenHandler>(
                 (ch) => ch == '\'', (_) => AddCharToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(

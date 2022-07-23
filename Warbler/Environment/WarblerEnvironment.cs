@@ -6,11 +6,39 @@ namespace Warbler.Environment;
 
 public class WarblerEnvironment
 {
+    private readonly WarblerEnvironment? _enclosing;
+    private readonly Dictionary<Guid, WarblerEnvironment> _subEnvironments;
     private Dictionary<string, Tuple<ExpressionType, object?>> _values = new();
+
+    public WarblerEnvironment()
+    {
+        _enclosing = null;
+        _subEnvironments = new Dictionary<Guid, WarblerEnvironment>();
+    }
+
+    public WarblerEnvironment(WarblerEnvironment enclosing)
+    {
+        _enclosing = enclosing;
+        _subEnvironments = new Dictionary<Guid, WarblerEnvironment>();
+    }
 
     public void Reset()
     {
         _values = new Dictionary<string, Tuple<ExpressionType, object?>>();
+    }
+
+    public void NewSubEnvironment(Guid environmentId)
+    {
+        if (_subEnvironments.ContainsKey(environmentId))
+            throw new ArgumentException($"a subenvironment with id {environmentId} already exists");
+        _subEnvironments[environmentId] = new WarblerEnvironment();
+    }
+
+    public WarblerEnvironment GetSubEnvironment(Guid environmentId)
+    {
+        if (!_subEnvironments.ContainsKey(environmentId))
+            throw new ArgumentException($"no subenvironment with id {environmentId}");
+        return _subEnvironments[environmentId];
     }
 
     public void Define(string name, ExpressionType type, object? value = null)
@@ -30,22 +58,29 @@ public class WarblerEnvironment
 
     public Tuple<ExpressionType, object?> Get(Token name, bool typeOnly = false)
     {
-        if (!_values.ContainsKey(name.Lexeme))
-            throw new RuntimeError(name, string.Format(Runtime.UndefinedVariable, name.Lexeme));
+        if (_values.ContainsKey(name.Lexeme))
+            return _values[name.Lexeme];
 
-        // technically this should not be an error that ever gets seen by the user
-        // so maybe remove this
-        if (!typeOnly && _values[name.Lexeme].Item2 is null)
-            throw new RuntimeError(name, string.Format(Runtime.UninitializedVariable, name.Lexeme));
-        return _values[name.Lexeme];
+        if (_enclosing is not null)
+            return _enclosing.Get(name);
+
+        throw new RuntimeError(name, string.Format(Runtime.UndefinedVariable, name.Lexeme));
     }
 
     public void Assign(Token name, object? value)
     {
-        if (!Defined(name.Lexeme))
-            throw new RuntimeError(name, Runtime.UndefinedVariable);
+        if (Defined(name.Lexeme))
+        {
+            var type = _values[name.Lexeme].Item1;
+            _values[name.Lexeme] = Tuple.Create(type, value);
+        }
 
-        var type = _values[name.Lexeme].Item1;
-        _values[name.Lexeme] = Tuple.Create(type, value);
+        if (_enclosing is not null)
+        {
+            _enclosing.Assign(name, value);
+            return;
+        }
+
+        throw new RuntimeError(name, Runtime.UndefinedVariable);
     }
 }

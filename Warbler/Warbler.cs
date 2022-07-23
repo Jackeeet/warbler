@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Interpreter;
@@ -16,8 +15,10 @@ public class Warbler
 
     public void RunFile(string path)
     {
-        var bytes = File.ReadAllBytes(Path.GetFullPath(path));
-        Run(Encoding.Default.GetString(bytes));
+        using (var reader = new StreamReader(path))
+        {
+            Run(reader.ReadToEnd());
+        }
 
         if (_errorReporter.HadError)
         {

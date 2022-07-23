@@ -235,4 +235,36 @@ public class AssignmentExpression : Expression
 	}
 }
 
+public class BlockExpression : Expression
+{
+	public readonly Guid BlockId;
+	public readonly List<Expression?> Expressions;
+
+	public BlockExpression(Guid blockid, List<Expression?> expressions)
+	{
+		BlockId = blockid;
+		Expressions = expressions;
+	}
+
+	public override T Accept<T>(IExpressionVisitor<T> visitor)
+	{
+		return visitor.VisitBlockExpression(this);
+	}
+
+	protected bool Equals(BlockExpression other)
+	{
+		return Type.Equals(other.Type) && Line.Equals(other.Line) && BlockId.Equals(other.BlockId) && Expressions.Equals(other.Expressions);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is BlockExpression other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine(BlockId, Expressions);
+	}
+}
+
 

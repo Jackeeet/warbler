@@ -1,4 +1,5 @@
-﻿using Warbler.Environment;
+﻿using System.Diagnostics;
+using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
@@ -218,6 +219,34 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         var value = Evaluate(expression.Value);
         _environment.Assign(expression.Name, value);
         return value;
+    }
+
+    public object VisitBlockExpression(BlockExpression expression)
+    {
+        var previousEnvironment = _environment;
+        try
+        {
+            _environment = _environment.GetSubEnvironment(expression.BlockId);
+            var expressions = expression.Expressions;
+            Debug.Assert(expressions != null, nameof(expressions) + " != null");
+
+            for (var i = 0; i < expressions.Count - 1; i++)
+            {
+                var expr = expressions[i];
+                Debug.Assert(expr != null, nameof(expr) + " != null");
+                _ = Evaluate(expr)!;
+            }
+
+            return Evaluate(expressions[^1]!)!;
+        }
+        catch (ArgumentException)
+        {
+            throw new Exception("Expected a block to be declared at type-checking stage");
+        }
+        finally
+        {
+            _environment = previousEnvironment;
+        }
     }
 
     private RuntimeError HandleRuntimeError(Expression expression, string message)

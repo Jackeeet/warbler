@@ -8,5 +8,6 @@ public interface IExpressionVisitor<out T>
 	T VisitVariableDeclarationExpression(VariableDeclarationExpression expression);
 	T VisitVariableExpression(VariableExpression expression);
 	T VisitAssignmentExpression(AssignmentExpression expression);
+	T VisitBlockExpression(BlockExpression expression);
 }
 

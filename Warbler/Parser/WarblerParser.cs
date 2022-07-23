@@ -24,13 +24,28 @@ public class WarblerParser
         var expressions = new List<Expression?>();
         while (!IsAtEnd)
         {
-            expressions.Add(ParseProgram());
+            expressions.Add(ParseBlock());
         }
 
         return expressions;
     }
 
-    private Expression? ParseProgram()
+    private Expression? ParseBlock()
+    {
+        if (Matching(TokenKind.RightBird))
+        {
+            var expressions = new List<Expression?>();
+            while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
+                expressions.Add(ParseExpression());
+
+            Consume(TokenKind.LeftBird, "Expected a closing <: after block");
+            return new BlockExpression(new Guid(), expressions);
+        }
+
+        return ParseExpression();
+    }
+
+    private Expression? ParseExpression()
     {
         try
         {
@@ -51,11 +66,11 @@ public class WarblerParser
 
     private Expression ParseAssignment()
     {
-        var expression = ParseExpression();
+        var expression = ParseBasicExpression();
         if (Matching(TokenKind.Equal))
         {
             var equals = PreviousToken;
-            var value = ParseExpression();
+            var value = ParseBasicExpression();
             if (expression is VariableExpression varExpr)
             {
                 var name = varExpr.Name;
@@ -73,19 +88,19 @@ public class WarblerParser
         var type = PreviousToken;
         var name = Consume(TokenKind.Identifier, Syntax.ExpectedIdentifier);
         Consume(TokenKind.Equal, Syntax.ExpectedAssignment);
-        var initializer = ParseExpression();
+        var initializer = ParseBasicExpression();
 
         return new VariableDeclarationExpression(type, name, initializer);
     }
 
-    private Expression ParseExpression()
+    private Expression ParseBasicExpression()
     {
         var expression = ParseEquality();
         if (Matching(TokenKind.Question))
         {
-            var thenExpression = ParseExpression();
+            var thenExpression = ParseBasicExpression();
             Consume(TokenKind.Colon, Syntax.ExpectedColon);
-            var elseExpression = ParseExpression();
+            var elseExpression = ParseBasicExpression();
 
             expression = new TernaryExpression(expression, thenExpression, elseExpression)
             {
@@ -222,7 +237,7 @@ public class WarblerParser
 
         if (Matching(TokenKind.LeftBracket))
         {
-            var expression = ParseExpression();
+            var expression = ParseBasicExpression();
             Consume(TokenKind.RightBracket, Syntax.ExpectedClosingBracket);
             return expression;
         }

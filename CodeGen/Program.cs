@@ -29,7 +29,8 @@ internal class Program
                     "Literal                : object Value",
                     "VariableDeclaration    : Token VarType, Token Name, Expression Initializer",
                     "Variable               : Token Name",
-                    "Assignment             : Token Name, Expression Value"
+                    "Assignment             : Token Name, Expression Value",
+                    "Block                  : Guid BlockId, List<Expression?> Expressions"
                 };
 
                 ExpressionsGenerator.DefineAst(expressionsDir, exprTypes);
