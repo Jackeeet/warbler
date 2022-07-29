@@ -88,6 +88,16 @@ namespace Warbler.Resources.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} 
+        ///[line {1}].
+        /// </summary>
+        internal static string RuntimeError {
+            get {
+                return ResourceManager.GetString("RuntimeError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Usage: warbler [file path].
         /// </summary>
         internal static string Usage {

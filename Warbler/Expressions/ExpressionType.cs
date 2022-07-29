@@ -2,7 +2,7 @@
 
 public enum ExpressionType
 {
-    Undefined,
+    Untyped,
     Boolean,
     Double,
     Integer,

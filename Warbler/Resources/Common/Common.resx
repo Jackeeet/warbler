@@ -30,4 +30,8 @@
     <data name="Usage" xml:space="preserve">
         <value>Usage: warbler [file path]</value>
     </data>
+    <data name="RuntimeError" xml:space="preserve">
+        <value>{0} 
+[line {1}]</value>
+    </data>
 </root>

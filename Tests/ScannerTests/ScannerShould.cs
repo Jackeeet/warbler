@@ -118,7 +118,7 @@ public class ScannerShould
         { "stringWithUnsupportedChar", "\"abcdf#2234\"" },
         { "unsupportedInputChar", "#" },
         { "multilineString", "\"first line\nsecond line\"" },
-        { "functionParams", "fun Run(int? first, bool second)" },
+        { "functionParams", "func Run(int? first, bool second)" },
         { "controlFlow", "if 10 % 2 == 0 then :> print 2 <: else :> print 1 <:" },
         { "simpleSum", "2 + 3" },
         { "simpleDifference", "3 - 1" },
@@ -386,7 +386,7 @@ public class ScannerShould
         {
             "functionParams", new List<Token>
             {
-                new(TokenKind.Func, "fun", null, 1),
+                new(TokenKind.Func, "func", null, 1),
                 new(TokenKind.Identifier, "Run", null, 1),
                 new(TokenKind.LeftBracket, "(", null, 1),
                 new(TokenKind.Int, "int", null, 1),

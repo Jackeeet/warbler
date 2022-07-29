@@ -1,5 +1,6 @@
 ﻿using Warbler.Errors;
 using Warbler.Expressions;
+using Warbler.Resources.Common;
 
 namespace Warbler.ErrorReporting;
 
@@ -23,9 +24,7 @@ public class ConsoleReporter : IErrorReporter
     {
         Report(
             token.LineNumber,
-            token.Kind == TokenKind.Eof
-                ? Resources.Common.Common.AtInputEnd
-                : string.Format(Resources.Common.Common.AtLocation, token.Lexeme),
+            token.Kind == TokenKind.Eof ? Common.AtInputEnd : string.Format(Common.AtLocation, token.Lexeme),
             message
         );
     }
@@ -38,12 +37,12 @@ public class ConsoleReporter : IErrorReporter
     public void ReportRuntimeError(RuntimeError error)
     {
         HadRuntimeError = true;
-        Console.WriteLine($"{error.Message} \n[line {error.Token.LineNumber}]");
+        Console.WriteLine(Common.RuntimeError, error.Message, error.Token.LineNumber);
     }
 
     private void Report(int line, string atLocation, string message)
     {
         HadError = true;
-        Console.WriteLine(Resources.Common.Common.ErrorLine, line, atLocation, message);
+        Console.WriteLine(Common.ErrorLine, line, atLocation, message);
     }
 }

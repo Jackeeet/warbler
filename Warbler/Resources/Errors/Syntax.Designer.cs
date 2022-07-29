@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace Warbler.Resources.Errors {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -121,6 +124,15 @@ namespace Warbler.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid assignment target.
+        /// </summary>
+        internal static string InvalidAssignmentTarget {
+            get {
+                return ResourceManager.GetString("InvalidAssignmentTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected character {0} at position {1}.
         /// </summary>
         internal static string UnexpectedChar {
@@ -144,6 +156,15 @@ namespace Warbler.Resources.Errors {
         internal static string UnknownEscape {
             get {
                 return ResourceManager.GetString("UnknownEscape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected a closing &lt;: after block.
+        /// </summary>
+        internal static string UnterminatedBlock {
+            get {
+                return ResourceManager.GetString("UnterminatedBlock", resourceCulture);
             }
         }
         

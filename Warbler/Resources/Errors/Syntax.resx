@@ -54,4 +54,10 @@
     <data name="ExpectedAssignment" xml:space="preserve">
         <value>Expected a =</value>
     </data>
+    <data name="UnterminatedBlock" xml:space="preserve">
+        <value>Expected a closing &lt;: after block</value>
+    </data>
+    <data name="InvalidAssignmentTarget" xml:space="preserve">
+        <value>Invalid assignment target</value>
+    </data>
 </root>

@@ -23,4 +23,8 @@
     <data name="Usage" xml:space="preserve">
         <value>Синтаксис: warbler [путь к файлу]</value>
     </data>
+    <data name="RuntimeError" xml:space="preserve">
+        <value>{0} 
+[строка {1}]</value>
+    </data>
 </root>

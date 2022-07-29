@@ -104,11 +104,16 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     private void TypeUnary(UnaryExpression expression, ExpressionType innerType)
     {
+        if (expression.Op.Kind != TokenKind.Not && expression.Op.Kind != TokenKind.Minus)
+            // this should be handled at parsing stage
+            throw new ArgumentException("Unexpected unary operator");
+                
         if (expression.Op.Kind == TokenKind.Not && innerType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NegateNonBoolean);
 
         if (expression.Op.Kind == TokenKind.Minus && !IsNumeric(innerType))
             throw HandleTypeError(expression, Type.NegateNonNumeric);
+        
         expression.Type = innerType;
     }
 
@@ -191,8 +196,8 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         // type of a literal expression is known at parsing stage
         // so at this point we just check that it's defined
-        if (expression.Type == ExpressionType.Undefined)
-            throw new Exception("Undefined literal type");
+        if (expression.Type == ExpressionType.Untyped)
+            throw new ArgumentException("Undefined literal type");
 
         return null;
     }

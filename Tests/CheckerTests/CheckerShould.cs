@@ -1,16 +1,18 @@
 ﻿using System;
-using NuGet.Frameworks;
 using NUnit.Framework;
 using Tests.Mocks;
+using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.TypeChecker;
 
 namespace Tests.CheckerTests;
 
+[TestFixture]
 public class CheckerShould
 {
     private TestReporter _errorReporter = null!;
-    private WarblerChecker _checker;
+    private WarblerChecker? _checker;
+    private WarblerEnvironment _environment = new WarblerEnvironment();
 
     [OneTimeSetUp]
     public void BeforeFixture()
@@ -22,7 +24,22 @@ public class CheckerShould
     public void BeforeTest()
     {
         _errorReporter.Reset();
-        _checker = new WarblerChecker(_errorReporter);
+        _environment = new WarblerEnvironment();
+        PredefineVariables();
+        _checker = new WarblerChecker(_errorReporter, _environment);
+    }
+
+    private void PredefineVariables()
+    {
+        _environment.Define("intVar", ExpressionType.Integer);
+        _environment.Define("reassignInt", ExpressionType.Integer);
+        _environment.Define("reassignDouble", ExpressionType.Double);
+        _environment.Define("reassignBool", ExpressionType.Boolean);
+        _environment.Define("reassignChar", ExpressionType.Char);
+        _environment.Define("reassignString", ExpressionType.String);
+        _environment.Define("reassignExpression", ExpressionType.Integer);
+        _environment.Define("reassignVariable", ExpressionType.Integer);
+        _environment.Define("stringOnly", ExpressionType.Integer);
     }
 
     [Test]
@@ -32,7 +49,7 @@ public class CheckerShould
         var expectedExpression = UnaryExpressionsData.Outputs[inputName];
 
         var actualExpression = UnaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(actualExpression);
+        var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
         Assert.AreEqual(expectedExpression, actualExpression);
@@ -45,7 +62,7 @@ public class CheckerShould
         var expectedExpression = BinaryExpressionsData.Outputs[inputName];
 
         var actualExpression = BinaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(actualExpression);
+        var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
         Assert.AreEqual(expectedExpression, actualExpression);
@@ -59,20 +76,23 @@ public class CheckerShould
         var expectedExpression = TernaryExpressionsData.Outputs[inputName];
 
         var actualExpression = TernaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(actualExpression);
+        var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
         Assert.AreEqual(expectedExpression, actualExpression);
     }
 
-
     [Test]
-    public void CheckInvalidLiteralExpression()
+    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.ValidNames))]
+    public void CheckValidVariableExpressions(string inputName)
     {
-        var checkResult = _checker.CheckTypes(new LiteralExpression(2) { Line = 1 });
+        var expectedExpression = VariableExpressionsData.Outputs[inputName];
 
-        Assert.IsFalse(checkResult);
-        Assert.IsTrue(_errorReporter.HadError);
+        var actualExpression = VariableExpressionsData.Inputs[inputName];
+        var checkResult = _checker!.CheckTypes(actualExpression);
+
+        Assert.IsTrue(checkResult);
+        Assert.AreEqual(expectedExpression, actualExpression);
     }
 
     [Test]
@@ -80,7 +100,7 @@ public class CheckerShould
     public void CheckInvalidUnaryExpressions(string inputName)
     {
         var expression = UnaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(expression);
+        var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
         Assert.IsTrue(_errorReporter.HadError);
@@ -91,7 +111,7 @@ public class CheckerShould
     public void CheckInvalidBinaryExpressions(string inputName)
     {
         var expression = BinaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(expression);
+        var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
         Assert.IsTrue(_errorReporter.HadError);
@@ -102,16 +122,33 @@ public class CheckerShould
     public void CheckInvalidTernaryExpressions(string inputName)
     {
         var expression = TernaryExpressionsData.Inputs[inputName];
-        var checkResult = _checker.CheckTypes(expression);
+        var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
         Assert.IsTrue(_errorReporter.HadError);
     }
 
     [Test]
+    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.InvalidNames))]
+    public void CheckInvalidVariableExpressions(string inputName)
+    {
+        var expression = VariableExpressionsData.Inputs[inputName];
+        var checkResult = _checker!.CheckTypes(expression);
+
+        Assert.IsFalse(checkResult);
+        Assert.IsTrue(_errorReporter.HadError);
+    }
+
+    [Test]
+    public void ThrowOnUntypedLiteralExpression()
+    {
+        Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(new LiteralExpression(2) { Line = 1 }));
+    }
+
+    [Test]
     public void ThrowOnUnexpectedUnaryOp()
     {
-        Assert.Throws<ArgumentException>(() => _checker.CheckTypes(
+        Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(
                 new UnaryExpression(
                     new Token(TokenKind.Plus, "+", null, 1),
                     new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
@@ -123,7 +160,7 @@ public class CheckerShould
     [Test]
     public void ThrowOnUnexpectedBinaryOp()
     {
-        Assert.Throws<ArgumentException>(() => _checker.CheckTypes(
+        Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(
                 new BinaryExpression(
                     new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                     new Token(TokenKind.Question, "?", null, 1),

@@ -34,12 +34,13 @@ public class WarblerParser
     {
         if (Matching(TokenKind.RightBird))
         {
+            var line = PreviousToken.LineNumber;
             var expressions = new List<Expression?>();
             while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
                 expressions.Add(ParseExpression());
 
-            Consume(TokenKind.LeftBird, "Expected a closing <: after block");
-            return new BlockExpression(new Guid(), expressions);
+            Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
+            return new BlockExpression(new Guid(), expressions) { Line = line };
         }
 
         return ParseExpression();
@@ -74,10 +75,10 @@ public class WarblerParser
             if (expression is VariableExpression varExpr)
             {
                 var name = varExpr.Name;
-                return new AssignmentExpression(name, value);
+                return new AssignmentExpression(name, value) { Line = name.LineNumber };
             }
 
-            _errorReporter.ErrorAtToken(equals, "Invalid assignment target");
+            _errorReporter.ErrorAtToken(equals, Syntax.InvalidAssignmentTarget);
         }
 
         return expression;
@@ -90,7 +91,7 @@ public class WarblerParser
         Consume(TokenKind.Equal, Syntax.ExpectedAssignment);
         var initializer = ParseBasicExpression();
 
-        return new VariableDeclarationExpression(type, name, initializer);
+        return new VariableDeclarationExpression(type, name, initializer) { Line = name.LineNumber };
     }
 
     private Expression ParseBasicExpression()
@@ -244,7 +245,10 @@ public class WarblerParser
 
         if (Matching(TokenKind.Identifier))
         {
-            return new VariableExpression(PreviousToken);
+            return new VariableExpression(PreviousToken)
+            {
+                Line = PreviousToken.LineNumber
+            };
         }
 
         throw HandleParseError(CurrentToken, Syntax.ExpectedExpression);

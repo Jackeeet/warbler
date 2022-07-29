@@ -1,4 +1,5 @@
 ﻿using Warbler.ErrorReporting;
+using Warbler.Errors;
 using Warbler.Expressions;
 
 namespace Tests.Mocks;
@@ -6,6 +7,7 @@ namespace Tests.Mocks;
 public class TestReporter : IErrorReporter
 {
     public bool HadError { get; set; }
+    public bool HadRuntimeError { get; set; }
 
     public string? ErrorMessage { get; set; }
 
@@ -28,9 +30,16 @@ public class TestReporter : IErrorReporter
         Report(expression.Line, "", messageKey);
     }
 
+    public void ReportRuntimeError(RuntimeError error)
+    {
+        HadRuntimeError = true;
+        ErrorMessage = error.Message;
+    }
+
     public void Reset()
     {
         HadError = false;
+        HadRuntimeError = false;
         ErrorMessage = null;
     }
 

@@ -33,8 +33,6 @@ public static class BinaryExpressionsData
         "mismatchedPower",
         "mismatchedMultiplication",
         "mismatchedDivision",
-        "divideByZero",
-        "moduloByZero",
         "mismatchedConcatenation",
         "concatIntegers",
         "concatDoubles",
@@ -229,23 +227,6 @@ public static class BinaryExpressionsData
                 new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
                 new Token(TokenKind.Slash, "/", null, 1),
                 new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
-            ) { Line = 1 }
-        },
-        {
-            "divideByZero",
-            new BinaryExpression(
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new Token(TokenKind.Slash, "/", null, 1),
-                new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Line = 1 }
-        },
-
-        {
-            "moduloByZero",
-            new BinaryExpression(
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new Token(TokenKind.Modulo, "%", null, 1),
-                new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
             ) { Line = 1 }
         },
         {
