@@ -19,7 +19,7 @@ public class WarblerParser
         _current = 0;
     }
 
-    public List<Expression?> Parse()
+    public List<Expression> Parse()
     {
         var expressions = new List<Expression?>();
         while (!IsAtEnd)
@@ -27,23 +27,31 @@ public class WarblerParser
             expressions.Add(ParseBlock());
         }
 
-        return expressions;
+        return expressions.Where(e => e is not null).ToList()!;
     }
 
     private Expression? ParseBlock()
     {
-        if (Matching(TokenKind.RightBird))
+        try
         {
-            var line = PreviousToken.LineNumber;
-            var expressions = new List<Expression?>();
-            while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
-                expressions.Add(ParseExpression());
+            if (Matching(TokenKind.RightBird))
+            {
+                var line = PreviousToken.LineNumber;
+                var expressions = new List<Expression?>();
+                while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
+                    expressions.Add(ParseExpression());
 
-            Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
-            return new BlockExpression(new Guid(), expressions) { Line = line };
+                Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
+                return new BlockExpression(new Guid(), expressions) { Line = line };
+            }
+
+            return ParseExpression();
         }
-
-        return ParseExpression();
+        catch (ParseError)
+        {
+            Synchronise();
+            return null;
+        }
     }
 
     private Expression? ParseExpression()
@@ -158,7 +166,7 @@ public class WarblerParser
     {
         var expression = ParseUnary();
 
-        while (Matching(TokenKind.Asterisk, TokenKind.Slash, TokenKind.Modulo))
+        while (Matching(TokenKind.Asterisk, TokenKind.Slash, TokenKind.Percent))
         {
             var op = PreviousToken;
             var rightExpression = ParseUnary();

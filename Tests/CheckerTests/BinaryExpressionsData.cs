@@ -118,7 +118,7 @@ public static class BinaryExpressionsData
             "doubleModulo",
             new BinaryExpression(
                 new LiteralExpression(22.3d) { Type = ExpressionType.Double, Line = 1 },
-                new Token(TokenKind.Modulo, "%", null, 1),
+                new Token(TokenKind.Percent, "%", null, 1),
                 new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 }
             ) { Line = 1 }
         },
@@ -361,7 +361,7 @@ public static class BinaryExpressionsData
             "doubleModulo",
             new BinaryExpression(
                 new LiteralExpression(22.3d) { Type = ExpressionType.Double, Line = 1 },
-                new Token(TokenKind.Modulo, "%", null, 1),
+                new Token(TokenKind.Percent, "%", null, 1),
                 new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 }
             ) { Type = ExpressionType.Double, Line = 1 }
         },

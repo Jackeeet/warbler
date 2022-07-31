@@ -66,7 +66,9 @@ public class Warbler
         foreach (var expression in expressions)
         {
             Debug.Assert(expression != null, nameof(expression) + " != null");
-            interpreter.Interpret(expression);
+            var value = interpreter.Interpret(expression);
+            if (value is not null)
+                Console.WriteLine(value);
         }
     }
 }

@@ -7,13 +7,16 @@ internal class Program
         switch (args.Length)
         {
             case 1:
-                var testDir = @"C:\dev\Warbler\Tests\CheckerTests\";
-                var nameSpace = "CheckerTests";
+                var testDir = @"C:\dev\Warbler\Tests\InterpreterTests\";
+                var nameSpace = "InterpreterTests";
                 var stubs = new List<string>()
                 {
-                    // "BinaryExpressionsData",
-                    // "TernaryExpressionsData",
-                    // "LiteralExpressionsData"
+                    "UnaryExpressionsData",
+                    "BinaryExpressionsData",
+                    "TernaryExpressionsData",
+                    "LiteralExpressionsData",
+                    "VariableExpressionsData",
+                    "BlockExpressionsData"
                 };
 
                 foreach (var fileName in stubs)

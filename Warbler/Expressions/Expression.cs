@@ -249,12 +249,12 @@ public class AssignmentExpression : Expression
 
 public class BlockExpression : Expression
 {
-    public readonly Guid BlockId;
+    public readonly BlockId BlockId;
     public readonly List<Expression?> Expressions;
 
     public BlockExpression(Guid blockid, List<Expression?> expressions)
     {
-        BlockId = blockid;
+        BlockId = new BlockId(blockid);
         Expressions = expressions;
     }
 

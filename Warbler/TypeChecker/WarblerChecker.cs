@@ -11,7 +11,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
 {
     private static readonly HashSet<TokenKind> numericOperators = new()
     {
-        TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Modulo
+        TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Percent
     };
 
     private static readonly HashSet<TokenKind> relationalOperators = new()
@@ -210,13 +210,12 @@ public class WarblerChecker : IExpressionVisitor<object?>
             throw new ArgumentException("Unsupported expression type");
         }
 
-        if (expression.VarType.Kind != types[expression.Initializer.Type])
+        if (expression.VarType.Kind != TokenKind.Def && expression.VarType.Kind != types[expression.Initializer.Type])
         {
             throw HandleTypeError(expression,
                 string.Format(Type.VariableAssignmentMismatch, expression.VarType.Kind));
         }
-
-
+        
         expression.Type = expression.Initializer.Type;
         _environment.Define(expression.Name.Lexeme, expression.Type);
         return null;
@@ -245,7 +244,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     public object? VisitBlockExpression(BlockExpression expression)
     {
-        _environment.NewSubEnvironment(expression.BlockId);
+        _environment.NewSubEnvironment(expression.BlockId.Value);
         TypeBlock(expression);
         return null;
     }
@@ -255,7 +254,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         var previousEnvironment = _environment;
         try
         {
-            _environment = _environment.GetSubEnvironment(expression.BlockId);
+            _environment = _environment.GetSubEnvironment(expression.BlockId.Value);
             var expressions = expression.Expressions;
             foreach (var expr in expressions)
             {

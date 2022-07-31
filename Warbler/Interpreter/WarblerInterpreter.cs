@@ -12,7 +12,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 {
     private static readonly HashSet<TokenKind> numericOperators = new()
     {
-        TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Modulo
+        TokenKind.Hat, TokenKind.Minus, TokenKind.Plus, TokenKind.Asterisk, TokenKind.Slash, TokenKind.Percent
     };
 
     private static readonly HashSet<TokenKind> relationalOperators = new()
@@ -30,18 +30,18 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         _environment = environment;
     }
 
-    public void Interpret(Expression expression)
+    public object? Interpret(Expression expression)
     {
         try
         {
-            Console.WriteLine(Evaluate(expression));
+            return Evaluate(expression);
         }
         catch (RuntimeError error)
         {
             _errorReporter.ReportRuntimeError(error);
+            return null;
         }
     }
-
 
     private object? Evaluate(Expression expression)
     {
@@ -50,34 +50,37 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object? VisitUnaryExpression(UnaryExpression expression)
     {
-        var expr = Evaluate(expression.Expression);
-        if (expr is null)
-        {
-            throw new ArgumentNullException();
-        }
+        if (expression.Expression is null)
+            throw new ArgumentException();
 
+        var expr = Evaluate(expression.Expression);
         switch (expression.Op.Kind)
         {
             case TokenKind.Minus:
                 if (expr is int intExpr)
                     return -1 * intExpr;
-                return -1 * (double)expr;
+                if (expr is double doubleExpr)
+                    return -1 * doubleExpr;
+                throw new ArgumentException();
             case TokenKind.Not:
-                return !(bool)expr;
+                if (expr is not bool boolExpr)
+                    throw new ArgumentException();
+                return !boolExpr;
         }
 
         // unreachable
-        return null;
+        throw new ArgumentException();
     }
 
     public object? VisitBinaryExpression(BinaryExpression expression)
     {
+        if (expression.Left is null || expression.Right is null)
+            throw new ArgumentException();
+
         var left = Evaluate(expression.Left);
         var right = Evaluate(expression.Right);
-        if (left is null || right is null)
-        {
-            throw new ArgumentNullException();
-        }
+        Debug.Assert(left != null, nameof(left) + " != null");
+        Debug.Assert(right != null, nameof(right) + " != null");
 
         var opKind = expression.Op.Kind;
         if (opKind == TokenKind.DoublePlus)
@@ -103,7 +106,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
 
         // unreachable
-        return null;
+        throw new ArgumentException("Unexpected operator");
     }
 
     private static object? EvaluateRelationalBinary(object left, object right, TokenKind opKind)
@@ -144,7 +147,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             TokenKind.Hat => mathProvider.RaiseToPower(left, right),
             TokenKind.Asterisk => mathProvider.Multiply(left, right),
             TokenKind.Slash => mathProvider.Divide(left, right),
-            TokenKind.Modulo => mathProvider.Modulo(left, right),
+            TokenKind.Percent => mathProvider.Modulo(left, right),
             TokenKind.Plus => mathProvider.Add(left, right),
             TokenKind.Minus => mathProvider.Subtract(left, right),
             _ => throw new ArgumentException("Unexpected operator")
@@ -166,13 +169,9 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object VisitLiteralExpression(LiteralExpression expression)
     {
-        // an int expression might have had its type set to Double 
-        // as a result of coercion
-        // todo maybe this should be handled at type-checking stage
-        if (expression.Type == ExpressionType.Double)
-        {
-            return (double)expression.Value;
-        }
+        // an int expression might have had its type set to Double as a result of coercion
+        if (expression.Value is int intValue && expression.Type == ExpressionType.Double)
+            return Convert.ToDouble(intValue);
 
         return expression.Value;
     }
@@ -226,7 +225,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         var previousEnvironment = _environment;
         try
         {
-            _environment = _environment.GetSubEnvironment(expression.BlockId);
+            _environment = _environment.GetSubEnvironment(expression.BlockId.Value);
             var expressions = expression.Expressions;
             Debug.Assert(expressions != null, nameof(expressions) + " != null");
 

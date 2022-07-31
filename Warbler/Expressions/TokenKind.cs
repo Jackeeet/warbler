@@ -9,7 +9,7 @@ public enum TokenKind
     Minus,          // -
     Asterisk,       // *
     Slash,          // /
-    Modulo,         // %
+    Percent,         // %
     Comma,          // ,
     Dot,            // . 
     Colon,          // :

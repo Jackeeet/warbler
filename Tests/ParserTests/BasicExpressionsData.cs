@@ -433,10 +433,10 @@ public static class BasicExpressionsData
                 new BinaryExpression(
                     new BinaryExpression(
                         new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
-                        new Token(TokenKind.Modulo, "%", null, 1),
+                        new Token(TokenKind.Percent, "%", null, 1),
                         new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
                     ) { Line = 1 },
-                    new Token(TokenKind.Modulo, "%", null, 1),
+                    new Token(TokenKind.Percent, "%", null, 1),
                     new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
                 ) { Line = 1 }
             }
@@ -447,7 +447,7 @@ public static class BasicExpressionsData
             {
                 new BinaryExpression(
                     new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                    new Token(TokenKind.Modulo, "%", null, 1),
+                    new Token(TokenKind.Percent, "%", null, 1),
                     new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
                 ) { Line = 1 }
             }

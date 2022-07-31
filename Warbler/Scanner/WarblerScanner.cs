@@ -16,7 +16,7 @@ public class WarblerScanner
 
     private static readonly Dictionary<char, TokenKind> singleTokenChars = new()
     {
-        { '%', TokenKind.Modulo },
+        { '%', TokenKind.Percent },
         { '^', TokenKind.Hat },
         { ',', TokenKind.Comma },
         { '.', TokenKind.Dot },

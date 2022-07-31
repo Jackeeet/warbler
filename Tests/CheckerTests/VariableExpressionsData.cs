@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Warbler.Expressions;
 
 namespace Tests.CheckerTests;
@@ -15,13 +16,17 @@ public static class VariableExpressionsData
         "implicitTypeDeclaration",
         "initializeWithExpression",
         "initializeWithVariable",
+
         "assignInt",
         "assignDouble",
         "assignBoolean",
         "assignChar",
         "assignString",
         "assignExpression",
-        "assignVariable"
+        "assignVariable",
+
+        "singleExpressionBlock",
+        "multipleExpressionsBlock"
     };
 
     public static readonly List<string> InvalidNames = new()
@@ -167,6 +172,52 @@ public static class VariableExpressionsData
 
         #endregion
 
+        #region blocks
+
+        {
+            "singleExpressionBlock", new BlockExpression(
+                new Guid(),
+                new List<Expression?>
+                {
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.Int, "int", null, 1),
+                        new Token(TokenKind.Identifier, "a", null, 1),
+                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Line = 1 }
+                }
+            ) { Line = 1 }
+        },
+        {
+            "multipleExpressionsBlock", new BlockExpression(
+                new Guid(),
+                new List<Expression?>
+                {
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.Int, "int", null, 1),
+                        new Token(TokenKind.Identifier, "a", null, 1),
+                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Line = 1 },
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.String, "string", null, 2),
+                        new Token(TokenKind.Identifier, "str", null, 2),
+                        new LiteralExpression("strrr") { Type = ExpressionType.String, Line = 2 }
+                    ) { Line = 2 },
+                    new AssignmentExpression(
+                        new Token(TokenKind.Identifier, "str", null, 3),
+                        new LiteralExpression("str") { Type = ExpressionType.String, Line = 3 }
+                    ) { Line = 3 },
+                    new AssignmentExpression(
+                        new Token(TokenKind.Identifier, "a", null, 4),
+                        new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 4 }
+                    ) { Line = 4 }
+                }
+            ) { Line = 1 }
+        },
+
+        #endregion
+
+        #region invalid
+
         {
             "initIntWithDouble",
             new VariableDeclarationExpression(
@@ -182,6 +233,8 @@ public static class VariableExpressionsData
                 new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
             ) { Line = 1 }
         }
+
+        #endregion
     };
 
     public static readonly Dictionary<string, Expression> Outputs = new()
@@ -317,6 +370,51 @@ public static class VariableExpressionsData
                 new VariableExpression(
                     new Token(TokenKind.Identifier, "intVar", null, 1)
                 ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = ExpressionType.Integer, Line = 1 }
+        },
+
+        #endregion
+
+        #region blocks
+
+        {
+            "singleExpressionBlock", new BlockExpression(
+                new Guid(),
+                new List<Expression?>
+                {
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.Int, "int", null, 1),
+                        new Token(TokenKind.Identifier, "a", null, 1),
+                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Type = ExpressionType.Integer, Line = 1 }
+                }
+            ) { Type = ExpressionType.Integer, Line = 1 }
+        },
+
+        {
+            "multipleExpressionsBlock", new BlockExpression(
+                new Guid(),
+                new List<Expression?>
+                {
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.Int, "int", null, 1),
+                        new Token(TokenKind.Identifier, "a", null, 1),
+                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                    ) { Type = ExpressionType.Integer, Line = 1 },
+                    new VariableDeclarationExpression(
+                        new Token(TokenKind.String, "string", null, 2),
+                        new Token(TokenKind.Identifier, "str", null, 2),
+                        new LiteralExpression("strrr") { Type = ExpressionType.String, Line = 2 }
+                    ) { Type = ExpressionType.String, Line = 2 },
+                    new AssignmentExpression(
+                        new Token(TokenKind.Identifier, "str", null, 3),
+                        new LiteralExpression("str") { Type = ExpressionType.String, Line = 3 }
+                    ) { Type = ExpressionType.String, Line = 3 },
+                    new AssignmentExpression(
+                        new Token(TokenKind.Identifier, "a", null, 4),
+                        new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 4 }
+                    ) { Type = ExpressionType.Integer, Line = 4 }
+                }
             ) { Type = ExpressionType.Integer, Line = 1 }
         },
 

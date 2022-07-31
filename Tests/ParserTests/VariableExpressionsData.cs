@@ -7,6 +7,7 @@ public static class VariableExpressionsData
 {
     public static readonly List<string> ValidNames = new()
     {
+        // declaration
         "declareInt",
         "declareDouble",
         "declareBool",
@@ -16,6 +17,7 @@ public static class VariableExpressionsData
         "initializeWithExpression",
         "initializeWithVariable",
 
+        // assignment
         "assignInt",
         "assignDouble",
         "assignBool",
@@ -28,10 +30,18 @@ public static class VariableExpressionsData
 
     public static readonly List<string> InvalidNames = new()
     {
+        "uninitializedVariable",
+        "noEquals",
+        "chainDeclaration",
+        "commaDeclaration",
+        "chainAssignment",
+        "commaAssignment",
+        "assignToExpression"
     };
 
     public static readonly Dictionary<string, string> Inputs = new()
     {
+        // declaration
         { "declareInt", "int a = 10" },
         { "declareDouble", "double a = 20.3" },
         { "declareBool", "bool a = false" },
@@ -41,6 +51,7 @@ public static class VariableExpressionsData
         { "initializeWithExpression", "int a = 1 + 1" },
         { "initializeWithVariable", "int a = intVar" },
 
+        // assignment
         { "assignInt", "a = 10" },
         { "assignDouble", "a = 20.3" },
         { "assignBool", "a = false" },
@@ -49,10 +60,30 @@ public static class VariableExpressionsData
         { "assignExpression", "a = 1 + 1" },
         { "assignVariable", "a = intVar" },
         { "declarationThenAssignment", "int b = 30 int c = 2 \n b = b + c" },
+
+        // invalid
+        { "uninitializedVariable", "int x" },
+        { "noEquals", "int x 20" },
+        { "chainDeclaration", "int x = int y = 20" },
+        { "commaDeclaration", "int x, y = 20" },
+        { "chainAssignment", "x = y = 20" },
+        { "commaAssignment", "x, y = 20" },
+        { "assignToExpression", "(2 + 3) = 10"}
     };
 
     public static readonly Dictionary<string, List<Expression?>> Outputs = new()
     {
+        #region invalid
+
+        { "uninitializedVariable", new List<Expression?>() },
+        { "noEquals", new List<Expression?>() },
+        { "chainDeclaration", new List<Expression?>() },
+        { "commaDeclaration", new List<Expression?>() },
+        { "chainAssignment", new List<Expression?>() },
+        { "commaAssignment", new List<Expression?>() },
+
+        #endregion
+
         #region varDecl
 
         {

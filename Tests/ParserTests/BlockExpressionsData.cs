@@ -16,16 +16,25 @@ public static class BlockExpressionsData
 
     public static readonly List<string> InvalidNames = new()
     {
+        "unterminatedBlock",
+        "unexpectedBlockEnd",
+        "initializeWithBlock",
         "assignBlock",
     };
 
     public static readonly Dictionary<string, string> Inputs = new()
     {
+        // invalid
         { "simpleBlock", ":> int a = 10 <:" },
         { "multiExpressionBlock", ":> int a = 10 a = 15 <:" },
         { "twoBlocks", ":> int a = 10 <: \n :> int x = 10 <:" },
         { "blockBetweenExpressions", "int a = 20 \n :> int a = 10 <: \n a = 15" },
-        { "assignBlock", "int a = :> int x = 15 <:" }
+
+        // invalid
+        { "unterminatedBlock", ":> int x = 15"},
+        { "unexpectedBlockEnd", "int x = 15 <:" },
+        { "initializeWithBlock", "int a = :> int x = 15 <:" },
+        { "assignBlock", "a = :> int x = 15 <:" },
     };
 
     public static readonly Dictionary<string, List<Expression?>> Outputs = new()

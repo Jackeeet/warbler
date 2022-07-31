@@ -366,7 +366,7 @@ public class ScannerShould
             {
                 new(TokenKind.If, "if", null, 1),
                 new(TokenKind.IntLiteral, "10", 10, 1),
-                new(TokenKind.Modulo, "%", null, 1),
+                new(TokenKind.Percent, "%", null, 1),
                 new(TokenKind.IntLiteral, "2", 2, 1),
                 new(TokenKind.DoubleEqual, "==", null, 1),
                 new(TokenKind.IntLiteral, "0", 0, 1),
