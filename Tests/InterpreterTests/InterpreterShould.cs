@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using Tests.Mocks;
 using Warbler.Environment;
@@ -32,7 +31,7 @@ public class InterpreterShould
 
     private void PredefineVariables()
     {
-        Define();
+        DefineGlobals();
         _environment.Assign(
             new Token(TokenKind.Identifier, "intVar", null, 1), 10);
         _environment.Assign(
@@ -52,7 +51,7 @@ public class InterpreterShould
     }
 
     // this is one of the dumbest methods i've ever written
-    private void Define()
+    private void DefineGlobals()
     {
         _environment.Define("intVar", ExpressionType.Integer);
 
@@ -226,6 +225,23 @@ public class InterpreterShould
     [TestCaseSource(typeof(BlockExpressionsData), nameof(BlockExpressionsData.ValidNames))]
     public void EvaluateValidBlockExpressions(string inputName)
     {
+        var outerBlockId = BlockExpressionsData.OuterBlockId;
+        var innerBlockId = BlockExpressionsData.InnerBlockId;
+
+        _environment.NewSubEnvironment(outerBlockId);
+        _environment
+            .GetSubEnvironment(outerBlockId)
+            .Define("block", ExpressionType.Integer);
+        _environment
+            .GetSubEnvironment(outerBlockId)
+            .Define("block2", ExpressionType.Integer);
+
+        _environment.GetSubEnvironment(outerBlockId).NewSubEnvironment(innerBlockId);
+        _environment
+            .GetSubEnvironment(outerBlockId)
+            .GetSubEnvironment(innerBlockId)
+            .Define("block", ExpressionType.Integer);
+
         var expected = BlockExpressionsData.Outputs[inputName];
 
         var actual = _interpreter.Interpret(BlockExpressionsData.Inputs[inputName]);

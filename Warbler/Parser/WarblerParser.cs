@@ -2,6 +2,7 @@
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
+using Warbler.Utils;
 using Syntax = Warbler.Resources.Errors.Syntax;
 
 namespace Warbler.Parser;
@@ -10,12 +11,14 @@ public class WarblerParser
 {
     private readonly List<Token> _tokens;
     private readonly IErrorReporter _errorReporter;
+    private readonly IGuidProvider _guidProvider;
     private int _current;
 
-    public WarblerParser(List<Token> tokens, IErrorReporter errorReporter)
+    public WarblerParser(List<Token> tokens, IErrorReporter errorReporter, IGuidProvider guidProvider)
     {
         _tokens = tokens;
         _errorReporter = errorReporter;
+        _guidProvider = guidProvider;
         _current = 0;
     }
 
@@ -39,10 +42,10 @@ public class WarblerParser
                 var line = PreviousToken.LineNumber;
                 var expressions = new List<Expression?>();
                 while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
-                    expressions.Add(ParseExpression());
+                    expressions.Add(ParseBlock());
 
                 Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
-                return new BlockExpression(new Guid(), expressions) { Line = line };
+                return new BlockExpression(_guidProvider.Get(), expressions) { Line = line };
             }
 
             return ParseExpression();

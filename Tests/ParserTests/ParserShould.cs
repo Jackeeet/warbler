@@ -28,7 +28,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(BasicExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         var expected = BasicExpressionsData.Outputs[inputName];
 
         var actual = parser.Parse();
@@ -42,7 +42,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(VariableExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         var expected = VariableExpressionsData.Outputs[inputName];
 
         var actual = parser.Parse();
@@ -56,7 +56,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(BlockExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         var expected = BlockExpressionsData.Outputs[inputName];
 
         var actual = parser.Parse();
@@ -70,7 +70,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(BasicExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         // the way the parser is used right now the only thing that matters
         // is that an error gets raised
         // and the actual list contents don't matter
@@ -86,7 +86,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(VariableExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
 
         _ = parser.Parse();
 
@@ -99,7 +99,7 @@ public class ParserShould
     {
         var tokens = new WarblerScanner(BlockExpressionsData.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
 
         _ = parser.Parse();
 

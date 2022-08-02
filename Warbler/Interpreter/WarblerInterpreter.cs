@@ -218,7 +218,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         var value = Evaluate(expression.Value);
         if (value is null)
             throw new ArgumentException();
-        
+
         _environment.Assign(expression.Name, value);
         return value;
     }
@@ -241,9 +241,9 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
             return Evaluate(expressions[^1]!)!;
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
-            throw new Exception("Expected a block to be declared at type-checking stage");
+            throw new ArgumentException("Expected a block to be declared at type-checking stage", ex);
         }
         finally
         {

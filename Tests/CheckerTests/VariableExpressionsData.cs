@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils;
 
 namespace Tests.CheckerTests;
 
@@ -176,7 +178,7 @@ public static class VariableExpressionsData
 
         {
             "singleExpressionBlock", new BlockExpression(
-                new Guid(),
+                new TestGuidProvider().Get(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -189,7 +191,7 @@ public static class VariableExpressionsData
         },
         {
             "multipleExpressionsBlock", new BlockExpression(
-                new Guid(),
+                new TestGuidProvider().Get(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -379,7 +381,7 @@ public static class VariableExpressionsData
 
         {
             "singleExpressionBlock", new BlockExpression(
-                new Guid(),
+                new TestGuidProvider().Get(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -393,7 +395,7 @@ public static class VariableExpressionsData
 
         {
             "multipleExpressionsBlock", new BlockExpression(
-                new Guid(),
+                new TestGuidProvider().Get(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(

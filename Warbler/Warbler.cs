@@ -5,6 +5,7 @@ using Warbler.Interpreter;
 using Warbler.Parser;
 using Warbler.Scanner;
 using Warbler.TypeChecker;
+using Warbler.Utils;
 
 namespace Warbler;
 
@@ -47,7 +48,7 @@ public class Warbler
         var scanner = new WarblerScanner(input, _errorReporter);
         var tokens = scanner.Scan();
 
-        var parser = new WarblerParser(tokens, _errorReporter);
+        var parser = new WarblerParser(tokens, _errorReporter, new DefaultGuidProvider());
         var expressions = parser.Parse();
         if (_errorReporter.HadError)
             return;
