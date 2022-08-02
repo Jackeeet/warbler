@@ -11,8 +11,8 @@ namespace Tests.CheckerTests;
 public class CheckerShould
 {
     private TestReporter _errorReporter = null!;
+    private WarblerEnvironment _environment = null!;
     private WarblerChecker? _checker;
-    private WarblerEnvironment _environment = new WarblerEnvironment();
 
     [OneTimeSetUp]
     public void BeforeFixture()

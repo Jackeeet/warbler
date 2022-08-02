@@ -51,7 +51,7 @@ public class WarblerEnvironment
         return _values.ContainsKey(name);
     }
 
-    public bool DefinedValue(string name)
+    public bool Assigned(string name)
     {
         return Defined(name) && _values[name].Item2 is not null;
     }
@@ -73,6 +73,7 @@ public class WarblerEnvironment
         {
             var type = _values[name.Lexeme].Item1;
             _values[name.Lexeme] = Tuple.Create(type, value);
+            return;
         }
 
         if (_enclosing is not null)

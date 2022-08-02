@@ -162,7 +162,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
         var result = boolCondition ? Evaluate(expression.ThenBranch) : Evaluate(expression.ElseBranch);
         if (result is null)
-            throw new ArgumentNullException();
+            throw new ArgumentException();
 
         return result;
     }
@@ -179,12 +179,12 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     public object VisitVariableDeclarationExpression(VariableDeclarationExpression expression)
     {
         if (!_environment.Defined(expression.Name.Lexeme))
-            throw new Exception(
+            throw new ArgumentException(
                 $"Variable name {expression.Name.Lexeme} should be defined before the interpreting stage");
 
         var initializerValue = Evaluate(expression.Initializer);
         if (initializerValue is null)
-            throw new ArgumentNullException();
+            throw new ArgumentException();
 
         _environment.Define(expression.Name.Lexeme, expression.Initializer.Type, initializerValue);
         return initializerValue;
@@ -192,7 +192,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object VisitVariableExpression(VariableExpression expression)
     {
-        if (!_environment.DefinedValue(expression.Name.Lexeme))
+        if (!_environment.Assigned(expression.Name.Lexeme))
             throw new ArgumentException();
 
         var stored = _environment.Get(expression.Name);
@@ -216,6 +216,9 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             throw new ArgumentException();
 
         var value = Evaluate(expression.Value);
+        if (value is null)
+            throw new ArgumentException();
+        
         _environment.Assign(expression.Name, value);
         return value;
     }
