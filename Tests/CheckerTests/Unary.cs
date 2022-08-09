@@ -3,7 +3,7 @@ using Warbler.Expressions;
 
 namespace Tests.CheckerTests;
 
-public static class UnaryExpressionsData
+public static class Unary
 {
     public static readonly List<string> ValidNames = new()
     {

@@ -21,6 +21,8 @@ internal static class ExpressionsGenerator
         file.WriteLine("\tpublic int Line { get; init; }");
         file.WriteLine();
         file.WriteLine($"\tpublic abstract T Accept<T>(I{baseName}Visitor<T> visitor);");
+        file.WriteLine();
+        file.WriteLine("\tpublic override string ToString() => $\"Type: {Type}, Line: {Line}\";");
         file.WriteLine("}");
         file.WriteLine();
 

@@ -33,7 +33,9 @@ internal class Program
                     "VariableDeclaration    : Token VarType, Token Name, Expression Initializer",
                     "Variable               : Token Name",
                     "Assignment             : Token Name, Expression Value",
-                    "Block                  : Guid BlockId, List<Expression?> Expressions"
+                    "Block                  : Guid BlockId, List<Expression?> Expressions",
+                    "Conditional            : Expression Condition, Expression ThenBranch, Expression? ElseBranch",
+                    "WhileLoop              : Expression Condition, Expression Actions"
                 };
 
                 ExpressionsGenerator.DefineAst(expressionsDir, exprTypes);

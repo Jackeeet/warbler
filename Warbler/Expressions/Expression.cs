@@ -9,6 +9,8 @@ public abstract class Expression
     public int Line { get; init; }
 
     public abstract T Accept<T>(IExpressionVisitor<T> visitor);
+
+    public override string ToString() => $"Type: {Type}, Line: {Line}";
 }
 
 public class UnaryExpression : Expression
@@ -207,11 +209,6 @@ public class VariableExpression : Expression
     {
         return Name.GetHashCode();
     }
-
-    public override string ToString()
-    {
-        return $"var {Name} (line {Line}, type {Type})";
-    }
 }
 
 public class AssignmentExpression : Expression
@@ -265,9 +262,7 @@ public class BlockExpression : Expression
 
     protected bool Equals(BlockExpression other)
     {
-        return Type.Equals(other.Type) &&
-               Line.Equals(other.Line) &&
-               BlockId.Equals(other.BlockId) &&
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && BlockId.Equals(other.BlockId) &&
                Expressions.AllEquals(other.Expressions);
     }
 
@@ -279,5 +274,75 @@ public class BlockExpression : Expression
     public override int GetHashCode()
     {
         return HashCode.Combine(BlockId, Expressions);
+    }
+}
+
+public class ConditionalExpression : Expression
+{
+    public readonly Expression Condition;
+    public readonly Expression ThenBranch;
+    public readonly Expression? ElseBranch;
+
+    public ConditionalExpression(Expression condition, Expression thenbranch, Expression? elsebranch)
+    {
+        Condition = condition;
+        ThenBranch = thenbranch;
+        ElseBranch = elsebranch;
+    }
+
+    public override T Accept<T>(IExpressionVisitor<T> visitor)
+    {
+        return visitor.VisitConditionalExpression(this);
+    }
+
+    protected bool Equals(ConditionalExpression other)
+    {
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && Condition.Equals(other.Condition) &&
+               ThenBranch.Equals(other.ThenBranch) &&
+               (ElseBranch is null && other.ElseBranch is null ||
+                ElseBranch is not null && ElseBranch.Equals(other.ElseBranch));
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ConditionalExpression other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Condition, ThenBranch, ElseBranch);
+    }
+}
+
+public class WhileLoopExpression : Expression
+{
+    public readonly Expression Condition;
+    public readonly Expression Actions;
+
+    public WhileLoopExpression(Expression condition, Expression actions)
+    {
+        Condition = condition;
+        Actions = actions;
+    }
+
+    public override T Accept<T>(IExpressionVisitor<T> visitor)
+    {
+        return visitor.VisitWhileLoopExpression(this);
+    }
+
+    protected bool Equals(WhileLoopExpression other)
+    {
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && Condition.Equals(other.Condition) &&
+               Actions.Equals(other.Actions);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is WhileLoopExpression other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Condition, Actions);
     }
 }

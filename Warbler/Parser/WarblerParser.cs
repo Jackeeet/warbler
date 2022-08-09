@@ -27,28 +27,26 @@ public class WarblerParser
         var expressions = new List<Expression?>();
         while (!IsAtEnd)
         {
-            expressions.Add(ParseBlock());
+            expressions.Add(ParseWhileLoop());
         }
 
         return expressions.Where(e => e is not null).ToList()!;
     }
 
-    private Expression? ParseBlock()
+    private Expression? ParseWhileLoop()
     {
         try
         {
-            if (Matching(TokenKind.RightBird))
+            if (Matching(TokenKind.While))
             {
                 var line = PreviousToken.LineNumber;
-                var expressions = new List<Expression?>();
-                while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
-                    expressions.Add(ParseBlock());
+                var condition = ParseBasicExpression();
+                var actions = ParseBlock();
 
-                Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
-                return new BlockExpression(_guidProvider.Get(), expressions) { Line = line };
+                return new WhileLoopExpression(condition, actions) { Line = line };
             }
 
-            return ParseExpression();
+            return ParseConditional();
         }
         catch (ParseError)
         {
@@ -57,23 +55,47 @@ public class WarblerParser
         }
     }
 
-    private Expression? ParseExpression()
+    private Expression ParseConditional()
     {
-        try
+        if (Matching(TokenKind.If))
         {
-            if (Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
-                    TokenKind.Char, TokenKind.String, TokenKind.Def))
-            {
-                return ParseVariableDeclaration();
-            }
+            var line = PreviousToken.LineNumber;
+            var condition = ParseBasicExpression();
+            Consume(TokenKind.Then, "Expected \"then\" after condition");
+            var thenBranch = ParseBlock();
+            var elseBranch = Matching(TokenKind.Else) ? ParseConditional() : null;
 
-            return ParseAssignment();
+            return new ConditionalExpression(condition, thenBranch, elseBranch) { Line = line };
         }
-        catch (ParseError)
+
+        return ParseBlock();
+    }
+
+    private Expression ParseBlock()
+    {
+        if (Matching(TokenKind.RightBird))
         {
-            Synchronise();
-            return null;
+            var line = PreviousToken.LineNumber;
+            var expressions = new List<Expression?>();
+            while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
+                expressions.Add(ParseWhileLoop());
+
+            Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
+            return new BlockExpression(_guidProvider.Get(), expressions) { Line = line };
         }
+
+        return ParseExpression();
+    }
+
+    private Expression ParseExpression()
+    {
+        if (Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
+                TokenKind.Char, TokenKind.String, TokenKind.Def))
+        {
+            return ParseVariableDeclaration();
+        }
+
+        return ParseAssignment();
     }
 
     private Expression ParseAssignment()

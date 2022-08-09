@@ -107,13 +107,13 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (expression.Op.Kind != TokenKind.Not && expression.Op.Kind != TokenKind.Minus)
             // this should be handled at parsing stage
             throw new ArgumentException("Unexpected unary operator");
-                
+
         if (expression.Op.Kind == TokenKind.Not && innerType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NegateNonBoolean);
 
         if (expression.Op.Kind == TokenKind.Minus && !IsNumeric(innerType))
             throw HandleTypeError(expression, Type.NegateNonNumeric);
-        
+
         expression.Type = innerType;
     }
 
@@ -174,7 +174,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         TypeExpression(expression.Condition);
         if (expression.Condition.Type != ExpressionType.Boolean)
-            throw HandleTypeError(expression, Type.NonBooleanTernaryCondition);
+            throw HandleTypeError(expression, Type.NonBooleanCondition);
 
         var thenBranch = expression.ThenBranch;
         var elseBranch = expression.ElseBranch;
@@ -215,7 +215,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
             throw HandleTypeError(expression,
                 string.Format(Type.VariableAssignmentMismatch, expression.VarType.Kind));
         }
-        
+
         expression.Type = expression.Initializer.Type;
         _environment.Define(expression.Name.Lexeme, expression.Type);
         return null;
@@ -246,6 +246,34 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         _environment.NewSubEnvironment(expression.BlockId.Value);
         TypeBlock(expression);
+        return null;
+    }
+
+    public object? VisitConditionalExpression(ConditionalExpression expression)
+    {
+        TypeExpression(expression.Condition);
+
+        if (expression.Condition.Type != ExpressionType.Boolean)
+            throw HandleTypeError(expression, Type.NonBooleanCondition);
+
+        TypeExpression(expression.ThenBranch);
+        if (expression.ElseBranch is not null)
+            TypeExpression(expression.ElseBranch);
+
+        expression.Type = ExpressionType.Boolean;
+        return null;
+    }
+
+    public object? VisitWhileLoopExpression(WhileLoopExpression expression)
+    {
+        TypeExpression(expression.Condition);
+
+        if (expression.Condition.Type != ExpressionType.Boolean)
+            throw HandleTypeError(expression, Type.NonBooleanCondition);
+
+        TypeExpression(expression.Actions);
+
+        expression.Type = expression.Actions.Type;
         return null;
     }
 

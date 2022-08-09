@@ -251,6 +251,38 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
     }
 
+    public object? VisitConditionalExpression(ConditionalExpression expression)
+    {
+        if (Evaluate(expression.Condition) is not bool boolCondition)
+            throw new ArgumentException();
+
+        if (boolCondition)
+        {
+            Evaluate(expression.ThenBranch);
+        }
+        else if (expression.ElseBranch is not null)
+        {
+            Evaluate(expression.ElseBranch);
+        }
+
+        return boolCondition;
+    }
+
+    public object? VisitWhileLoopExpression(WhileLoopExpression expression)
+    {
+        if (Evaluate(expression.Condition) is not bool)
+            throw new ArgumentException();
+
+        var loopCount = 0;
+        while ((bool)Evaluate(expression.Condition))
+        {
+            Evaluate(expression.Actions);
+            loopCount++;
+        }
+
+        return loopCount;
+    }
+
     private RuntimeError HandleRuntimeError(Expression expression, string message)
     {
         _errorReporter.ErrorAtExpression(expression, message);

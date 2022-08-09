@@ -4,7 +4,7 @@ using Warbler.Expressions;
 
 namespace Tests.ParserTests;
 
-public static class BlockExpressionsData
+public static class Block
 {
     public static readonly List<string> ValidNames = new()
     {

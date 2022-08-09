@@ -23,13 +23,13 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BasicExpressionsData), nameof(BasicExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Basic), nameof(Basic.ValidNames))]
     public void ParseValidBasicExpressions(string inputName)
     {
-        var tokens = new WarblerScanner(BasicExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Basic.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
-        var expected = BasicExpressionsData.Outputs[inputName];
+        var expected = Basic.Outputs[inputName];
 
         var actual = parser.Parse();
 
@@ -37,13 +37,13 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.ValidNames))]
     public void ParseValidVariableExpressions(string inputName)
     {
-        var tokens = new WarblerScanner(VariableExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Variable.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
-        var expected = VariableExpressionsData.Outputs[inputName];
+        var expected = Variable.Outputs[inputName];
 
         var actual = parser.Parse();
 
@@ -51,13 +51,13 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BlockExpressionsData), nameof(BlockExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Block), nameof(Block.ValidNames))]
     public void ParseValidBlockExpressions(string inputName)
     {
-        var tokens = new WarblerScanner(BlockExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Block.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
-        var expected = BlockExpressionsData.Outputs[inputName];
+        var expected = Block.Outputs[inputName];
 
         var actual = parser.Parse();
 
@@ -65,10 +65,38 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BasicExpressionsData), nameof(BasicExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Conditional), nameof(Conditional.ValidNames))]
+    public void ParseValidConditionalExpressions(string inputName)
+    {
+        var tokens = new WarblerScanner(Conditional.Inputs[inputName], _errorReporter).Scan();
+        _errorReporter.Reset();
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
+        var expected = Conditional.Outputs[inputName];
+
+        var actual = parser.Parse();
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(WhileLoop), nameof(WhileLoop.ValidNames))]
+    public void ParseValidWhileLoops(string inputName)
+    {
+        var tokens = new WarblerScanner(WhileLoop.Inputs[inputName], _errorReporter).Scan();
+        _errorReporter.Reset();
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
+        var expected = WhileLoop.Outputs[inputName];
+
+        var actual = parser.Parse();
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(Basic), nameof(Basic.InvalidNames))]
     public void ThrowErrorOnInvalidBasics(string inputName)
     {
-        var tokens = new WarblerScanner(BasicExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Basic.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         // the way the parser is used right now the only thing that matters
@@ -81,10 +109,10 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.InvalidNames))]
     public void ThrowErrorOnInvalidVarExpressions(string inputName)
     {
-        var tokens = new WarblerScanner(VariableExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Variable.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
 
@@ -94,10 +122,10 @@ public class ParserShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BlockExpressionsData), nameof(BlockExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Block), nameof(Block.InvalidNames))]
     public void ThrowErrorOnInvalidBlocks(string inputName)
     {
-        var tokens = new WarblerScanner(BlockExpressionsData.Inputs[inputName], _errorReporter).Scan();
+        var tokens = new WarblerScanner(Block.Inputs[inputName], _errorReporter).Scan();
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
 

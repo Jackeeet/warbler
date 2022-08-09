@@ -4,7 +4,7 @@ using Warbler.Expressions;
 
 namespace Tests.InterpreterTests;
 
-public static class BlockExpressionsData
+public static class Block
 {
     public static Guid OuterBlockId = new();
     public static Guid InnerBlockId = new("00000000-0000-0000-0000-000000000001");

@@ -3,7 +3,7 @@ using Warbler.Expressions;
 
 namespace Tests.InterpreterTests;
 
-public static class VariableExpressionsData
+public static class Variable
 {
     public static readonly List<string> DeclarationNames = new()
     {

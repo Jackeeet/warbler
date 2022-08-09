@@ -43,12 +43,12 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(UnaryExpressionsData), nameof(UnaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Unary), nameof(Unary.ValidNames))]
     public void CheckValidUnaryExpressions(string inputName)
     {
-        var expectedExpression = UnaryExpressionsData.Outputs[inputName];
+        var expectedExpression = Unary.Outputs[inputName];
 
-        var actualExpression = UnaryExpressionsData.Inputs[inputName];
+        var actualExpression = Unary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
@@ -56,12 +56,12 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BinaryExpressionsData), nameof(BinaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Binary), nameof(Binary.ValidNames))]
     public void CheckValidBinaryExpressions(string inputName)
     {
-        var expectedExpression = BinaryExpressionsData.Outputs[inputName];
+        var expectedExpression = Binary.Outputs[inputName];
 
-        var actualExpression = BinaryExpressionsData.Inputs[inputName];
+        var actualExpression = Binary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
@@ -70,12 +70,12 @@ public class CheckerShould
 
 
     [Test]
-    [TestCaseSource(typeof(TernaryExpressionsData), nameof(TernaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Ternary), nameof(Ternary.ValidNames))]
     public void CheckValidTernaryExpressions(string inputName)
     {
-        var expectedExpression = TernaryExpressionsData.Outputs[inputName];
+        var expectedExpression = Ternary.Outputs[inputName];
 
-        var actualExpression = TernaryExpressionsData.Inputs[inputName];
+        var actualExpression = Ternary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
@@ -83,12 +83,12 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.ValidNames))]
     public void CheckValidVariableExpressions(string inputName)
     {
-        var expectedExpression = VariableExpressionsData.Outputs[inputName];
+        var expectedExpression = Variable.Outputs[inputName];
 
-        var actualExpression = VariableExpressionsData.Inputs[inputName];
+        var actualExpression = Variable.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(actualExpression);
 
         Assert.IsTrue(checkResult);
@@ -96,10 +96,10 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(UnaryExpressionsData), nameof(UnaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Unary), nameof(Unary.InvalidNames))]
     public void CheckInvalidUnaryExpressions(string inputName)
     {
-        var expression = UnaryExpressionsData.Inputs[inputName];
+        var expression = Unary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
@@ -107,10 +107,10 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BinaryExpressionsData), nameof(BinaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Binary), nameof(Binary.InvalidNames))]
     public void CheckInvalidBinaryExpressions(string inputName)
     {
-        var expression = BinaryExpressionsData.Inputs[inputName];
+        var expression = Binary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
@@ -118,10 +118,10 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(TernaryExpressionsData), nameof(TernaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Ternary), nameof(Ternary.InvalidNames))]
     public void CheckInvalidTernaryExpressions(string inputName)
     {
-        var expression = TernaryExpressionsData.Inputs[inputName];
+        var expression = Ternary.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);
@@ -129,10 +129,10 @@ public class CheckerShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.InvalidNames))]
     public void CheckInvalidVariableExpressions(string inputName)
     {
-        var expression = VariableExpressionsData.Inputs[inputName];
+        var expression = Variable.Inputs[inputName];
         var checkResult = _checker!.CheckTypes(expression);
 
         Assert.IsFalse(checkResult);

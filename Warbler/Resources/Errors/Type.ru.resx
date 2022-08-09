@@ -26,7 +26,7 @@
     <data name="ComparisonOperandsMismatch" xml:space="preserve">
         <value>Нельзя сравнивать выражения типов {0} и {1}</value>
     </data>
-    <data name="NonBooleanTernaryCondition" xml:space="preserve">
+    <data name="NonBooleanCondition" xml:space="preserve">
         <value>Условие должно иметь тип Boolean</value>
     </data>
     <data name="TernaryBranchesMismatch" xml:space="preserve">

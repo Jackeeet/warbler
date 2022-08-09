@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
-using Warbler.Utils;
 
 namespace Tests.CheckerTests;
 
-public static class VariableExpressionsData
+public static class Variable
 {
     public static readonly List<string> ValidNames = new()
     {

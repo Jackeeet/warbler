@@ -3,7 +3,7 @@ using Warbler.Expressions;
 
 namespace Tests.ParserTests;
 
-public static class BasicExpressionsData
+public static class Basic
 {
     public static readonly List<string> ValidNames = new()
     {
@@ -132,21 +132,6 @@ public static class BasicExpressionsData
 
     public static readonly Dictionary<string, List<Expression?>> Outputs = new()
     {
-        // { "empty", new List<Expression?>() },
-        // { "chainComparison", new List<Expression?>() },
-        // { "chainEquality", new List<Expression?>() },
-        // { "unsupportedUnary", new List<Expression?>() },
-        // { "unsupportedBinary", new List<Expression?>() },
-        // { "unsupportedTernaryCondition", new List<Expression?>() },
-        // { "unsupportedTernaryBranch", new List<Expression?>() },
-        // { "noBinaryArg", new List<Expression?>() },
-        // { "noBinaryArgs", new List<Expression?>() },
-        // { "noTernaryCondition", new List<Expression?>() },
-        // { "noTernaryThen", new List<Expression?>() },
-        // { "noTernaryElse", new List<Expression?>() },
-        // { "noClosingBracket", new List<Expression?>() },
-        // { "noOpeningBracket", new List<Expression?>() },
-
         #region validOutputs
 
         {

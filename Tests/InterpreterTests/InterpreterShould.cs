@@ -55,7 +55,7 @@ public class InterpreterShould
     {
         _environment.Define("intVar", ExpressionType.Integer);
 
-        foreach (var name in VariableExpressionsData.DeclarationNames)
+        foreach (var name in Variable.DeclarationNames)
         {
             var type = name[0] == 'i'
                 ? ExpressionType.Integer
@@ -71,7 +71,7 @@ public class InterpreterShould
             _environment.Define(name, type);
         }
 
-        foreach (var name in VariableExpressionsData.AssignmentNames)
+        foreach (var name in Variable.AssignmentNames)
         {
             var type = name.Substring(8).ToLower() switch
             {
@@ -87,42 +87,42 @@ public class InterpreterShould
     }
 
     [Test]
-    [TestCaseSource(typeof(LiteralExpressionsData), nameof(LiteralExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Literal), nameof(Literal.ValidNames))]
     public void EvaluateValidLiteralExpressions(string inputName)
     {
-        var expected = LiteralExpressionsData.Outputs[inputName];
+        var expected = Literal.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(LiteralExpressionsData.Inputs[inputName]);
+        var actual = _interpreter.Interpret(Literal.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }
 
     [Test]
-    [TestCaseSource(typeof(UnaryExpressionsData), nameof(UnaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Unary), nameof(Unary.ValidNames))]
     public void EvaluateValidUnaryExpressions(string inputName)
     {
-        var expected = UnaryExpressionsData.Outputs[inputName];
+        var expected = Unary.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(UnaryExpressionsData.Inputs[inputName]);
+        var actual = _interpreter.Interpret(Unary.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }
 
     [Test]
-    [TestCaseSource(typeof(UnaryExpressionsData), nameof(UnaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Unary), nameof(Unary.InvalidNames))]
     public void ThrowOnInvalidUnaryExpressions(string inputName)
     {
-        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(UnaryExpressionsData.Inputs[inputName]));
+        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(Unary.Inputs[inputName]));
     }
 
     [Test]
-    [TestCaseSource(typeof(BinaryExpressionsData), nameof(BinaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Binary), nameof(Binary.ValidNames))]
     [DefaultFloatingPointTolerance(0.000001)]
     public void EvaluateValidBinaryExpressions(string inputName)
     {
-        var expected = BinaryExpressionsData.Outputs[inputName];
+        var expected = Binary.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(BinaryExpressionsData.Inputs[inputName]);
+        var actual = _interpreter.Interpret(Binary.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }
@@ -147,34 +147,34 @@ public class InterpreterShould
     }
 
     [Test]
-    [TestCaseSource(typeof(BinaryExpressionsData), nameof(BinaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Binary), nameof(Binary.InvalidNames))]
     public void ThrowOnInvalidBinaryExpressions(string inputName)
     {
-        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(BinaryExpressionsData.Inputs[inputName]));
+        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(Binary.Inputs[inputName]));
     }
 
     [Test]
-    [TestCaseSource(typeof(TernaryExpressionsData), nameof(TernaryExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Ternary), nameof(Ternary.ValidNames))]
     public void EvaluateValidTernaryExpressions(string inputName)
     {
-        var expected = TernaryExpressionsData.Outputs[inputName];
+        var expected = Ternary.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(TernaryExpressionsData.Inputs[inputName]);
+        var actual = _interpreter.Interpret(Ternary.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }
 
     [Test]
-    [TestCaseSource(typeof(TernaryExpressionsData), nameof(TernaryExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Ternary), nameof(Ternary.InvalidNames))]
     public void ThrowOnInvalidTernaryExpressions(string inputName)
     {
         Assert.Throws<ArgumentException>(() =>
-            _interpreter.Interpret(TernaryExpressionsData.Inputs[inputName])
+            _interpreter.Interpret(Ternary.Inputs[inputName])
         );
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.DeclarationNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.DeclarationNames))]
     public void EvaluateValidVariableDeclarationExpressions(string inputName)
     {
         // variable names get defined at type-checking stage so that 
@@ -182,9 +182,9 @@ public class InterpreterShould
         // matches the declared type
         // thus before a vardecl expression is evaluated (and assigned), the name is already defined
         Assert.True(_environment.Defined(inputName));
-        var expected = VariableExpressionsData.Outputs[inputName];
+        var expected = Variable.Outputs[inputName];
 
-        var returnValue = _interpreter.Interpret(VariableExpressionsData.Inputs[inputName]);
+        var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
         Assert.True(_environment.Assigned(inputName));
         var (_, storedValue) = _environment.Get(
             new Token(TokenKind.Identifier, inputName, null, 1));
@@ -194,16 +194,16 @@ public class InterpreterShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.AssignmentNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.AssignmentNames))]
     public void EvaluateValidVariableAssignmentExpressions(string inputName)
     {
         Assert.True(_environment.Assigned(inputName));
         var variableToken = new Token(TokenKind.Identifier, inputName, null, 1);
 
         var initialValue = _environment.Get(variableToken);
-        var expected = VariableExpressionsData.Outputs[inputName];
+        var expected = Variable.Outputs[inputName];
 
-        var returnValue = _interpreter.Interpret(VariableExpressionsData.Inputs[inputName]);
+        var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
         Assert.True(_environment.Assigned(inputName));
         var (_, storedValue) = _environment.Get(variableToken);
 
@@ -213,20 +213,20 @@ public class InterpreterShould
     }
 
     [Test]
-    [TestCaseSource(typeof(VariableExpressionsData), nameof(VariableExpressionsData.InvalidNames))]
+    [TestCaseSource(typeof(Variable), nameof(Variable.InvalidNames))]
     public void ThrowOnUndefinedVariable(string inputName)
     {
         Assert.Throws<ArgumentException>(() =>
-            _interpreter.Interpret(VariableExpressionsData.Inputs[inputName])
+            _interpreter.Interpret(Variable.Inputs[inputName])
         );
     }
 
     [Test]
-    [TestCaseSource(typeof(BlockExpressionsData), nameof(BlockExpressionsData.ValidNames))]
+    [TestCaseSource(typeof(Block), nameof(Block.ValidNames))]
     public void EvaluateValidBlockExpressions(string inputName)
     {
-        var outerBlockId = BlockExpressionsData.OuterBlockId;
-        var innerBlockId = BlockExpressionsData.InnerBlockId;
+        var outerBlockId = Block.OuterBlockId;
+        var innerBlockId = Block.InnerBlockId;
 
         _environment.NewSubEnvironment(outerBlockId);
         _environment
@@ -242,9 +242,9 @@ public class InterpreterShould
             .GetSubEnvironment(innerBlockId)
             .Define("block", ExpressionType.Integer);
 
-        var expected = BlockExpressionsData.Outputs[inputName];
+        var expected = Block.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(BlockExpressionsData.Inputs[inputName]);
+        var actual = _interpreter.Interpret(Block.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }

@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace Warbler.Resources.Errors {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -87,9 +90,9 @@ namespace Warbler.Resources.Errors {
         /// <summary>
         ///   Looks up a localized string similar to A ternary condition must be Boolean.
         /// </summary>
-        internal static string NonBooleanTernaryCondition {
+        internal static string NonBooleanCondition {
             get {
-                return ResourceManager.GetString("NonBooleanTernaryCondition", resourceCulture);
+                return ResourceManager.GetString("NonBooleanCondition", resourceCulture);
             }
         }
         
