@@ -273,7 +273,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
         TypeExpression(expression.Actions);
 
-        expression.Type = expression.Actions.Type;
+        expression.Type = ExpressionType.Integer;
         return null;
     }
 

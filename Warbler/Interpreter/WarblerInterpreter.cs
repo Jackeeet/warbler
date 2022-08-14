@@ -8,7 +8,7 @@ using Warbler.Resources.Errors;
 
 namespace Warbler.Interpreter;
 
-public class WarblerInterpreter : IExpressionVisitor<object?>
+public class WarblerInterpreter : IExpressionVisitor<object>
 {
     private static readonly HashSet<TokenKind> numericOperators = new()
     {
@@ -43,12 +43,13 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
     }
 
-    private object? Evaluate(Expression expression)
+    private object Evaluate(Expression expression)
     {
+        Debug.Assert(expression != null, nameof(expression) + " != null");
         return expression.Accept(this);
     }
 
-    public object? VisitUnaryExpression(UnaryExpression expression)
+    public object VisitUnaryExpression(UnaryExpression expression)
     {
         if (expression.Expression is null)
             throw new ArgumentException();
@@ -72,7 +73,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         throw new ArgumentException();
     }
 
-    public object? VisitBinaryExpression(BinaryExpression expression)
+    public object VisitBinaryExpression(BinaryExpression expression)
     {
         if (expression.Left is null || expression.Right is null)
             throw new ArgumentException();
@@ -109,7 +110,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         throw new ArgumentException("Unexpected operator");
     }
 
-    private static object? EvaluateRelationalBinary(object left, object right, TokenKind opKind)
+    private static object EvaluateRelationalBinary(object left, object right, TokenKind opKind)
     {
         var comparableLeft = (IComparable)left;
         var comparableRight = (IComparable)right;
@@ -210,7 +211,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         };
     }
 
-    public object? VisitAssignmentExpression(AssignmentExpression expression)
+    public object VisitAssignmentExpression(AssignmentExpression expression)
     {
         if (!_environment.Defined(expression.Name.Lexeme))
             throw new ArgumentException();
@@ -236,13 +237,16 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             {
                 var expr = expressions[i];
                 Debug.Assert(expr != null, nameof(expr) + " != null");
-                _ = Evaluate(expr)!;
+                _ = Evaluate(expr);
             }
 
-            return Evaluate(expressions[^1]!)!;
+            return Evaluate(expressions[^1]!);
         }
         catch (ArgumentException ex)
         {
+            // this should catch a custom "NoBlockException" or something like that
+            // because the message is block-specific and because right now it catches
+            // exceptions not related to blocks as well
             throw new ArgumentException("Expected a block to be declared at type-checking stage", ex);
         }
         finally
@@ -251,7 +255,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
     }
 
-    public object? VisitConditionalExpression(ConditionalExpression expression)
+    public object VisitConditionalExpression(ConditionalExpression expression)
     {
         if (Evaluate(expression.Condition) is not bool boolCondition)
             throw new ArgumentException();
@@ -268,12 +272,15 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         return boolCondition;
     }
 
-    public object? VisitWhileLoopExpression(WhileLoopExpression expression)
+    public object VisitWhileLoopExpression(WhileLoopExpression expression)
     {
         if (Evaluate(expression.Condition) is not bool)
             throw new ArgumentException();
 
         var loopCount = 0;
+        // this has to be explicitly reevaluated on every iteration
+        // otherwise the loop condition will be a constant value
+        Debug.Assert(expression.Condition != null, "expression.Condition != null");
         while ((bool)Evaluate(expression.Condition))
         {
             Evaluate(expression.Actions);

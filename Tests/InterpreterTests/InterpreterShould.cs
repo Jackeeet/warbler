@@ -11,6 +11,7 @@ namespace Tests.InterpreterTests;
 public class InterpreterShould
 {
     private TestReporter _errorReporter = null!;
+    private TestGuidProvider _guidProvider = null!;
     private WarblerEnvironment _environment = null!;
     private WarblerInterpreter _interpreter = null!;
 
@@ -18,6 +19,7 @@ public class InterpreterShould
     public void BeforeFixture()
     {
         _errorReporter = new TestReporter();
+        _guidProvider = new TestGuidProvider();
     }
 
     [SetUp]
@@ -48,12 +50,18 @@ public class InterpreterShould
             new Token(TokenKind.Identifier, "reassignExpression", null, 1), 0);
         _environment.Assign(
             new Token(TokenKind.Identifier, "reassignVariable", null, 1), 0);
+        _environment.Assign(
+            new Token(TokenKind.Identifier, "i", null, 1), 0);
+        _environment.Assign(
+            new Token(TokenKind.Identifier, "j", null, 1), 0);
     }
 
     // this is one of the dumbest methods i've ever written
     private void DefineGlobals()
     {
         _environment.Define("intVar", ExpressionType.Integer);
+        _environment.Define("i", ExpressionType.Integer);
+        _environment.Define("j", ExpressionType.Integer);
 
         foreach (var name in Variable.DeclarationNames)
         {
@@ -145,6 +153,7 @@ public class InterpreterShould
         Assert.IsTrue(_errorReporter.HadRuntimeError);
         Assert.IsNull(value);
     }
+
 
     [Test]
     [TestCaseSource(typeof(Binary), nameof(Binary.InvalidNames))]
@@ -245,6 +254,21 @@ public class InterpreterShould
         var expected = Block.Outputs[inputName];
 
         var actual = _interpreter.Interpret(Block.Inputs[inputName]);
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(WhileLoop), nameof(WhileLoop.ValidNames))]
+    public void EvaluateValidWhileLoops(string inputName)
+    {
+        _environment.NewSubEnvironment(_guidProvider.Get());
+        _environment.GetSubEnvironment(_guidProvider.Get())
+            .NewSubEnvironment(new Guid("00000000-0000-0000-0000-000000000001"));
+
+        var expected = WhileLoop.Outputs[inputName];
+
+        var actual = _interpreter.Interpret(WhileLoop.Inputs[inputName]);
 
         Assert.AreEqual(expected, actual);
     }

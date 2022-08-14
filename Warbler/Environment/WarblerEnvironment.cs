@@ -31,7 +31,7 @@ public class WarblerEnvironment
     {
         if (_subEnvironments.ContainsKey(environmentId))
             throw new ArgumentException($"a subenvironment with id {environmentId} already exists");
-        _subEnvironments[environmentId] = new WarblerEnvironment();
+        _subEnvironments[environmentId] = new WarblerEnvironment(this);
     }
 
     public WarblerEnvironment GetSubEnvironment(Guid environmentId)
@@ -48,12 +48,20 @@ public class WarblerEnvironment
 
     public bool Defined(string name)
     {
+        return DefinedLocal(name) || _enclosing is not null && _enclosing.Defined(name);
+    }
+
+    private bool DefinedLocal(string name)
+    {
         return _values.ContainsKey(name);
     }
 
     public bool Assigned(string name)
     {
-        return Defined(name) && _values[name].Item2 is not null;
+        var assignedLocal = _values.ContainsKey(name) && _values[name].Item2 is not null;
+        var assignedEnclosing = _enclosing is not null && _enclosing.Assigned(name);
+
+        return Defined(name) && (assignedLocal || assignedEnclosing);
     }
 
     public Tuple<ExpressionType, object?> Get(Token name, bool typeOnly = false)
@@ -69,7 +77,7 @@ public class WarblerEnvironment
 
     public void Assign(Token name, object? value)
     {
-        if (Defined(name.Lexeme))
+        if (DefinedLocal(name.Lexeme))
         {
             var type = _values[name.Lexeme].Item1;
             _values[name.Lexeme] = Tuple.Create(type, value);
