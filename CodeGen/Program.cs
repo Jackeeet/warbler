@@ -26,16 +26,18 @@ internal class Program
                 var expressionsDir = @"C:\dev\Warbler\Warbler\Expressions\";
                 var exprTypes = new List<string>
                 {
-                    "Unary                  : Token Op, Expression Expression",
-                    "Binary                 : Expression Left, Token Op, Expression Right",
-                    "Ternary                : Expression Condition, Expression ThenBranch, Expression ElseBranch",
+                    "Unary                  : Token Op # Expression Expression",
+                    "Binary                 : Expression Left # Token Op # Expression Right",
+                    "Ternary                : Expression Condition # Expression ThenBranch # Expression ElseBranch",
                     "Literal                : object Value",
-                    "VariableDeclaration    : Token VarType, Token Name, Expression Initializer",
+                    "VariableDeclaration    : Token VarType # Token Name # Expression Initializer",
                     "Variable               : Token Name",
-                    "Assignment             : Token Name, Expression Value",
-                    "Block                  : Guid BlockId, List<Expression?> Expressions",
-                    "Conditional            : Expression Condition, Expression ThenBranch, Expression? ElseBranch",
-                    "WhileLoop              : Expression Condition, Expression Actions"
+                    "Assignment             : Token Name # Expression Value",
+                    "Block                  : Guid BlockId # List<Expression?> Expressions",
+                    "Conditional            : Expression Condition # Expression ThenBranch # Expression? ElseBranch",
+                    "WhileLoop              : Expression Condition # Expression Actions",
+                    "FunctionDefinition     : Token Name # List<Tuple<Token, Token>> Parameters # Token ReturnType # BlockExpression Body",
+                    "Call                   : Expression Called # List<Expression> Args"
                 };
 
                 ExpressionsGenerator.DefineAst(expressionsDir, exprTypes);

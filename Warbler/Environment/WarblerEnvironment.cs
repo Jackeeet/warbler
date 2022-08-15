@@ -8,7 +8,7 @@ public class WarblerEnvironment
 {
     private readonly WarblerEnvironment? _enclosing;
     private readonly Dictionary<Guid, WarblerEnvironment> _subEnvironments;
-    private Dictionary<string, Tuple<ExpressionType, object?>> _values = new();
+    private Dictionary<string, Tuple<WarblerType, object?>> _values = new();
 
     public WarblerEnvironment()
     {
@@ -24,7 +24,7 @@ public class WarblerEnvironment
 
     public void Reset()
     {
-        _values = new Dictionary<string, Tuple<ExpressionType, object?>>();
+        _values = new Dictionary<string, Tuple<WarblerType, object?>>();
     }
 
     public void NewSubEnvironment(Guid environmentId)
@@ -41,7 +41,7 @@ public class WarblerEnvironment
         return _subEnvironments[environmentId];
     }
 
-    public void Define(string name, ExpressionType type, object? value = null)
+    public void Define(string name, WarblerType type, object? value = null)
     {
         _values[name] = Tuple.Create(type, value);
     }
@@ -64,7 +64,7 @@ public class WarblerEnvironment
         return Defined(name) && (assignedLocal || assignedEnclosing);
     }
 
-    public Tuple<ExpressionType, object?> Get(Token name, bool typeOnly = false)
+    public Tuple<WarblerType, object?> Get(Token name, bool typeOnly = false)
     {
         if (_values.ContainsKey(name.Lexeme))
             return _values[name.Lexeme];

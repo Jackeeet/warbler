@@ -47,4 +47,28 @@
     <data name="ExpectedIdentifier" xml:space="preserve">
         <value>Ожидается идентификатор</value>
     </data>
+    <data name="ExpectedClosingArgsBracket" xml:space="preserve">
+        <value>После аргументов функции ожидается символ )</value>
+    </data>
+    <data name="InvalidAssignmentTarget" xml:space="preserve">
+        <value>Невозможно присвоить значение</value>
+    </data>
+    <data name="UnterminatedBlock" xml:space="preserve">
+        <value>В конце блока ожидаются закрывающие символы &lt;:</value>
+    </data>
+    <data name="ExpectedOpeningBracket" xml:space="preserve">
+        <value>Ожидается символ (</value>
+    </data>
+    <data name="ExpectedParameterType" xml:space="preserve">
+        <value>Ожидается тип параметра</value>
+    </data>
+    <data name="ExpectedParameterName" xml:space="preserve">
+        <value>Ожидается имя параметра</value>
+    </data>
+    <data name="ExpectedClosingParamsBracket" xml:space="preserve">
+        <value>После параметров функции ожидается символ )</value>
+    </data>
+    <data name="ExpectedReturnType" xml:space="preserve">
+        <value>Ожидается тип возвращаемого значения</value>
+    </data>
 </root>

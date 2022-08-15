@@ -44,7 +44,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Int, "int", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -52,7 +52,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Double, "double", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1.0d) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(1.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -60,7 +60,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Bool, "bool", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
+                new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -68,7 +68,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Char, "char", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression('a') { Type = ExpressionType.Char, Line = 1 }
+                new LiteralExpression('a') { Type = new WarblerType(ExpressionType.Char), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -76,7 +76,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.String, "string", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression("abc") { Type = ExpressionType.String, Line = 1 }
+                new LiteralExpression("abc") { Type = new WarblerType(ExpressionType.String), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -84,7 +84,7 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Def, "def", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -93,9 +93,9 @@ public static class Variable
                 new Token(TokenKind.Int, "int", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             ) { Line = 1 }
         },
@@ -106,7 +106,7 @@ public static class Variable
                 new Token(TokenKind.Identifier, "a", null, 1),
                 new VariableExpression(
                     new Token(TokenKind.Identifier, "intVar", null, 1)
-                ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
 
@@ -118,35 +118,35 @@ public static class Variable
             "assignInt",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignInt", null, 1),
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "assignDouble",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignDouble", null, 1),
-                new LiteralExpression(2.0d) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
             ) { Line = 1 }
         },
         {
             "assignBoolean",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignBool", null, 1),
-                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
+                new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
             ) { Line = 1 }
         },
         {
             "assignChar",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignChar", null, 1),
-                new LiteralExpression('2') { Type = ExpressionType.Char, Line = 1 }
+                new LiteralExpression('2') { Type = new WarblerType(ExpressionType.Char), Line = 1 }
             ) { Line = 1 }
         },
         {
             "assignString",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignString", null, 1),
-                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
+                new LiteralExpression("2") { Type = new WarblerType(ExpressionType.String), Line = 1 }
             ) { Line = 1 }
         },
         {
@@ -154,9 +154,9 @@ public static class Variable
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignExpression", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             ) { Line = 1 }
         },
@@ -166,7 +166,7 @@ public static class Variable
                 new Token(TokenKind.Identifier, "reassignVariable", null, 1),
                 new VariableExpression(
                     new Token(TokenKind.Identifier, "intVar", null, 1)
-                ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
 
@@ -182,7 +182,7 @@ public static class Variable
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "a", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 }
             ) { Line = 1 }
@@ -195,20 +195,20 @@ public static class Variable
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "a", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new VariableDeclarationExpression(
                         new Token(TokenKind.String, "string", null, 2),
                         new Token(TokenKind.Identifier, "str", null, 2),
-                        new LiteralExpression("strrr") { Type = ExpressionType.String, Line = 2 }
+                        new LiteralExpression("strrr") { Type = new WarblerType(ExpressionType.String), Line = 2 }
                     ) { Line = 2 },
                     new AssignmentExpression(
                         new Token(TokenKind.Identifier, "str", null, 3),
-                        new LiteralExpression("str") { Type = ExpressionType.String, Line = 3 }
+                        new LiteralExpression("str") { Type = new WarblerType(ExpressionType.String), Line = 3 }
                     ) { Line = 3 },
                     new AssignmentExpression(
                         new Token(TokenKind.Identifier, "a", null, 4),
-                        new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 4 }
+                        new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                     ) { Line = 4 }
                 }
             ) { Line = 1 }
@@ -223,14 +223,14 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Int, "int", null, 1),
                 new Token(TokenKind.Identifier, "sdhhfiuw", null, 1),
-                new LiteralExpression(2.3d) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(2.3d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
             ) { Line = 1 }
         },
         {
             "assignBoolToString",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "stringOnly", null, 1),
-                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
+                new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
             ) { Line = 1 }
         }
 
@@ -246,8 +246,8 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Int, "int", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
 
         {
@@ -255,40 +255,40 @@ public static class Variable
             new VariableDeclarationExpression(
                 new Token(TokenKind.Double, "double", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1.0d) { Type = ExpressionType.Double, Line = 1 }
-            ) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(1.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
         },
         {
             "boolDeclaration",
             new VariableDeclarationExpression(
                 new Token(TokenKind.Bool, "bool", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
-            ) { Type = ExpressionType.Boolean, Line = 1 }
+                new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
         },
         {
             "charDeclaration",
             new VariableDeclarationExpression(
                 new Token(TokenKind.Char, "char", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression('a') { Type = ExpressionType.Char, Line = 1 }
-            ) { Type = ExpressionType.Char, Line = 1 }
+                new LiteralExpression('a') { Type = new WarblerType(ExpressionType.Char), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Char), Line = 1 }
         },
         {
             "stringDeclaration",
             new VariableDeclarationExpression(
                 new Token(TokenKind.String, "string", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression("abc") { Type = ExpressionType.String, Line = 1 }
-            ) { Type = ExpressionType.String, Line = 1 }
+                new LiteralExpression("abc") { Type = new WarblerType(ExpressionType.String), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.String), Line = 1 }
         },
         {
             "implicitTypeDeclaration",
             new VariableDeclarationExpression(
                 new Token(TokenKind.Def, "def", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
-                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "initializeWithExpression",
@@ -296,11 +296,11 @@ public static class Variable
                 new Token(TokenKind.Int, "int", null, 1),
                 new Token(TokenKind.Identifier, "a", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "initializeWithVariable",
@@ -309,8 +309,8 @@ public static class Variable
                 new Token(TokenKind.Identifier, "a", null, 1),
                 new VariableExpression(
                     new Token(TokenKind.Identifier, "intVar", null, 1)
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
 
         #endregion
@@ -321,47 +321,47 @@ public static class Variable
             "assignInt",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignInt", null, 1),
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "assignDouble",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignDouble", null, 1),
-                new LiteralExpression(2.0d) { Type = ExpressionType.Double, Line = 1 }
-            ) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
         },
         {
             "assignBoolean",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignBool", null, 1),
-                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 }
-            ) { Type = ExpressionType.Boolean, Line = 1 }
+                new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
         },
         {
             "assignChar",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignChar", null, 1),
-                new LiteralExpression('2') { Type = ExpressionType.Char, Line = 1 }
-            ) { Type = ExpressionType.Char, Line = 1 }
+                new LiteralExpression('2') { Type = new WarblerType(ExpressionType.Char), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Char), Line = 1 }
         },
         {
             "assignString",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignString", null, 1),
-                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 }
-            ) { Type = ExpressionType.String, Line = 1 }
+                new LiteralExpression("2") { Type = new WarblerType(ExpressionType.String), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.String), Line = 1 }
         },
         {
             "assignExpression",
             new AssignmentExpression(
                 new Token(TokenKind.Identifier, "reassignExpression", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "assignVariable",
@@ -369,8 +369,8 @@ public static class Variable
                 new Token(TokenKind.Identifier, "reassignVariable", null, 1),
                 new VariableExpression(
                     new Token(TokenKind.Identifier, "intVar", null, 1)
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
 
         #endregion
@@ -385,10 +385,10 @@ public static class Variable
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "a", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
 
         {
@@ -399,23 +399,23 @@ public static class Variable
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "a", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new VariableDeclarationExpression(
                         new Token(TokenKind.String, "string", null, 2),
                         new Token(TokenKind.Identifier, "str", null, 2),
-                        new LiteralExpression("strrr") { Type = ExpressionType.String, Line = 2 }
-                    ) { Type = ExpressionType.String, Line = 2 },
+                        new LiteralExpression("strrr") { Type = new WarblerType(ExpressionType.String), Line = 2 }
+                    ) { Type = new WarblerType(ExpressionType.String), Line = 2 },
                     new AssignmentExpression(
                         new Token(TokenKind.Identifier, "str", null, 3),
-                        new LiteralExpression("str") { Type = ExpressionType.String, Line = 3 }
-                    ) { Type = ExpressionType.String, Line = 3 },
+                        new LiteralExpression("str") { Type = new WarblerType(ExpressionType.String), Line = 3 }
+                    ) { Type = new WarblerType(ExpressionType.String), Line = 3 },
                     new AssignmentExpression(
                         new Token(TokenKind.Identifier, "a", null, 4),
-                        new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 4 }
-                    ) { Type = ExpressionType.Integer, Line = 4 }
+                        new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
 
         #endregion

@@ -27,72 +27,72 @@ public static class Ternary
             "comparisonCondition",
             new TernaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 },
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "equalityCondition",
             new TernaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.DoubleEqual, "==", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 },
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "numericBranches",
             new TernaryExpression(
-                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(2.0d) { Type = ExpressionType.Double, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "intCondition",
             new TernaryExpression(
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "doubleCondition",
             new TernaryExpression(
-                new LiteralExpression(2.2d) { Type = ExpressionType.Double, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(2.2d) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "charCondition",
             new TernaryExpression(
-                new LiteralExpression('2') { Type = ExpressionType.Char, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression('2') { Type = new WarblerType(ExpressionType.Char), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "stringCondition",
             new TernaryExpression(
-                new LiteralExpression("2") { Type = ExpressionType.String, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression("2") { Type = new WarblerType(ExpressionType.String), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
         {
             "mismatchingBranches",
             new TernaryExpression(
-                new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Line = 1 }
         },
     };
@@ -103,33 +103,33 @@ public static class Ternary
             "comparisonCondition",
             new TernaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "equalityCondition",
             new TernaryExpression(
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.DoubleEqual, "==", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "numericBranches",
             new TernaryExpression(
-                new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
-                new LiteralExpression(2.0d) { Type = ExpressionType.Double, Line = 1 },
-                new LiteralExpression(3) { Type = ExpressionType.Double, Line = 1 }
-            ) { Type = ExpressionType.Double, Line = 1 }
+                new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
+                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
         },
     };
 }

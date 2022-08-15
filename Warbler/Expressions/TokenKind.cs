@@ -56,7 +56,7 @@ public enum TokenKind
     Func,           // \ for function definition
     Def,            // implicit type variable
     Type,           // user-defined types
-    Ret,
+    // Ret,
     And,
     Or,
     True,

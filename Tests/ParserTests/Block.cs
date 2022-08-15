@@ -52,7 +52,7 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 1),
                             new Token(TokenKind.Identifier, "a", null, 1),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 }
                     }
                 ) { Line = 1 }
@@ -67,11 +67,11 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 1),
                             new Token(TokenKind.Identifier, "a", null, 1),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 },
                         new AssignmentExpression(
                             new Token(TokenKind.Identifier, "a", null, 1),
-                            new LiteralExpression(15) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(15) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 }
                     }
                 ) { Line = 1 }
@@ -86,7 +86,7 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 1),
                             new Token(TokenKind.Identifier, "a", null, 1),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 },
                         new BlockExpression(new Guid(),
                             new List<Expression?>()
@@ -94,7 +94,7 @@ public static class Block
                                 new VariableDeclarationExpression(
                                     new Token(TokenKind.Int, "int", null, 1),
                                     new Token(TokenKind.Identifier, "a", null, 1),
-                                    new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 1 }
+                                    new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                                 ) { Line = 1 },
                             }
                         ) { Line = 1 },
@@ -118,7 +118,7 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 1),
                             new Token(TokenKind.Identifier, "a", null, 1),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 }
                     }
                 ) { Line = 1 },
@@ -128,7 +128,7 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 2),
                             new Token(TokenKind.Identifier, "x", null, 2),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 2 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                         ) { Line = 2 }
                     }
                 ) { Line = 2 }
@@ -140,7 +140,7 @@ public static class Block
                 new VariableDeclarationExpression(
                     new Token(TokenKind.Int, "int", null, 1),
                     new Token(TokenKind.Identifier, "a", null, 1),
-                    new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 },
                 new BlockExpression(new Guid(),
                     new List<Expression?>
@@ -148,13 +148,13 @@ public static class Block
                         new VariableDeclarationExpression(
                             new Token(TokenKind.Int, "int", null, 2),
                             new Token(TokenKind.Identifier, "a", null, 2),
-                            new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 2 }
+                            new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                         ) { Line = 2 }
                     }
                 ) { Line = 2 },
                 new AssignmentExpression(
                     new Token(TokenKind.Identifier, "a", null, 3),
-                    new LiteralExpression(15) { Type = ExpressionType.Integer, Line = 3 }
+                    new LiteralExpression(15) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                 ) { Line = 3 }
             }
         },

@@ -60,4 +60,22 @@
     <data name="InvalidAssignmentTarget" xml:space="preserve">
         <value>Invalid assignment target</value>
     </data>
+    <data name="ExpectedClosingArgsBracket" xml:space="preserve">
+        <value>Expected a ) after function arguments</value>
+    </data>
+    <data name="ExpectedOpeningBracket" xml:space="preserve">
+        <value>Expected a (</value>
+    </data>
+    <data name="ExpectedParameterType" xml:space="preserve">
+        <value>Expected a parameter type</value>
+    </data>
+    <data name="ExpectedParameterName" xml:space="preserve">
+        <value>Expected a parameter name</value>
+    </data>
+    <data name="ExpectedClosingParamsBracket" xml:space="preserve">
+        <value>Expected a ) after function paramters</value>
+    </data>
+    <data name="ExpectedReturnType" xml:space="preserve">
+        <value>Expected a return type</value>
+    </data>
 </root>

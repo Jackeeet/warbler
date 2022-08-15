@@ -8,7 +8,7 @@ using Warbler.Resources.Errors;
 
 namespace Warbler.Interpreter;
 
-public class WarblerInterpreter : IExpressionVisitor<object>
+public class WarblerInterpreter : IExpressionVisitor<object?>
 {
     private static readonly HashSet<TokenKind> numericOperators = new()
     {
@@ -43,7 +43,7 @@ public class WarblerInterpreter : IExpressionVisitor<object>
         }
     }
 
-    private object Evaluate(Expression expression)
+    private object? Evaluate(Expression expression)
     {
         Debug.Assert(expression != null, nameof(expression) + " != null");
         return expression.Accept(this);
@@ -171,7 +171,7 @@ public class WarblerInterpreter : IExpressionVisitor<object>
     public object VisitLiteralExpression(LiteralExpression expression)
     {
         // an int expression might have had its type set to Double as a result of coercion
-        if (expression.Value is int intValue && expression.Type == ExpressionType.Double)
+        if (expression.Value is int intValue && expression.Type.BaseType == ExpressionType.Double)
             return Convert.ToDouble(intValue);
 
         return expression.Value;
@@ -200,7 +200,7 @@ public class WarblerInterpreter : IExpressionVisitor<object>
         var storedType = stored.Item1;
         var storedValue = stored.Item2!;
 
-        return storedType switch
+        return storedType.BaseType switch
         {
             ExpressionType.Integer => (int)storedValue,
             ExpressionType.Double => (double)storedValue,
@@ -224,7 +224,7 @@ public class WarblerInterpreter : IExpressionVisitor<object>
         return value;
     }
 
-    public object VisitBlockExpression(BlockExpression expression)
+    public object? VisitBlockExpression(BlockExpression expression)
     {
         var previousEnvironment = _environment;
         try
@@ -255,21 +255,22 @@ public class WarblerInterpreter : IExpressionVisitor<object>
         }
     }
 
-    public object VisitConditionalExpression(ConditionalExpression expression)
+    public object? VisitConditionalExpression(ConditionalExpression expression)
     {
         if (Evaluate(expression.Condition) is not bool boolCondition)
             throw new ArgumentException();
 
         if (boolCondition)
         {
-            Evaluate(expression.ThenBranch);
+            return Evaluate(expression.ThenBranch);
         }
         else if (expression.ElseBranch is not null)
         {
-            Evaluate(expression.ElseBranch);
+            return Evaluate(expression.ElseBranch);
         }
 
-        return boolCondition;
+        // this only executes when the condition is not true and there is no else branch
+        return null;
     }
 
     public object VisitWhileLoopExpression(WhileLoopExpression expression)
@@ -280,14 +281,27 @@ public class WarblerInterpreter : IExpressionVisitor<object>
         var loopCount = 0;
         // this has to be explicitly reevaluated on every iteration
         // otherwise the loop condition will be a constant value
+
         Debug.Assert(expression.Condition != null, "expression.Condition != null");
-        while ((bool)Evaluate(expression.Condition))
+        // expression.Condition is never a ConditionalExpression (the only one that can return null)
+        // so Evaluate(expression.Condition) is never null
+        while ((bool)Evaluate(expression.Condition)!)
         {
             Evaluate(expression.Actions);
             loopCount++;
         }
 
         return loopCount;
+    }
+
+    public object VisitFunctionDefinitionExpression(FunctionDefinitionExpression expression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object VisitCallExpression(CallExpression expression)
+    {
+        throw new NotImplementedException();
     }
 
     private RuntimeError HandleRuntimeError(Expression expression, string message)

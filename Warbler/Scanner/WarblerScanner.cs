@@ -72,7 +72,7 @@ public class WarblerScanner
         { "in", TokenKind.In },
         { "def", TokenKind.Def },
         { "type", TokenKind.Type },
-        { "ret", TokenKind.Ret },
+        // { "ret", TokenKind.Ret },
         { "and", TokenKind.And },
         { "or", TokenKind.Or },
         { "true", TokenKind.True },

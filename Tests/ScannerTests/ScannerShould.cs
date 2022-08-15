@@ -112,7 +112,7 @@ public class ScannerShould
         { "escapedCharString", "\"\\text\"" },
         { "unknownEscapedString", "\"t\\dxt\"" },
         { "escapedQuoteString", "\"t\\\"xt\"" },
-        { "keyword", "ret \"ret\"" },
+        { "keyword", "while" },
         { "cStyleComment", "\"before\" // comment\n \"after\"" },
         { "haskellStyleComment", "\"before\" -- comment\n \"after\"" },
         { "stringWithUnsupportedChar", "\"abcdf#2234\"" },
@@ -457,8 +457,7 @@ public class ScannerShould
         {
             "keyword", new List<Token>
             {
-                new(TokenKind.Ret, "ret", null, 1),
-                new(TokenKind.StringLiteral, "\"ret\"", "ret", 1),
+                new(TokenKind.While, "while", null, 1),
                 new(TokenKind.Eof, "", null, 1)
             }
         },

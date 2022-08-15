@@ -61,9 +61,10 @@ public class WarblerChecker : IExpressionVisitor<object?>
         expression.Accept(this);
     }
 
-    private static bool IsNumeric(ExpressionType innerType)
+    private static bool IsNumeric(WarblerType innerType)
     {
-        return innerType == ExpressionType.Double || innerType == ExpressionType.Integer;
+        return innerType.BaseType == ExpressionType.Double ||
+               innerType.BaseType == ExpressionType.Integer;
     }
 
     private bool CheckNumericOperands(Expression left, Expression right)
@@ -71,21 +72,21 @@ public class WarblerChecker : IExpressionVisitor<object?>
         return IsNumeric(left.Type) && IsNumeric(right.Type);
     }
 
-    private ExpressionType CoerceNumeric(Expression left, Expression right)
+    private WarblerType CoerceNumeric(Expression left, Expression right)
     {
-        if (left.Type == ExpressionType.Double)
+        if (left.Type.BaseType == ExpressionType.Double)
         {
-            right.Type = ExpressionType.Double;
-            return ExpressionType.Double;
+            right.Type = new WarblerType(ExpressionType.Double);
+            return right.Type;
         }
 
-        if (right.Type == ExpressionType.Double)
+        if (right.Type.BaseType == ExpressionType.Double)
         {
-            left.Type = ExpressionType.Double;
-            return ExpressionType.Double;
+            left.Type = new WarblerType(ExpressionType.Double);
+            return left.Type;
         }
 
-        return ExpressionType.Integer;
+        return new WarblerType(ExpressionType.Integer);
     }
 
     private TypeError HandleTypeError(Expression expression, string message)
@@ -102,13 +103,13 @@ public class WarblerChecker : IExpressionVisitor<object?>
         return null;
     }
 
-    private void TypeUnary(UnaryExpression expression, ExpressionType innerType)
+    private void TypeUnary(UnaryExpression expression, WarblerType innerType)
     {
         if (expression.Op.Kind != TokenKind.Not && expression.Op.Kind != TokenKind.Minus)
             // this should be handled at parsing stage
             throw new ArgumentException("Unexpected unary operator");
 
-        if (expression.Op.Kind == TokenKind.Not && innerType != ExpressionType.Boolean)
+        if (expression.Op.Kind == TokenKind.Not && innerType.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NegateNonBoolean);
 
         if (expression.Op.Kind == TokenKind.Minus && !IsNumeric(innerType))
@@ -150,7 +151,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (numeric)
             CoerceNumeric(left, right);
 
-        expression.Type = ExpressionType.Boolean;
+        expression.Type = new WarblerType(ExpressionType.Boolean);
     }
 
     private void TypeNumericBinary(BinaryExpression expression)
@@ -165,15 +166,16 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     private void TypeStringBinary(BinaryExpression expression)
     {
-        if (expression.Left.Type != ExpressionType.String || expression.Right.Type != ExpressionType.String)
+        if (expression.Left.Type.BaseType != ExpressionType.String ||
+            expression.Right.Type.BaseType != ExpressionType.String)
             throw HandleTypeError(expression, Type.NonStringConcatenation);
-        expression.Type = ExpressionType.String;
+        expression.Type = new WarblerType(ExpressionType.String);
     }
 
     public object? VisitTernaryExpression(TernaryExpression expression)
     {
         TypeExpression(expression.Condition);
-        if (expression.Condition.Type != ExpressionType.Boolean)
+        if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NonBooleanCondition);
 
         var thenBranch = expression.ThenBranch;
@@ -196,7 +198,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         // type of a literal expression is known at parsing stage
         // so at this point we just check that it's defined
-        if (expression.Type == ExpressionType.Untyped)
+        if (expression.Type.BaseType == ExpressionType.Untyped)
             throw new ArgumentException("Undefined literal type");
 
         return null;
@@ -205,12 +207,13 @@ public class WarblerChecker : IExpressionVisitor<object?>
     public object? VisitVariableDeclarationExpression(VariableDeclarationExpression expression)
     {
         TypeExpression(expression.Initializer);
-        if (!types.ContainsKey(expression.Initializer.Type))
+        if (!types.ContainsKey(expression.Initializer.Type.BaseType))
         {
             throw new ArgumentException("Unsupported expression type");
         }
 
-        if (expression.VarType.Kind != TokenKind.Def && expression.VarType.Kind != types[expression.Initializer.Type])
+        if (expression.VarType.Kind != TokenKind.Def &&
+            expression.VarType.Kind != types[expression.Initializer.Type.BaseType])
         {
             throw HandleTypeError(expression,
                 string.Format(Type.VariableAssignmentMismatch, expression.VarType.Kind));
@@ -253,14 +256,18 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         TypeExpression(expression.Condition);
 
-        if (expression.Condition.Type != ExpressionType.Boolean)
+        if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NonBooleanCondition);
 
         TypeExpression(expression.ThenBranch);
         if (expression.ElseBranch is not null)
+        {
             TypeExpression(expression.ElseBranch);
+            if (expression.ThenBranch.Type != expression.ElseBranch.Type)
+                throw HandleTypeError(expression, Type.ConditionBranchesMismatch);
+        }
 
-        expression.Type = ExpressionType.Boolean;
+        expression.Type = expression.ThenBranch.Type;
         return null;
     }
 
@@ -268,13 +275,23 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         TypeExpression(expression.Condition);
 
-        if (expression.Condition.Type != ExpressionType.Boolean)
+        if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Type.NonBooleanCondition);
 
         TypeExpression(expression.Actions);
 
-        expression.Type = ExpressionType.Integer;
+        expression.Type = new WarblerType(ExpressionType.Integer);
         return null;
+    }
+
+    public object? VisitFunctionDefinitionExpression(FunctionDefinitionExpression expression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object? VisitCallExpression(CallExpression expression)
+    {
+        throw new NotImplementedException();
     }
 
     private void TypeBlock(BlockExpression expression)

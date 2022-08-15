@@ -26,10 +26,11 @@ public static class WhileLoop
             new WhileLoopExpression(
                 new BinaryExpression(
                     new VariableExpression(
-                        new Token(TokenKind.Identifier, "i", null, 1)) { Type = ExpressionType.Integer, Line = 1 },
+                            new Token(TokenKind.Identifier, "i", null, 1))
+                        { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.NotEqual, "!=", null, 1),
-                    new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                 new BlockExpression(new TestGuidProvider().Get(),
                     new List<Expression?>
                     {
@@ -38,14 +39,14 @@ public static class WhileLoop
                             new BinaryExpression(
                                 new VariableExpression(
                                     new Token(TokenKind.Identifier, "i", null, 1)
-                                ) { Type = ExpressionType.Integer, Line = 1 },
+                                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                 new Token(TokenKind.Plus, "+", null, 1),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                            ) { Type = ExpressionType.Integer, Line = 1 }
-                        ) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     }
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "relational",
@@ -53,8 +54,8 @@ public static class WhileLoop
                 new BinaryExpression(
                     new VariableExpression(new Token(TokenKind.Identifier, "i", null, 1)) { Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                 new BlockExpression(new TestGuidProvider().Get(),
                     new List<Expression?>
                     {
@@ -63,14 +64,14 @@ public static class WhileLoop
                             new BinaryExpression(
                                 new VariableExpression(
                                     new Token(TokenKind.Identifier, "i", null, 1)
-                                ) { Type = ExpressionType.Integer, Line = 1 },
+                                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                 new Token(TokenKind.Plus, "+", null, 1),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                            ) { Type = ExpressionType.Integer, Line = 1 }
-                        ) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     }
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "nested",
@@ -78,20 +79,20 @@ public static class WhileLoop
                 new BinaryExpression(
                     new VariableExpression(
                         new Token(TokenKind.Identifier, "i", null, 1)
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                 new BlockExpression(new TestGuidProvider().Get(),
                     new List<Expression?>
                     {
                         new WhileLoopExpression(
                             new BinaryExpression(
                                 new VariableExpression(new Token(TokenKind.Identifier, "j", null, 1)
-                                ) { Type = ExpressionType.Integer, Line = 1 },
+                                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                 new Token(TokenKind.LessThan, "<", null, 1),
-                                new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                            ) { Type = ExpressionType.Boolean, Line = 1 },
+                                new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                            ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                             new BlockExpression(new Guid("00000000-0000-0000-0000-000000000001"),
                                 new List<Expression?>
                                 {
@@ -100,27 +101,28 @@ public static class WhileLoop
                                         new BinaryExpression(
                                             new VariableExpression(
                                                 new Token(TokenKind.Identifier, "j", null, 1)
-                                            ) { Type = ExpressionType.Integer, Line = 1 },
+                                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                             new Token(TokenKind.Plus, "+", null, 1),
-                                            new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                                        ) { Type = ExpressionType.Integer, Line = 1 }
-                                    ) { Type = ExpressionType.Integer, Line = 1 }
+                                            new LiteralExpression(1)
+                                                { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                                 }
-                            ) { Type = ExpressionType.Integer, Line = 1 }
-                        ) { Type = ExpressionType.Integer, Line = 1 },
+                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new AssignmentExpression(
                             new Token(TokenKind.Identifier, "i", null, 1),
                             new BinaryExpression(
                                 new VariableExpression(
                                     new Token(TokenKind.Identifier, "i", null, 1)
-                                ) { Type = ExpressionType.Integer, Line = 1 },
+                                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                 new Token(TokenKind.Plus, "+", null, 1),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
-                            ) { Type = ExpressionType.Integer, Line = 1 }
-                        ) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     }
-                ) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "oneLine",
@@ -128,25 +130,25 @@ public static class WhileLoop
                 new BinaryExpression(
                     new VariableExpression(
                         new Token(TokenKind.Identifier, "i", null, 1)
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(5) { Type = ExpressionType.Integer, Line = 1 }
-                ) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(5) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                 new AssignmentExpression(
                     new Token(TokenKind.Identifier, "i", null, 2),
                     new BinaryExpression(
                         new VariableExpression(
                             new Token(TokenKind.Identifier, "i", null, 2)
-                        ) { Type = ExpressionType.Integer, Line = 2 },
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 2 },
                         new Token(TokenKind.Plus, "+", null, 2),
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 2 }
-                    ) { Type = ExpressionType.Integer, Line = 2 }
-                ) { Type = ExpressionType.Integer, Line = 2 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
     };
 
-    public static Dictionary<string, object?> Outputs = new()
+    public static readonly Dictionary<string, object?> Outputs = new()
     {
         { "inequality", 10 },
         { "relational", 10 },

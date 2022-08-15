@@ -31,15 +31,15 @@ public class CheckerShould
 
     private void PredefineVariables()
     {
-        _environment.Define("intVar", ExpressionType.Integer);
-        _environment.Define("reassignInt", ExpressionType.Integer);
-        _environment.Define("reassignDouble", ExpressionType.Double);
-        _environment.Define("reassignBool", ExpressionType.Boolean);
-        _environment.Define("reassignChar", ExpressionType.Char);
-        _environment.Define("reassignString", ExpressionType.String);
-        _environment.Define("reassignExpression", ExpressionType.Integer);
-        _environment.Define("reassignVariable", ExpressionType.Integer);
-        _environment.Define("stringOnly", ExpressionType.Integer);
+        _environment.Define("intVar", new WarblerType(ExpressionType.Integer));
+        _environment.Define("reassignInt", new WarblerType(ExpressionType.Integer));
+        _environment.Define("reassignDouble", new WarblerType(ExpressionType.Double));
+        _environment.Define("reassignBool", new WarblerType(ExpressionType.Boolean));
+        _environment.Define("reassignChar", new WarblerType(ExpressionType.Char));
+        _environment.Define("reassignString", new WarblerType(ExpressionType.String));
+        _environment.Define("reassignExpression", new WarblerType(ExpressionType.Integer));
+        _environment.Define("reassignVariable", new WarblerType(ExpressionType.Integer));
+        _environment.Define("stringOnly", new WarblerType(ExpressionType.Integer));
     }
 
     [Test]
@@ -151,7 +151,7 @@ public class CheckerShould
         Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(
                 new UnaryExpression(
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             )
         );
@@ -162,9 +162,9 @@ public class CheckerShould
     {
         Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Question, "?", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             )
         );

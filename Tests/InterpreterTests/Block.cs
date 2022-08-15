@@ -27,10 +27,10 @@ public static class Block
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "block", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "multiExpressionBlock",
@@ -39,14 +39,14 @@ public static class Block
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "block", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new AssignmentExpression(
                         new Token(TokenKind.Identifier, "block", null, 1),
-                        new LiteralExpression(15) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(15) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
         {
             "nestedBlock",
@@ -55,26 +55,26 @@ public static class Block
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "block", null, 1),
-                        new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new BlockExpression(InnerBlockId, new List<Expression?>()
                         {
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 1),
                                 new Token(TokenKind.Identifier, "block", null, 1),
-                                new LiteralExpression(20) { Type = ExpressionType.Integer, Line = 1 }
-                            ) { Type = ExpressionType.Integer, Line = 1 },
+                                new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         }
-                    ) { Type = ExpressionType.Integer, Line = 1 },
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new VariableDeclarationExpression(
                         new Token(TokenKind.Int, "int", null, 1),
                         new Token(TokenKind.Identifier, "block2", null, 1),
                         new VariableExpression(
                             new Token(TokenKind.Identifier, "block", null, 1)
-                        ) { Type = ExpressionType.Integer, Line = 1 }
-                    ) { Type = ExpressionType.Integer, Line = 1 }
+                        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                    ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         },
     };
 

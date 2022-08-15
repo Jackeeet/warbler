@@ -8,5 +8,6 @@ public enum ExpressionType
     Integer,
     Char,
     String,
+    Function,
     Record
 }

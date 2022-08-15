@@ -70,14 +70,14 @@ public static class Conditional
             "if", new List<Expression?>
             {
                 new ConditionalExpression(
-                    new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                     new BlockExpression(new TestGuidProvider().Get(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 1),
                                 new Token(TokenKind.Identifier, "a", null, 1),
-                                new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                             ) { Line = 1 }
                         }
                     ) { Line = 1 },
@@ -89,14 +89,14 @@ public static class Conditional
             "ifElse", new List<Expression?>
             {
                 new ConditionalExpression(
-                    new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                     new BlockExpression(new TestGuidProvider().Get(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 1),
                                 new Token(TokenKind.Identifier, "a", null, 1),
-                                new LiteralExpression(10) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                             ) { Line = 1 }
                         }
                     ) { Line = 1 },
@@ -106,7 +106,7 @@ public static class Conditional
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 1),
                                 new Token(TokenKind.Identifier, "a", null, 1),
-                                new LiteralExpression(12) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(12) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                             ) { Line = 1 }
                         }
                     ) { Line = 1 }
@@ -118,9 +118,9 @@ public static class Conditional
             {
                 new ConditionalExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.GreaterThan, ">", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new BlockExpression(new TestGuidProvider().Get(),
                         new List<Expression?>
@@ -128,15 +128,15 @@ public static class Conditional
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 2),
                                 new Token(TokenKind.Identifier, "a", null, 2),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 2 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                             ) { Line = 2 }
                         }
                     ) { Line = 1 },
                     new ConditionalExpression(
                         new BinaryExpression(
-                            new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 3 },
+                            new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 3 },
                             new Token(TokenKind.DoubleEqual, "==", null, 3),
-                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 3 }
+                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                         ) { Line = 3 },
                         new BlockExpression(new TestGuidProvider().Get(),
                             new List<Expression?>
@@ -144,7 +144,7 @@ public static class Conditional
                                 new VariableDeclarationExpression(
                                     new Token(TokenKind.Int, "int", null, 4),
                                     new Token(TokenKind.Identifier, "a", null, 4),
-                                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 4 }
+                                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                 ) { Line = 4 }
                             }
                         ) { Line = 3 },
@@ -159,9 +159,9 @@ public static class Conditional
                 new ConditionalExpression(
                     // if 1 > 2 then
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.GreaterThan, ">", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     // int a = 1
                     new BlockExpression(new TestGuidProvider().Get(),
@@ -170,16 +170,16 @@ public static class Conditional
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 2),
                                 new Token(TokenKind.Identifier, "a", null, 2),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 2 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                             ) { Line = 2 }
                         }
                     ) { Line = 1 },
                     // else if 1 == 2 then
                     new ConditionalExpression(
                         new BinaryExpression(
-                            new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 3 },
+                            new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 3 },
                             new Token(TokenKind.DoubleEqual, "==", null, 3),
-                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 3 }
+                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                         ) { Line = 3 },
                         // int a = 2
                         new BlockExpression(new TestGuidProvider().Get(),
@@ -188,7 +188,7 @@ public static class Conditional
                                 new VariableDeclarationExpression(
                                     new Token(TokenKind.Int, "int", null, 4),
                                     new Token(TokenKind.Identifier, "a", null, 4),
-                                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 4 }
+                                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                 ) { Line = 4 }
                             }
                         ) { Line = 3 },
@@ -199,7 +199,7 @@ public static class Conditional
                                 new VariableDeclarationExpression(
                                     new Token(TokenKind.Int, "int", null, 5),
                                     new Token(TokenKind.Identifier, "a", null, 5),
-                                    new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 5 }
+                                    new LiteralExpression(0) { Type = new WarblerType(ExpressionType.Integer), Line = 5 }
                                 ) { Line = 5 }
                             }
                         ) { Line = 5 }
@@ -212,9 +212,9 @@ public static class Conditional
             {
                 new ConditionalExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.LessThan, "<", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new BlockExpression(new TestGuidProvider().Get(),
                         new List<Expression?>
@@ -222,7 +222,7 @@ public static class Conditional
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 2),
                                 new Token(TokenKind.Identifier, "a", null, 2),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 2 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                             ) { Line = 2 },
                             new ConditionalExpression(
                                 new BinaryExpression(
@@ -230,14 +230,14 @@ public static class Conditional
                                         new Token(TokenKind.Identifier, "a", null, 3)
                                     ) { Line = 3 },
                                     new Token(TokenKind.NotEqual, "!=", null, 3),
-                                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 3 }
+                                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                                 ) { Line = 3 },
                                 new BlockExpression(new TestGuidProvider().Get(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(
                                             new Token(TokenKind.Identifier, "a", null, 4),
-                                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 4 }
+                                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                         ) { Line = 4 }
                                     }
                                 ) { Line = 3 },
@@ -254,7 +254,7 @@ public static class Conditional
             "nestedElse", new List<Expression?>
             {
                 new ConditionalExpression(
-                    new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                     new BlockExpression(new TestGuidProvider().Get(), 
                         new List<Expression?>()) {Line = 1},
                     new BlockExpression(new TestGuidProvider().Get(),
@@ -263,7 +263,7 @@ public static class Conditional
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Int, "int", null, 3),
                                 new Token(TokenKind.Identifier, "a", null, 3),
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 3 }
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                             ) { Line = 3},
                             new ConditionalExpression(
                                 new BinaryExpression(
@@ -271,14 +271,14 @@ public static class Conditional
                                         new Token(TokenKind.Identifier, "a", null, 4)
                                     ) { Line = 4 },
                                     new Token(TokenKind.DoubleEqual, "==", null, 4),
-                                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 4 }
+                                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                 ) { Line = 4 },
                                 new BlockExpression(new TestGuidProvider().Get(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(
                                             new Token(TokenKind.Identifier, "a", null, 5),
-                                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 5 }
+                                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 5 }
                                         ) { Line = 5 }
                                     }
                                 ) { Line = 4 },

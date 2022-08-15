@@ -59,21 +59,21 @@ public class InterpreterShould
     // this is one of the dumbest methods i've ever written
     private void DefineGlobals()
     {
-        _environment.Define("intVar", ExpressionType.Integer);
-        _environment.Define("i", ExpressionType.Integer);
-        _environment.Define("j", ExpressionType.Integer);
+        _environment.Define("intVar", new WarblerType(ExpressionType.Integer));
+        _environment.Define("i", new WarblerType(ExpressionType.Integer));
+        _environment.Define("j", new WarblerType(ExpressionType.Integer));
 
         foreach (var name in Variable.DeclarationNames)
         {
             var type = name[0] == 'i'
-                ? ExpressionType.Integer
+                ? new WarblerType(ExpressionType.Integer)
                 : name.Substring(0, name.IndexOf('D')) switch
                 {
-                    "double" => ExpressionType.Double,
-                    "bool" => ExpressionType.Boolean,
-                    "char" => ExpressionType.Char,
-                    "string" => ExpressionType.String,
-                    _ => ExpressionType.Integer
+                    "double" => new WarblerType(ExpressionType.Double),
+                    "bool" => new WarblerType(ExpressionType.Boolean),
+                    "char" => new WarblerType(ExpressionType.Char),
+                    "string" => new WarblerType(ExpressionType.String),
+                    _ => new WarblerType(ExpressionType.Integer)
                 };
 
             _environment.Define(name, type);
@@ -83,11 +83,11 @@ public class InterpreterShould
         {
             var type = name.Substring(8).ToLower() switch
             {
-                "double" => ExpressionType.Double,
-                "bool" => ExpressionType.Boolean,
-                "char" => ExpressionType.Char,
-                "string" => ExpressionType.String,
-                _ => ExpressionType.Integer
+                "double" => new WarblerType(ExpressionType.Double),
+                "bool" => new WarblerType(ExpressionType.Boolean),
+                "char" => new WarblerType(ExpressionType.Char),
+                "string" => new WarblerType(ExpressionType.String),
+                _ => new WarblerType(ExpressionType.Integer)
             };
 
             _environment.Define(name, type);
@@ -139,14 +139,14 @@ public class InterpreterShould
     public void HandleDivisionByZero()
     {
         var divByZero = new BinaryExpression(
-            new LiteralExpression(39) { Type = ExpressionType.Integer, Line = 1 },
+            new LiteralExpression(39) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
             new Token(TokenKind.Slash, "/", null, 1),
             new BinaryExpression(
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                 new Token(TokenKind.Minus, "-", null, 1),
-                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
-            ) { Type = ExpressionType.Integer, Line = 1 }
-        ) { Type = ExpressionType.Integer, Line = 1 };
+                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+        ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 };
 
         var value = _interpreter.Interpret(divByZero);
 
@@ -240,16 +240,16 @@ public class InterpreterShould
         _environment.NewSubEnvironment(outerBlockId);
         _environment
             .GetSubEnvironment(outerBlockId)
-            .Define("block", ExpressionType.Integer);
+            .Define("block", new WarblerType(ExpressionType.Integer));
         _environment
             .GetSubEnvironment(outerBlockId)
-            .Define("block2", ExpressionType.Integer);
+            .Define("block2", new WarblerType(ExpressionType.Integer));
 
         _environment.GetSubEnvironment(outerBlockId).NewSubEnvironment(innerBlockId);
         _environment
             .GetSubEnvironment(outerBlockId)
             .GetSubEnvironment(innerBlockId)
-            .Define("block", ExpressionType.Integer);
+            .Define("block", new WarblerType(ExpressionType.Integer));
 
         var expected = Block.Outputs[inputName];
 

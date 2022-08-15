@@ -10,7 +10,10 @@ internal static class ExpressionsGenerator
         var path = Path.Join(outputDir, baseName + ".cs");
         File.Delete(path);
         using StreamWriter file = new(path, append: true);
-
+        
+        file.WriteLine("using Warbler.Utils;");
+        file.WriteLine();
+        
         file.WriteLine("namespace Warbler.Expressions;");
         file.WriteLine();
 
@@ -117,7 +120,7 @@ internal static class ExpressionsGenerator
 
     private static List<Tuple<string, string>> GetFieldData(string fieldList)
     {
-        var fields = fieldList.Split(", ");
+        var fields = fieldList.Split(" # ");
         var fieldTypes = new List<string>();
         var fieldNames = new List<string>();
         foreach (var field in fields)

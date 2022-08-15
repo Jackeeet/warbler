@@ -35,4 +35,7 @@
     <data name="VariableAssignmentMismatch" xml:space="preserve">
         <value>Ожидается выражение типа {0}</value>
     </data>
+    <data name="ConditionBranchesMismatch" xml:space="preserve">
+        <value>Ветви условного выражения должны иметь один и тот же тип</value>
+    </data>
 </root>

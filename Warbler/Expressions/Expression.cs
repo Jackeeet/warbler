@@ -4,7 +4,7 @@ namespace Warbler.Expressions;
 
 public abstract class Expression
 {
-    public ExpressionType Type { get; set; }
+    public WarblerType Type { get; set; }
 
     public int Line { get; init; }
 
@@ -344,5 +344,77 @@ public class WhileLoopExpression : Expression
     public override int GetHashCode()
     {
         return HashCode.Combine(Condition, Actions);
+    }
+}
+
+public class FunctionDefinitionExpression : Expression
+{
+    public readonly Token Name;
+    public readonly List<Tuple<Token, Token>> Parameters;
+    public readonly Token ReturnType;
+    public readonly BlockExpression Body;
+
+    public FunctionDefinitionExpression(Token name, List<Tuple<Token, Token>> parameters, Token returntype,
+        BlockExpression body)
+    {
+        Name = name;
+        Parameters = parameters;
+        ReturnType = returntype;
+        Body = body;
+    }
+
+    public override T Accept<T>(IExpressionVisitor<T> visitor)
+    {
+        return visitor.VisitFunctionDefinitionExpression(this);
+    }
+
+    protected bool Equals(FunctionDefinitionExpression other)
+    {
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && Name.Equals(other.Name)
+               && Parameters.AllEquals(other.Parameters)
+               && ReturnType.Equals(other.ReturnType) && Body.Equals(other.Body);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is FunctionDefinitionExpression other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name, Parameters, ReturnType, Body);
+    }
+}
+
+public class CallExpression : Expression
+{
+    public readonly Expression Called;
+    public readonly List<Expression> Args;
+
+    public CallExpression(Expression called, List<Expression> args)
+    {
+        Called = called;
+        Args = args;
+    }
+
+    public override T Accept<T>(IExpressionVisitor<T> visitor)
+    {
+        return visitor.VisitCallExpression(this);
+    }
+
+    protected bool Equals(CallExpression other)
+    {
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && Called.Equals(other.Called) &&
+               Args.AllEquals(other.Args);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CallExpression other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Called, Args);
     }
 }

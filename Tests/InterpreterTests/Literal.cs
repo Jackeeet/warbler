@@ -18,11 +18,11 @@ public static class Literal
 
     public static readonly Dictionary<string, Expression> Inputs = new()
     {
-        { "int", new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 } },
-        { "double", new LiteralExpression(1.2d) { Type = ExpressionType.Double, Line = 1 } },
-        { "bool", new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 } },
-        { "char", new LiteralExpression('a') { Type = ExpressionType.Char, Line = 1 } },
-        { "string", new LiteralExpression("abc") { Type = ExpressionType.String, Line = 1 } },
+        { "int", new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 } },
+        { "double", new LiteralExpression(1.2d) { Type = new WarblerType(ExpressionType.Double), Line = 1 } },
+        { "bool", new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 } },
+        { "char", new LiteralExpression('a') { Type = new WarblerType(ExpressionType.Char), Line = 1 } },
+        { "string", new LiteralExpression("abc") { Type = new WarblerType(ExpressionType.String), Line = 1 } },
     };
 
     public static readonly Dictionary<string, object?> Outputs = new()

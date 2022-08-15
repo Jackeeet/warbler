@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Tests.Mocks;
 using Warbler.Parser;
 using Warbler.Scanner;
@@ -86,6 +87,34 @@ public class ParserShould
         _errorReporter.Reset();
         var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
         var expected = WhileLoop.Outputs[inputName];
+
+        var actual = parser.Parse();
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(Function), nameof(Function.ValidNames))]
+    public void ParseValidFunctions(string inputName)
+    {
+        var tokens = new WarblerScanner(Function.Inputs[inputName], _errorReporter).Scan();
+        _errorReporter.Reset();
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
+        var expected = Function.Outputs[inputName];
+
+        var actual = parser.Parse();
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(Call), nameof(Call.ValidNames))]
+    public void ParseValidCallExpressions(string inputName)
+    {
+        var tokens = new WarblerScanner(Call.Inputs[inputName], _errorReporter).Scan();
+        _errorReporter.Reset();
+        var parser = new WarblerParser(tokens, _errorReporter, new TestGuidProvider());
+        var expected = Call.Outputs[inputName];
 
         var actual = parser.Parse();
 

@@ -144,19 +144,19 @@ public static class Basic
             {
                 new TernaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.NotEqual, "!=", null, 1),
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Minus, "-", null, 1),
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }
@@ -167,16 +167,16 @@ public static class Basic
             new List<Expression?>
             {
                 new TernaryExpression(
-                    new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
+                    new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                     new TernaryExpression(
-                        new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 },
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new TernaryExpression(
-                        new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
-                        new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                        new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }
@@ -187,9 +187,9 @@ public static class Basic
             new List<Expression?>
             {
                 new TernaryExpression(
-                    new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 },
-                    new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
-                    new LiteralExpression(0) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
+                    new LiteralExpression(0) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -199,15 +199,15 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.LessThan, "<", null, 1),
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.DoubleEqual, "==", null, 1),
                     new BinaryExpression(
-                        new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
+                        new LiteralExpression("a") { Type = new WarblerType(ExpressionType.String), Line = 1 },
                         new Token(TokenKind.LessThan, "<", null, 1),
-                        new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                        new LiteralExpression("b") { Type = new WarblerType(ExpressionType.String), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }
@@ -217,9 +217,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.NotEqual, "!=", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -228,9 +228,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.DoubleEqual, "==", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -240,12 +240,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.LessEqual, "<=", null, 1),
-                    new LiteralExpression(5) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(5) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -254,9 +254,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
+                    new LiteralExpression("a") { Type = new WarblerType(ExpressionType.String), Line = 1 },
                     new Token(TokenKind.LessEqual, "<=", null, 1),
-                    new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                    new LiteralExpression("b") { Type = new WarblerType(ExpressionType.String), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -265,9 +265,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.GreaterEqual, ">=", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -276,9 +276,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.LessThan, "<", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -287,9 +287,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.GreaterThan, ">", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -300,21 +300,21 @@ public static class Basic
                 new BinaryExpression(
                     new UnaryExpression(
                         new Token(TokenKind.Minus, "-", null, 1),
-                        new LiteralExpression(5) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(5) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
                     new BinaryExpression(
                         new BinaryExpression(
                             new BinaryExpression(
-                                new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                                 new Token(TokenKind.Plus, "+", null, 1),
-                                new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                             ) { Line = 1 },
                             new Token(TokenKind.Hat, "^", null, 1),
-                            new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 },
                         new Token(TokenKind.Asterisk, "*", null, 1),
-                        new LiteralExpression(4) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(4) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }
@@ -325,12 +325,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
+                        new LiteralExpression("a") { Type = new WarblerType(ExpressionType.String), Line = 1 },
                         new Token(TokenKind.DoublePlus, "++", null, 1),
-                        new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                        new LiteralExpression("b") { Type = new WarblerType(ExpressionType.String), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.DoublePlus, "++", null, 1),
-                    new LiteralExpression("c") { Type = ExpressionType.String, Line = 1 }
+                    new LiteralExpression("c") { Type = new WarblerType(ExpressionType.String), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -339,9 +339,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression("a") { Type = ExpressionType.String, Line = 1 },
+                    new LiteralExpression("a") { Type = new WarblerType(ExpressionType.String), Line = 1 },
                     new Token(TokenKind.DoublePlus, "++", null, 1),
-                    new LiteralExpression("b") { Type = ExpressionType.String, Line = 1 }
+                    new LiteralExpression("b") { Type = new WarblerType(ExpressionType.String), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -352,10 +352,10 @@ public static class Basic
                 new BinaryExpression(
                     new UnaryExpression(
                         new Token(TokenKind.Minus, "-", null, 1),
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -365,12 +365,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Minus, "-", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -379,9 +379,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -391,12 +391,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -405,9 +405,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -417,12 +417,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Percent, "%", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Percent, "%", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -431,9 +431,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Percent, "%", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -443,12 +443,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Slash, "/", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Slash, "/", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -457,9 +457,9 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Slash, "/", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -469,12 +469,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(1) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Asterisk, "*", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Asterisk, "*", null, 1),
-                    new LiteralExpression(3) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -483,41 +483,51 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Asterisk, "*", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
         /* ------------------ */
         {
-            "intLiteral", new List<Expression?> { new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 } }
+            "intLiteral",
+            new List<Expression?>
+                { new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 } }
         },
         {
             "doubleLiteral",
-            new List<Expression?> { new LiteralExpression(3.4d) { Type = ExpressionType.Double, Line = 1 } }
+            new List<Expression?>
+                { new LiteralExpression(3.4d) { Type = new WarblerType(ExpressionType.Double), Line = 1 } }
         },
         {
             "stringLiteral",
-            new List<Expression?> { new LiteralExpression("hello birds") { Type = ExpressionType.String, Line = 1 } }
+            new List<Expression?>
+                { new LiteralExpression("hello birds") { Type = new WarblerType(ExpressionType.String), Line = 1 } }
         },
         {
-            "charLiteral", new List<Expression?> { new LiteralExpression('a') { Type = ExpressionType.Char, Line = 1 } }
+            "charLiteral",
+            new List<Expression?>
+                { new LiteralExpression('a') { Type = new WarblerType(ExpressionType.Char), Line = 1 } }
         },
         {
-            "true", new List<Expression?> { new LiteralExpression(true) { Type = ExpressionType.Boolean, Line = 1 } }
+            "true",
+            new List<Expression?>
+                { new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 } }
         },
         {
-            "false", new List<Expression?> { new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 } }
+            "false",
+            new List<Expression?>
+                { new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 } }
         },
         {
             "grouping",
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -525,9 +535,9 @@ public static class Basic
             "raiseToPower", new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Hat, "^", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -537,12 +547,12 @@ public static class Basic
             {
                 new BinaryExpression(
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     new Token(TokenKind.Hat, "^", null, 1),
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -551,12 +561,12 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Hat, "^", null, 1),
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }
@@ -566,15 +576,15 @@ public static class Basic
             new List<Expression?>
             {
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Hat, "^", null, 1),
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Hat, "^", null, 1),
                         new BinaryExpression(
-                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                             new Token(TokenKind.Hat, "^", null, 1),
-                            new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                            new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
@@ -586,7 +596,7 @@ public static class Basic
             {
                 new UnaryExpression(
                     new Token(TokenKind.Minus, "-", null, 1),
-                    new LiteralExpression(123) { Type = ExpressionType.Integer, Line = 1 }
+                    new LiteralExpression(123) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -596,7 +606,7 @@ public static class Basic
             {
                 new UnaryExpression(
                     new Token(TokenKind.Not, "!", null, 1),
-                    new LiteralExpression(false) { Type = ExpressionType.Boolean, Line = 1 }
+                    new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
                 ) { Line = 1 }
             }
         },
@@ -607,9 +617,9 @@ public static class Basic
                 new UnaryExpression(
                     new Token(TokenKind.Minus, "-", null, 1),
                     new BinaryExpression(
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 },
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                         new Token(TokenKind.Plus, "+", null, 1),
-                        new LiteralExpression(2) { Type = ExpressionType.Integer, Line = 1 }
+                        new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 }
                 ) { Line = 1 }
             }

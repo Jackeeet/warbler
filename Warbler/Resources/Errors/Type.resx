@@ -47,4 +47,7 @@
     <data name="VariableAssignmentMismatch" xml:space="preserve">
         <value>Expected an expression of type {0}</value>
     </data>
+    <data name="ConditionBranchesMismatch" xml:space="preserve">
+        <value>Conditional expression branches must have the same type</value>
+    </data>
 </root>
