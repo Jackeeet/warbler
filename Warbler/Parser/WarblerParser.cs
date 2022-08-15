@@ -14,61 +14,71 @@ public class WarblerParser
     private readonly IGuidProvider _guidProvider;
     private int _current;
 
+    private delegate Expression TopLevelExprHandler();
+
+    private readonly Dictionary<TokenKind, TopLevelExprHandler> _topLevelExprHandlers;
+
     public WarblerParser(List<Token> tokens, IErrorReporter errorReporter, IGuidProvider guidProvider)
     {
         _tokens = tokens;
         _errorReporter = errorReporter;
         _guidProvider = guidProvider;
         _current = 0;
+
+        _topLevelExprHandlers = new Dictionary<TokenKind, TopLevelExprHandler>()
+        {
+            { TokenKind.While, ParseWhileLoop },
+            { TokenKind.If, ParseConditional },
+            { TokenKind.RightBird, ParseBlock }
+        };
     }
 
     public List<Expression> Parse()
     {
-        var expressions = new List<Expression?>();
+        var expressions = new List<Expression>();
         while (!IsAtEnd)
         {
-            expressions.Add(ParseWhileLoop());
+            try
+            {
+                expressions.Add(ParseProgram());
+            }
+            catch (ParseError)
+            {
+                Synchronise();
+            }
         }
 
-        return expressions.Where(e => e is not null).ToList()!;
+        return expressions;
     }
 
-    private Expression? ParseWhileLoop()
+    private Expression ParseProgram()
     {
-        try
-        {
-            if (Matching(TokenKind.While))
-            {
-                var line = PreviousToken.LineNumber;
-                var condition = ParseBasicExpression();
-                var actions = ParseBlock();
+        var expressionKind = CurrentToken.Kind;
+        return _topLevelExprHandlers.ContainsKey(expressionKind)
+            ? _topLevelExprHandlers[expressionKind]()
+            : ParseExpression();
+    }
 
-                return new WhileLoopExpression(condition, actions) { Line = line };
-            }
+    private Expression ParseWhileLoop()
+    {
+        var line = CurrentToken.LineNumber;
+        NextToken();
+        var condition = ParseBasicExpression();
+        var actions = ParseBlock();
 
-            return ParseConditional();
-        }
-        catch (ParseError)
-        {
-            Synchronise();
-            return null;
-        }
+        return new WhileLoopExpression(condition, actions) { Line = line };
     }
 
     private Expression ParseConditional()
     {
-        if (Matching(TokenKind.If))
-        {
-            var line = PreviousToken.LineNumber;
-            var condition = ParseBasicExpression();
-            Consume(TokenKind.Then, "Expected \"then\" after condition");
-            var thenBranch = ParseBlock();
-            var elseBranch = Matching(TokenKind.Else) ? ParseConditional() : null;
+        var line = CurrentToken.LineNumber;
+        NextToken();
+        var condition = ParseBasicExpression();
+        Consume(TokenKind.Then, "Expected \"then\" after condition");
+        var thenBranch = ParseBlock();
+        var elseBranch = Matching(TokenKind.Else) ? ParseProgram() : null;
 
-            return new ConditionalExpression(condition, thenBranch, elseBranch) { Line = line };
-        }
-
-        return ParseBlock();
+        return new ConditionalExpression(condition, thenBranch, elseBranch) { Line = line };
     }
 
     private Expression ParseBlock()
@@ -78,7 +88,7 @@ public class WarblerParser
             var line = PreviousToken.LineNumber;
             var expressions = new List<Expression?>();
             while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
-                expressions.Add(ParseWhileLoop());
+                expressions.Add(ParseProgram());
 
             Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
             return new BlockExpression(_guidProvider.Get(), expressions) { Line = line };
@@ -350,10 +360,8 @@ public class WarblerParser
                 case TokenKind.ForEach:
                 case TokenKind.Func:
                 case TokenKind.In:
-                case TokenKind.Inst:
                 case TokenKind.Int:
                 case TokenKind.Of:
-                case TokenKind.Print:
                 case TokenKind.Ret:
                 case TokenKind.String:
                 case TokenKind.Comma:

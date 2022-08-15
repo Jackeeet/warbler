@@ -118,8 +118,8 @@ public class ScannerShould
         { "stringWithUnsupportedChar", "\"abcdf#2234\"" },
         { "unsupportedInputChar", "#" },
         { "multilineString", "\"first line\nsecond line\"" },
-        { "functionParams", "func Run(int? first, bool second)" },
-        { "controlFlow", "if 10 % 2 == 0 then :> print 2 <: else :> print 1 <:" },
+        { "functionParams", "\\ Run(int? first, bool second)" },
+        { "controlFlow", "if 10 % 2 == 0 then :> 2 <: else :> 1 <:" },
         { "simpleSum", "2 + 3" },
         { "simpleDifference", "3 - 1" },
         { "negativeNum", "-1" },
@@ -372,12 +372,10 @@ public class ScannerShould
                 new(TokenKind.IntLiteral, "0", 0, 1),
                 new(TokenKind.Then, "then", null, 1),
                 new(TokenKind.RightBird, ":>", null, 1),
-                new(TokenKind.Print, "print", null, 1),
                 new(TokenKind.IntLiteral, "2", 2, 1),
                 new(TokenKind.LeftBird, "<:", null, 1),
                 new(TokenKind.Else, "else", null, 1),
                 new(TokenKind.RightBird, ":>", null, 1),
-                new(TokenKind.Print, "print", null, 1),
                 new(TokenKind.IntLiteral, "1", 1, 1),
                 new(TokenKind.LeftBird, "<:", null, 1),
                 new(TokenKind.Eof, "", null, 1),
@@ -386,7 +384,7 @@ public class ScannerShould
         {
             "functionParams", new List<Token>
             {
-                new(TokenKind.Func, "func", null, 1),
+                new(TokenKind.Func, "\\", null, 1),
                 new(TokenKind.Identifier, "Run", null, 1),
                 new(TokenKind.LeftBracket, "(", null, 1),
                 new(TokenKind.Int, "int", null, 1),

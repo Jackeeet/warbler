@@ -53,12 +53,10 @@ public enum TokenKind
     For,
     ForEach,
     In,
-    Func,
-    Def,
-    Type,
-    Inst,
+    Func,           // \ for function definition
+    Def,            // implicit type variable
+    Type,           // user-defined types
     Ret,
-    Print,
     And,
     Or,
     True,

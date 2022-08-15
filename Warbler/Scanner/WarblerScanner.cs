@@ -9,7 +9,6 @@ namespace Warbler.Scanner;
 public class WarblerScanner
 {
     private delegate void TokenHandler(char ch);
-
     private delegate bool TokenPredicate(char ch);
 
     private readonly List<Tuple<TokenPredicate, TokenHandler>> _tokenHandlers;
@@ -24,6 +23,7 @@ public class WarblerScanner
         { '?', TokenKind.Question },
         { '(', TokenKind.LeftBracket },
         { ')', TokenKind.RightBracket },
+        { '\\', TokenKind.Func }
     };
 
     private static readonly Dictionary<char, Tuple<char, TokenKind, TokenKind>> doubleTokenChars = new()
@@ -70,12 +70,9 @@ public class WarblerScanner
         { "for", TokenKind.For },
         { "foreach", TokenKind.ForEach },
         { "in", TokenKind.In },
-        { "func", TokenKind.Func },
         { "def", TokenKind.Def },
         { "type", TokenKind.Type },
-        { "inst", TokenKind.Inst },
         { "ret", TokenKind.Ret },
-        { "print", TokenKind.Print },
         { "and", TokenKind.And },
         { "or", TokenKind.Or },
         { "true", TokenKind.True },
