@@ -16,9 +16,9 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Syntax.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-      <EmbeddedResource Update="Resources\Errors\Type.resx">
+      <EmbeddedResource Update="Resources\Errors\Checker.resx">
         <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Type.Designer.cs</LastGenOutput>
+        <LastGenOutput>Checker.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Resources\Errors\Runtime.resx">
         <Generator>ResXFileCodeGenerator</Generator>
@@ -36,10 +36,10 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Syntax.resx</DependentUpon>
       </Compile>
-      <Compile Update="Resources\Errors\Type.Designer.cs">
+      <Compile Update="Resources\Errors\Checker.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
-        <DependentUpon>Type.resx</DependentUpon>
+        <DependentUpon>Checker.resx</DependentUpon>
       </Compile>
       <Compile Update="Resources\Errors\Runtime.Designer.cs">
         <DesignTime>True</DesignTime>

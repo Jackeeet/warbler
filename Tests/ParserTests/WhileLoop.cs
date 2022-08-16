@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.ParserTests;
 
@@ -60,7 +62,7 @@ public static class WhileLoop
                         new Token(TokenKind.NotEqual, "!=", null, 1),
                         new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new AssignmentExpression(
@@ -88,7 +90,7 @@ public static class WhileLoop
                         new Token(TokenKind.LessThan, "<", null, 1),
                         new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new AssignmentExpression(
@@ -120,7 +122,7 @@ public static class WhileLoop
                         new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
                         new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -138,7 +140,7 @@ public static class WhileLoop
             {
                 new WhileLoopExpression(
                     new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new WhileLoopExpression(
@@ -148,7 +150,7 @@ public static class WhileLoop
                                     new LiteralExpression(10)
                                         { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                                 ) { Line = 1 },
-                                new BlockExpression(new TestGuidProvider().Get(),
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(

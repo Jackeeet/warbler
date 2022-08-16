@@ -38,4 +38,16 @@
     <data name="ConditionBranchesMismatch" xml:space="preserve">
         <value>Ветви условного выражения должны иметь один и тот же тип</value>
     </data>
+    <data name="FunctionSignatureMismatch" xml:space="preserve">
+        <value>Тип тела функции не совпадает с типом возвращаемого значения этой функции</value>
+    </data>
+    <data name="CallUncallable" xml:space="preserve">
+        <value>Нельзя вызвать {0}</value>
+    </data>
+    <data name="ArgumentCountMismatch" xml:space="preserve">
+        <value>Ожидается {0} аргументов функции</value>
+    </data>
+    <data name="ArgumentTypeMismatch" xml:space="preserve">
+        <value>Ожидается аргумент типа {0}</value>
+    </data>
 </root>

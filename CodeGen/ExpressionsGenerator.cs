@@ -10,16 +10,18 @@ internal static class ExpressionsGenerator
         var path = Path.Join(outputDir, baseName + ".cs");
         File.Delete(path);
         using StreamWriter file = new(path, append: true);
-        
-        file.WriteLine("using Warbler.Utils;");
+
+        file.WriteLine("using Warbler.Utils.General;");
+        file.WriteLine("using Warbler.Utils.Id;");
+        file.WriteLine("using Warbler.Utils.Token;");
         file.WriteLine();
-        
+
         file.WriteLine("namespace Warbler.Expressions;");
         file.WriteLine();
 
         file.WriteLine($"public abstract class {baseName}");
         file.WriteLine("{");
-        file.WriteLine("\tpublic ExpressionType Type { get; set; }");
+        file.WriteLine("\tpublic WarblerType Type { get; set; }");
         file.WriteLine();
         file.WriteLine("\tpublic int Line { get; init; }");
         file.WriteLine();

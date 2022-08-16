@@ -2,7 +2,9 @@
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
-using Warbler.Utils;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 using Syntax = Warbler.Resources.Errors.Syntax;
 
 namespace Warbler.Parser;
@@ -11,23 +13,32 @@ public class WarblerParser
 {
     private readonly List<Token> _tokens;
     private readonly IErrorReporter _errorReporter;
-    private readonly IGuidProvider _guidProvider;
+    private readonly IIdProvider _idProvider;
     private int _current;
 
     private delegate Expression TopLevelExprHandler();
 
     private readonly Dictionary<TokenKind, TopLevelExprHandler> _topLevelExprHandlers;
 
-    public WarblerParser(List<Token> tokens, IErrorReporter errorReporter, IGuidProvider guidProvider)
+    private static readonly Dictionary<TokenKind, ExpressionType> expressionTypes = new()
+    {
+        { TokenKind.Int, ExpressionType.Integer },
+        { TokenKind.Double, ExpressionType.Double },
+        { TokenKind.Bool, ExpressionType.Boolean },
+        { TokenKind.Char, ExpressionType.Char },
+        { TokenKind.String, ExpressionType.String },
+    };
+
+    public WarblerParser(List<Token> tokens, IErrorReporter errorReporter, IIdProvider idProvider)
     {
         _tokens = tokens;
         _errorReporter = errorReporter;
-        _guidProvider = guidProvider;
+        _idProvider = idProvider;
         _current = 0;
 
-        _topLevelExprHandlers = new Dictionary<TokenKind, TopLevelExprHandler>()
+        _topLevelExprHandlers = new Dictionary<TokenKind, TopLevelExprHandler>
         {
-            { TokenKind.Func, ParseFunctionDeclaration },
+            { TokenKind.FuncDef, ParseFunctionDeclaration },
             { TokenKind.While, ParseWhileLoop },
             { TokenKind.If, ParseConditional },
             { TokenKind.RightBird, ParseBlock }
@@ -65,26 +76,61 @@ public class WarblerParser
         NextToken();
         var line = CurrentToken.LineNumber;
         var name = Consume(TokenKind.Identifier, Syntax.ExpectedIdentifier);
+        
         Consume(TokenKind.LeftBracket, Syntax.ExpectedOpeningBracket);
+        var parameters = ParseFunctionParameters();
+        Consume(TokenKind.RightBracket, Syntax.ExpectedClosingParamsBracket);
+        
+        var returnType = ParseType();
+        var body = (BlockExpression)ParseBlock();
 
-        var parameters = new List<Tuple<Token, Token>>();
+        return new FunctionDeclarationExpression(
+            _idProvider.GetEnvironmentId(), name, parameters, returnType, body) { Line = line };
+    }
+
+    private List<Tuple<TypeData, Token>> ParseFunctionParameters()
+    {
+        var parameters = new List<Tuple<TypeData, Token>>();
         if (!HasKind(TokenKind.RightBracket))
         {
             do
             {
-                var paramType = ConsumeAny(Syntax.ExpectedParameterType,
-                    TokenKind.Int, TokenKind.Double, TokenKind.Bool, TokenKind.Char, TokenKind.String);
+                var paramType = ParseType();
                 var paramName = Consume(TokenKind.Identifier, Syntax.ExpectedParameterName);
                 parameters.Add(Tuple.Create(paramType, paramName));
             } while (Matching(TokenKind.Comma));
         }
 
-        Consume(TokenKind.RightBracket, Syntax.ExpectedClosingParamsBracket);
-        var returnType = ConsumeAny(Syntax.ExpectedReturnType,
-            TokenKind.Int, TokenKind.Double, TokenKind.Bool, TokenKind.Char, TokenKind.String);
-        var body = (BlockExpression)ParseBlock();
+        return parameters;
+    }
 
-        return new FunctionDefinitionExpression(name, parameters, returnType, body) { Line = line };
+    private TypeData ParseType()
+    {
+        if (Matching(TokenKind.FuncType))
+            return ParseTypeSignature();
+
+        if (Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
+                TokenKind.Char, TokenKind.String))
+        {
+            return new TypeData(expressionTypes[PreviousToken.Kind], null, null);
+        }
+
+        throw HandleParseError(PreviousToken, "Expected a type token");
+    }
+
+    private TypeData ParseTypeSignature()
+    {
+        var typeParams = new List<TypeData>();
+        Consume(TokenKind.LeftBracket, Syntax.ExpectedOpeningBracket);
+        do
+        {
+            typeParams.Add(ParseType());
+        } while (Matching(TokenKind.Comma));
+
+        Consume(TokenKind.RightBracket, Syntax.ExpectedClosingBracket);
+        Consume(TokenKind.Colon, Syntax.ExpectedColon);
+        var returnType = ParseType();
+        return new TypeData(ExpressionType.Function, typeParams, returnType);
     }
 
     private Expression ParseWhileLoop()
@@ -111,29 +157,24 @@ public class WarblerParser
 
     private Expression ParseBlock()
     {
-        if (Matching(TokenKind.RightBird))
-        {
-            var line = PreviousToken.LineNumber;
-            var expressions = new List<Expression?>();
-            while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
-                expressions.Add(ParseProgram());
+        if (!Matching(TokenKind.RightBird)) 
+            return ParseExpression();
+        
+        var line = PreviousToken.LineNumber;
+        var expressions = new List<Expression?>();
+        while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
+            expressions.Add(ParseProgram());
 
-            Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
-            return new BlockExpression(_guidProvider.Get(), expressions) { Line = line };
-        }
-
-        return ParseExpression();
+        Consume(TokenKind.LeftBird, Syntax.UnterminatedBlock);
+        return new BlockExpression(_idProvider.GetEnvironmentId(), expressions) { Line = line };
     }
 
     private Expression ParseExpression()
     {
-        if (Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
-                TokenKind.Char, TokenKind.String, TokenKind.Def))
-        {
-            return ParseVariableDeclaration();
-        }
-
-        return ParseAssignment();
+        return Matching(TokenKind.Int, TokenKind.Double, TokenKind.Bool,
+            TokenKind.Char, TokenKind.String, TokenKind.Def)
+            ? ParseVariableDeclaration()
+            : ParseAssignment();
     }
 
     private Expression ParseAssignment()
@@ -394,17 +435,6 @@ public class WarblerParser
         throw HandleParseError(CurrentToken, message);
     }
 
-    private Token ConsumeAny(string message, params TokenKind[] kinds)
-    {
-        foreach (var kind in kinds)
-        {
-            if (HasKind(kind))
-                return NextToken();
-        }
-
-        throw HandleParseError(CurrentToken, message);
-    }
-
     private ParseError HandleParseError(Token token, string message)
     {
         _errorReporter.ErrorAtToken(token, message);
@@ -428,11 +458,10 @@ public class WarblerParser
                 case TokenKind.Double:
                 case TokenKind.For:
                 case TokenKind.ForEach:
-                case TokenKind.Func:
+                case TokenKind.FuncDef:
                 case TokenKind.In:
                 case TokenKind.Int:
                 case TokenKind.Of:
-                // case TokenKind.Ret:
                 case TokenKind.String:
                 case TokenKind.Comma:
                     return;

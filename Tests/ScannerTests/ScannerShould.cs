@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Tests.Mocks;
 using Warbler.Expressions;
 using Warbler.Scanner;
+using Warbler.Utils.Token;
 
 namespace Tests.ScannerTests;
 
@@ -384,7 +385,7 @@ public class ScannerShould
         {
             "functionParams", new List<Token>
             {
-                new(TokenKind.Func, "\\", null, 1),
+                new(TokenKind.FuncDef, "\\", null, 1),
                 new(TokenKind.Identifier, "Run", null, 1),
                 new(TokenKind.LeftBracket, "(", null, 1),
                 new(TokenKind.Int, "int", null, 1),

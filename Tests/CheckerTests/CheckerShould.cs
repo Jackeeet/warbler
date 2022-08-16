@@ -4,6 +4,8 @@ using Tests.Mocks;
 using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.TypeChecker;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.CheckerTests;
 
@@ -11,6 +13,7 @@ namespace Tests.CheckerTests;
 public class CheckerShould
 {
     private TestReporter _errorReporter = null!;
+    private TestIdProvider _idProvider = null!;
     private WarblerEnvironment _environment = null!;
     private WarblerChecker? _checker;
 
@@ -18,6 +21,7 @@ public class CheckerShould
     public void BeforeFixture()
     {
         _errorReporter = new TestReporter();
+        _idProvider = new TestIdProvider();
     }
 
     [SetUp]
@@ -26,7 +30,7 @@ public class CheckerShould
         _errorReporter.Reset();
         _environment = new WarblerEnvironment();
         PredefineVariables();
-        _checker = new WarblerChecker(_errorReporter, _environment);
+        _checker = new WarblerChecker(_errorReporter, _environment, _idProvider);
     }
 
     private void PredefineVariables()

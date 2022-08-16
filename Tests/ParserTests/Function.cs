@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.ParserTests;
 
@@ -70,22 +72,23 @@ public class Function
         {
             "empty", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(
+                    new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "empty", null, 1),
-                    new List<Tuple<Token, Token>>(),
-                    new Token(TokenKind.Int, "int", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>()) { Line = 1 }
+                    new List<Tuple<TypeData, Token>>(),
+                    new TypeData(ExpressionType.Integer, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>()) { Line = 1 }
                 ) { Line = 1 }
             }
         },
         {
             "noParams", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "func", null, 1),
-                    new List<Tuple<Token, Token>>(),
-                    new Token(TokenKind.Int, "int", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new List<Tuple<TypeData, Token>>(),
+                    new TypeData(ExpressionType.Integer, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
                             new LiteralExpression(5) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         }
@@ -96,16 +99,18 @@ public class Function
         {
             "singleParam", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
-                    new Token(TokenKind.Identifier, "increment", null, 1), new List<Tuple<Token, Token>>
+                new FunctionDeclarationExpression(
+                    new TestIdProvider().GetEnvironmentId(),
+                    new Token(TokenKind.Identifier, "increment", null, 1),
+                    new List<Tuple<TypeData, Token>>
                     {
                         Tuple.Create(
-                            new Token(TokenKind.Int, "int", null, 1),
+                            new TypeData(ExpressionType.Integer, null, null),
                             new Token(TokenKind.Identifier, "n", null, 1)
                         )
                     },
-                    new Token(TokenKind.Int, "int", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new TypeData(ExpressionType.Integer, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
                             new BinaryExpression(
                                 new VariableExpression(
@@ -122,29 +127,29 @@ public class Function
         {
             "multipleParams", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "concat", null, 1),
-                    new List<Tuple<Token, Token>>
+                    new List<Tuple<TypeData, Token>>
                     {
                         Tuple.Create(
-                            new Token(TokenKind.String, "string", null, 1),
+                            new TypeData(ExpressionType.String, null, null),
                             new Token(TokenKind.Identifier, "a", null, 1)
                         ),
                         Tuple.Create(
-                            new Token(TokenKind.String, "string", null, 1),
+                            new TypeData(ExpressionType.String, null, null),
                             new Token(TokenKind.Identifier, "b", null, 1)
                         ),
                         Tuple.Create(
-                            new Token(TokenKind.String, "string", null, 1),
+                            new TypeData(ExpressionType.String, null, null),
                             new Token(TokenKind.Identifier, "c", null, 1)
                         ),
                         Tuple.Create(
-                            new Token(TokenKind.String, "string", null, 1),
+                            new TypeData(ExpressionType.String, null, null),
                             new Token(TokenKind.Identifier, "d", null, 1)
                         ),
                     },
-                    new Token(TokenKind.String, "string", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new TypeData(ExpressionType.String, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
                             new BinaryExpression(
                                 new BinaryExpression(
@@ -173,17 +178,17 @@ public class Function
         {
             "conditionInBody", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "func", null, 1),
-                    new List<Tuple<Token, Token>>
+                    new List<Tuple<TypeData, Token>>
                     {
                         Tuple.Create(
-                            new Token(TokenKind.Char, "char", null, 1),
+                            new TypeData(ExpressionType.Char, null, null),
                             new Token(TokenKind.Identifier, "ch", null, 1)
                         )
                     },
-                    new Token(TokenKind.Double, "double", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new TypeData(ExpressionType.Double, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
                             new VariableDeclarationExpression(
                                 new Token(TokenKind.Def, "def", null, 2),
@@ -198,11 +203,12 @@ public class Function
                                     new Token(TokenKind.DoubleEqual, "==", null, 3),
                                     new LiteralExpression('a') { Type = new WarblerType(ExpressionType.Char), Line = 3 }
                                 ) { Line = 3 },
-                                new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                                     {
                                         new AssignmentExpression(
                                             new Token(TokenKind.Identifier, "num", null, 4),
-                                            new LiteralExpression(0.0) { Type = new WarblerType(ExpressionType.Double), Line = 4 }
+                                            new LiteralExpression(0.0)
+                                                { Type = new WarblerType(ExpressionType.Double), Line = 4 }
                                         ) { Line = 4 }
                                     }
                                 ) { Line = 3 },
@@ -219,17 +225,17 @@ public class Function
         {
             "whileLoopInBody", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "iterCount", null, 1),
-                    new List<Tuple<Token, Token>>
+                    new List<Tuple<TypeData, Token>>
                     {
                         Tuple.Create(
-                            new Token(TokenKind.Int, "int", null, 1),
+                            new TypeData(ExpressionType.Integer, null, null),
                             new Token(TokenKind.Identifier, "n", null, 1)
                         )
                     },
-                    new Token(TokenKind.Int, "int", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new TypeData(ExpressionType.Integer, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
                             new WhileLoopExpression(
                                 new BinaryExpression(
@@ -237,9 +243,10 @@ public class Function
                                         new Token(TokenKind.Identifier, "n", null, 2)
                                     ) { Line = 2 },
                                     new Token(TokenKind.LessThan, "<", null, 2),
-                                    new LiteralExpression(8) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
+                                    new LiteralExpression(8)
+                                        { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                                 ) { Line = 2 },
-                                new BlockExpression(new TestGuidProvider().Get(),
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(
@@ -249,7 +256,8 @@ public class Function
                                                     new Token(TokenKind.Identifier, "n", null, 3)
                                                 ) { Line = 3 },
                                                 new Token(TokenKind.Plus, "+", null, 3),
-                                                new LiteralExpression(7) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
+                                                new LiteralExpression(7)
+                                                    { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                                             ) { Line = 3 }
                                         ) { Line = 3 },
                                         new AssignmentExpression(
@@ -259,7 +267,8 @@ public class Function
                                                     new Token(TokenKind.Identifier, "n", null, 4)
                                                 ) { Line = 4 },
                                                 new Token(TokenKind.Percent, "%", null, 4),
-                                                new LiteralExpression(5) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
+                                                new LiteralExpression(5)
+                                                    { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                             ) { Line = 4 }
                                         ) { Line = 4 }
                                     }
@@ -273,26 +282,27 @@ public class Function
         {
             "blockInBody", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "block", null, 1),
-                    new List<Tuple<Token, Token>>
+                    new List<Tuple<TypeData, Token>>
                     {
                         Tuple.Create(
-                            new Token(TokenKind.Int, "int", null, 1),
+                            new TypeData(ExpressionType.Integer, null, null),
                             new Token(TokenKind.Identifier, "x", null, 1)
                         )
                     },
-                    new Token(TokenKind.Bool, "bool", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new TypeData(ExpressionType.Boolean, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
-                            new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                            new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                                 {
                                     new BinaryExpression(
                                         new VariableExpression(
                                             new Token(TokenKind.Identifier, "x", null, 2)
                                         ) { Line = 2 },
                                         new Token(TokenKind.Plus, "+", null, 2),
-                                        new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
+                                        new LiteralExpression(1)
+                                            { Type = new WarblerType(ExpressionType.Integer), Line = 2 }
                                     ) { Line = 2 }
                                 }
                             ) { Line = 2 },
@@ -307,30 +317,31 @@ public class Function
         {
             "nested", new List<Expression?>
             {
-                new FunctionDefinitionExpression(
+                new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                     new Token(TokenKind.Identifier, "outer", null, 1),
-                    new List<Tuple<Token, Token>>(),
-                    new Token(TokenKind.Int, "int", null, 1),
-                    new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                    new List<Tuple<TypeData, Token>>(),
+                    new TypeData(ExpressionType.Integer, null, null),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                         {
-                            new FunctionDefinitionExpression(
+                            new FunctionDeclarationExpression(new TestIdProvider().GetEnvironmentId(),
                                 new Token(TokenKind.Identifier, "inner", null, 2),
-                                new List<Tuple<Token, Token>>
+                                new List<Tuple<TypeData, Token>>
                                 {
                                     Tuple.Create(
-                                        new Token(TokenKind.Int, "int", null, 2),
+                                        new TypeData(ExpressionType.Integer, null, null),
                                         new Token(TokenKind.Identifier, "x", null, 2)
                                     )
                                 },
-                                new Token(TokenKind.Int, "int", null, 2),
-                                new BlockExpression(new TestGuidProvider().Get(), new List<Expression?>
+                                new TypeData(ExpressionType.Integer, null, null),
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(), new List<Expression?>
                                     {
                                         new BinaryExpression(
                                             new VariableExpression(
                                                 new Token(TokenKind.Identifier, "x", null, 3)
                                             ) { Line = 3 },
                                             new Token(TokenKind.Plus, "+", null, 3),
-                                            new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
+                                            new LiteralExpression(1)
+                                                { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                                         ) { Line = 3 }
                                     }
                                 ) { Line = 2 }

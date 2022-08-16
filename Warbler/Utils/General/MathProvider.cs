@@ -1,4 +1,4 @@
-﻿namespace Warbler.Utils;
+﻿namespace Warbler.Utils.General;
 
 internal abstract class MathProvider<T> where T : struct
 {

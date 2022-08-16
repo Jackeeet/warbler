@@ -1,0 +1,10 @@
+﻿int a = 10
+int b = 20
+
+:> 
+    double a = 15.0
+    int b = 30
+    -- double d = a + b // throws error
+<:
+
+int c = a + b

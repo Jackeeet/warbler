@@ -1,44 +1,92 @@
 ﻿using Warbler.Errors;
-using Warbler.Expressions;
 using Warbler.Resources.Errors;
+using Warbler.Utils.Exceptions;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Warbler.Environment;
 
 public class WarblerEnvironment
 {
     private readonly WarblerEnvironment? _enclosing;
-    private readonly Dictionary<Guid, WarblerEnvironment> _subEnvironments;
-    private Dictionary<string, Tuple<WarblerType, object?>> _values = new();
+    private readonly Dictionary<EnvId, WarblerEnvironment> _subEnvironments = new();
+    private readonly Dictionary<string, WarblerEnvironment> _functionEnvironments = new();
+    private readonly Dictionary<string, Tuple<WarblerType, object?>> _values = new();
 
     public WarblerEnvironment()
     {
         _enclosing = null;
-        _subEnvironments = new Dictionary<Guid, WarblerEnvironment>();
     }
 
     public WarblerEnvironment(WarblerEnvironment enclosing)
     {
         _enclosing = enclosing;
-        _subEnvironments = new Dictionary<Guid, WarblerEnvironment>();
     }
 
-    public void Reset()
+    private WarblerEnvironment(
+        WarblerEnvironment? enclosing,
+        Dictionary<EnvId, WarblerEnvironment> subEnvironments,
+        Dictionary<string, WarblerEnvironment> functionEnvironments,
+        Dictionary<string, Tuple<WarblerType, object?>> values)
     {
-        _values = new Dictionary<string, Tuple<WarblerType, object?>>();
+        _enclosing = enclosing;
+
+        foreach (var env in subEnvironments)
+            _subEnvironments[env.Key] = env.Value.Copy();
+
+        foreach (var env in functionEnvironments)
+            _functionEnvironments[env.Key] = env.Value.Copy();
+
+        foreach (var (name, value) in values)
+            _values[name] = value;
     }
 
-    public void NewSubEnvironment(Guid environmentId)
+    public WarblerEnvironment Copy()
+    {
+        return new WarblerEnvironment(_enclosing, _subEnvironments, _functionEnvironments, _values);
+    }
+
+    public bool HasSubEnvironment(EnvId environmentId)
+    {
+        return _subEnvironments.ContainsKey(environmentId);
+    }
+
+    public WarblerEnvironment AddSubEnvironment(EnvId environmentId)
     {
         if (_subEnvironments.ContainsKey(environmentId))
-            throw new ArgumentException($"a subenvironment with id {environmentId} already exists");
+            throw new EnvironmentException($"a subenvironment with id {environmentId} already exists");
         _subEnvironments[environmentId] = new WarblerEnvironment(this);
+        return _subEnvironments[environmentId];
     }
 
-    public WarblerEnvironment GetSubEnvironment(Guid environmentId)
+    public WarblerEnvironment AddFunctionEnvironment(string functionName)
+    {
+        if (_functionEnvironments.ContainsKey(functionName))
+            throw new EnvironmentException($"a function environment with name {functionName} already exists");
+        _functionEnvironments[functionName] = new WarblerEnvironment(this);
+        return _functionEnvironments[functionName];
+    }
+
+    public void DeleteSubEnvironment(EnvId environmentId)
+    {
+        var removed = _subEnvironments.Remove(environmentId);
+        if (!removed)
+            throw new EnvironmentException($"could not delete a subenvironment with id {environmentId}");
+    }
+
+    public WarblerEnvironment GetSubEnvironment(EnvId environmentId)
     {
         if (!_subEnvironments.ContainsKey(environmentId))
-            throw new ArgumentException($"no subenvironment with id {environmentId}");
+            throw new EnvironmentException($"no subenvironment with id {environmentId}");
         return _subEnvironments[environmentId];
+    }
+
+    public WarblerEnvironment GetFunctionEnvironment(string functionName)
+    {
+        if (!_functionEnvironments.ContainsKey(functionName))
+            throw new EnvironmentException($"no function environment with name {functionName}");
+        return _functionEnvironments[functionName];
     }
 
     public void Define(string name, WarblerType type, object? value = null)
@@ -84,12 +132,8 @@ public class WarblerEnvironment
             return;
         }
 
-        if (_enclosing is not null)
-        {
-            _enclosing.Assign(name, value);
-            return;
-        }
-
-        throw new RuntimeError(name, Runtime.UndefinedVariable);
+        if (_enclosing is null)
+            throw new RuntimeError(name, Runtime.UndefinedVariable);
+        _enclosing.Assign(name, value);
     }
 }

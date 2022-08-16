@@ -11,7 +11,7 @@ public interface IExpressionVisitor<out T>
 	T VisitBlockExpression(BlockExpression expression);
 	T VisitConditionalExpression(ConditionalExpression expression);
 	T VisitWhileLoopExpression(WhileLoopExpression expression);
-	T VisitFunctionDefinitionExpression(FunctionDefinitionExpression expression);
+	T VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression);
 	T VisitCallExpression(CallExpression expression);
 }
 

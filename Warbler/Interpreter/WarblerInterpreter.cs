@@ -3,8 +3,10 @@ using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
-using Warbler.Utils;
 using Warbler.Resources.Errors;
+using Warbler.Utils.Exceptions;
+using Warbler.Utils.General;
+using Warbler.Utils.Token;
 
 namespace Warbler.Interpreter;
 
@@ -22,12 +24,15 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     };
 
     private readonly IErrorReporter _errorReporter;
+
+    public readonly WarblerEnvironment GlobalEnvironment;
     private WarblerEnvironment _environment;
 
-    public WarblerInterpreter(IErrorReporter errorReporter, WarblerEnvironment environment)
+    public WarblerInterpreter(IErrorReporter errorReporter, WarblerEnvironment globalEnvironment)
     {
+        GlobalEnvironment = globalEnvironment;
         _errorReporter = errorReporter;
-        _environment = environment;
+        _environment = GlobalEnvironment;
     }
 
     public object? Interpret(Expression expression)
@@ -57,16 +62,15 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         var expr = Evaluate(expression.Expression);
         switch (expression.Op.Kind)
         {
-            case TokenKind.Minus:
-                if (expr is int intExpr)
-                    return -1 * intExpr;
-                if (expr is double doubleExpr)
-                    return -1 * doubleExpr;
-                throw new ArgumentException();
-            case TokenKind.Not:
-                if (expr is not bool boolExpr)
-                    throw new ArgumentException();
+            case TokenKind.Minus when expr is int intExpr:
+                return -1 * intExpr;
+            case TokenKind.Minus when expr is double doubleExpr:
+                return -1 * doubleExpr;
+            case TokenKind.Not when expr is bool boolExpr:
                 return !boolExpr;
+            case TokenKind.Minus:
+            case TokenKind.Not:
+                throw new ArgumentException();
         }
 
         // unreachable
@@ -132,7 +136,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         return (string)left + (string)right;
     }
 
-    private object EvaluateNumericBinary(object left, object right, TokenKind opKind)
+    private static object EvaluateNumericBinary(object left, object right, TokenKind opKind)
     {
         if (left is double dLeft)
             return EvaluateNumeric(opKind, dLeft, (double)right, new DoubleMathProvider());
@@ -196,9 +200,8 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         if (!_environment.Assigned(expression.Name.Lexeme))
             throw new ArgumentException();
 
-        var stored = _environment.Get(expression.Name);
-        var storedType = stored.Item1;
-        var storedValue = stored.Item2!;
+        var (storedType, storedValue) = _environment.Get(expression.Name);
+        Debug.Assert(storedValue != null, nameof(storedValue) + " != null");
 
         return storedType.BaseType switch
         {
@@ -207,6 +210,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             ExpressionType.Boolean => (bool)storedValue,
             ExpressionType.Char => (char)storedValue,
             ExpressionType.String => (string)storedValue,
+            ExpressionType.Function => (WarblerFunction)storedValue,
             _ => throw new ArgumentException()
         };
     }
@@ -224,13 +228,13 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         return value;
     }
 
-    public object? VisitBlockExpression(BlockExpression expression)
+    public object? InterpretBlock(BlockExpression block, WarblerEnvironment environment)
     {
         var previousEnvironment = _environment;
         try
         {
-            _environment = _environment.GetSubEnvironment(expression.BlockId.Value);
-            var expressions = expression.Expressions;
+            _environment = environment;
+            var expressions = block.Expressions;
             Debug.Assert(expressions != null, nameof(expressions) + " != null");
 
             for (var i = 0; i < expressions.Count - 1; i++)
@@ -244,7 +248,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
         catch (ArgumentException ex)
         {
-            // this should catch a custom "NoBlockException" or something like that
+            // todo this should catch a custom "NoBlockException" or something like that
             // because the message is block-specific and because right now it catches
             // exceptions not related to blocks as well
             throw new ArgumentException("Expected a block to be declared at type-checking stage", ex);
@@ -255,21 +259,31 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         }
     }
 
+    public object? VisitBlockExpression(BlockExpression expression)
+    {
+        // if a block is in a function, it does not get defined until the interpreting stage
+        // I'm not happy with how this works but at least it works
+        var blockEnvironment = _environment.HasSubEnvironment(expression.EnvironmentId)
+            ? _environment.GetSubEnvironment(expression.EnvironmentId)
+            : _environment.AddSubEnvironment(expression.EnvironmentId);
+
+        return InterpretBlock(expression, blockEnvironment);
+    }
+
     public object? VisitConditionalExpression(ConditionalExpression expression)
     {
         if (Evaluate(expression.Condition) is not bool boolCondition)
             throw new ArgumentException();
 
+        // condition is true -> "then" branch gets evaluated
         if (boolCondition)
-        {
             return Evaluate(expression.ThenBranch);
-        }
-        else if (expression.ElseBranch is not null)
-        {
-            return Evaluate(expression.ElseBranch);
-        }
 
-        // this only executes when the condition is not true and there is no else branch
+        // condition is false -> "else" branch exists and gets evaluated
+        if (expression.ElseBranch is not null)
+            return Evaluate(expression.ElseBranch);
+
+        // condition is false and there is no else branch
         return null;
     }
 
@@ -279,12 +293,12 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             throw new ArgumentException();
 
         var loopCount = 0;
-        // this has to be explicitly reevaluated on every iteration
-        // otherwise the loop condition will be a constant value
 
         Debug.Assert(expression.Condition != null, "expression.Condition != null");
-        // expression.Condition is never a ConditionalExpression (the only one that can return null)
-        // so Evaluate(expression.Condition) is never null
+
+        // expression.Condition has to be explicitly reevaluated on every iteration,
+        // otherwise the loop condition will be a constant value
+        // it is always a basic expression (never null) so evaluated condition is never null as well
         while ((bool)Evaluate(expression.Condition)!)
         {
             Evaluate(expression.Actions);
@@ -294,14 +308,26 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         return loopCount;
     }
 
-    public object VisitFunctionDefinitionExpression(FunctionDefinitionExpression expression)
+    public object VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)
     {
-        throw new NotImplementedException();
+        var func = new WarblerFunction(expression);
+        _environment.Define(expression.Name.Lexeme, expression.Type, func);
+        return func;
     }
 
     public object VisitCallExpression(CallExpression expression)
     {
-        throw new NotImplementedException();
+        var called = Evaluate(expression.Called);
+
+        // todo maybe this error should be shown to the user
+        if (called is not ICallable callable)
+            throw new ArgumentException();
+
+        var arguments = new List<object>();
+        foreach (var arg in expression.Args)
+            arguments.Add(Evaluate(arg) ?? throw new ArgumentException());
+
+        return callable.Call(this, _environment, arguments);
     }
 
     private RuntimeError HandleRuntimeError(Expression expression, string message)

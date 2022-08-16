@@ -1,4 +1,4 @@
-﻿namespace Warbler.Expressions;
+﻿namespace Warbler.Utils.Token;
 
 public enum TokenKind
 {
@@ -53,10 +53,9 @@ public enum TokenKind
     For,
     ForEach,
     In,
-    Func,           // \ for function definition
+    FuncDef,        // \ for function definition
     Def,            // implicit type variable
     Type,           // user-defined types
-    // Ret,
     And,
     Or,
     True,
@@ -66,6 +65,7 @@ public enum TokenKind
     Double,
     Char,
     String,
-    
+    FuncType,       // fn for function type signatures
+
     Eof
 }

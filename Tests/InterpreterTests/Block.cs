@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Warbler.Expressions;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.InterpreterTests;
 
 public static class Block
 {
-    public static Guid OuterBlockId = new();
-    public static Guid InnerBlockId = new("00000000-0000-0000-0000-000000000001");
+    public static readonly EnvId OuterBlockId = new(new Guid());
+    public static readonly EnvId InnerBlockId = new(new Guid("00000000-0000-0000-0000-000000000001"));
 
     public static readonly List<string> ValidNames = new()
     {

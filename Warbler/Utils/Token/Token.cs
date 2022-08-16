@@ -1,6 +1,4 @@
-﻿using Warbler.Scanner;
-
-namespace Warbler.Expressions;
+﻿namespace Warbler.Utils.Token;
 
 public class Token
 {
@@ -19,10 +17,9 @@ public class Token
 
     public override string ToString()
     {
-        if (Literal is null)
-            return $"{Kind} \"{Lexeme}\" (line {LineNumber})";
-
-        return $"{Kind} \"{Lexeme}\" {Literal} (line {LineNumber})";
+        return Literal is null
+            ? $"{Kind} \"{Lexeme}\" (line {LineNumber})"
+            : $"{Kind} \"{Lexeme}\" {Literal} (line {LineNumber})";
     }
 
     public override bool Equals(object? obj)

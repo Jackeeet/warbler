@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using Warbler.ErrorReporting;
-using Warbler.Expressions;
+using Warbler.Utils.Token;
 using Syntax = Warbler.Resources.Errors.Syntax;
 
 namespace Warbler.Scanner;
@@ -23,7 +23,7 @@ public class WarblerScanner
         { '?', TokenKind.Question },
         { '(', TokenKind.LeftBracket },
         { ')', TokenKind.RightBracket },
-        { '\\', TokenKind.Func }
+        { '\\', TokenKind.FuncDef }
     };
 
     private static readonly Dictionary<char, Tuple<char, TokenKind, TokenKind>> doubleTokenChars = new()
@@ -33,7 +33,7 @@ public class WarblerScanner
         { '*', Tuple.Create('=', TokenKind.AsteriskEqual, TokenKind.Asterisk) },
         { '/', Tuple.Create('=', TokenKind.SlashEqual, TokenKind.Slash) },
         { '>', Tuple.Create('=', TokenKind.GreaterEqual, TokenKind.GreaterThan) },
-        { ':', Tuple.Create('>', TokenKind.RightBird, TokenKind.Colon) },
+        { ':', Tuple.Create('>', TokenKind.RightBird, TokenKind.Colon) }
     };
 
     private static readonly Dictionary<char, Tuple<char, TokenKind, char, TokenKind, TokenKind>> tripleTokenChars =
@@ -41,7 +41,7 @@ public class WarblerScanner
         {
             { '+', Tuple.Create('=', TokenKind.PlusEqual, '+', TokenKind.DoublePlus, TokenKind.Plus) },
             { '-', Tuple.Create('=', TokenKind.MinusEqual, '>', TokenKind.RightArrow, TokenKind.Minus) },
-            { '<', Tuple.Create('=', TokenKind.LessEqual, ':', TokenKind.LeftBird, TokenKind.LessThan) },
+            { '<', Tuple.Create('=', TokenKind.LessEqual, ':', TokenKind.LeftBird, TokenKind.LessThan) }
         };
 
     private static readonly Dictionary<char, char> escapedChars = new()
@@ -72,7 +72,6 @@ public class WarblerScanner
         { "in", TokenKind.In },
         { "def", TokenKind.Def },
         { "type", TokenKind.Type },
-        // { "ret", TokenKind.Ret },
         { "and", TokenKind.And },
         { "or", TokenKind.Or },
         { "true", TokenKind.True },
@@ -81,7 +80,8 @@ public class WarblerScanner
         { "int", TokenKind.Int },
         { "double", TokenKind.Double },
         { "char", TokenKind.Char },
-        { "string", TokenKind.String }
+        { "string", TokenKind.String },
+        { "fn", TokenKind.FuncType }
     };
 
     private readonly string _input;
@@ -104,28 +104,28 @@ public class WarblerScanner
         _currentLinePos = 0;
         _currentLine = 1;
 
-        _tokenHandlers = new List<Tuple<TokenPredicate, TokenHandler>>()
+        _tokenHandlers = new List<Tuple<TokenPredicate, TokenHandler>>
         {
             Tuple.Create<TokenPredicate, TokenHandler>(
-                IsBlankChar, (_) => { }),
+                IsBlankChar, _ => { }),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                CommentChar, (_) => SkipUntil('\n')),
+                CommentChar, _ => SkipUntil('\n')),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                singleTokenChars.ContainsKey, (ch) => AddToken(singleTokenChars[ch])),
+                singleTokenChars.ContainsKey, ch => AddToken(singleTokenChars[ch])),
             Tuple.Create<TokenPredicate, TokenHandler>(
                 doubleTokenChars.ContainsKey, AddDoubleToken),
             Tuple.Create<TokenPredicate, TokenHandler>(
                 tripleTokenChars.ContainsKey, AddTripleToken),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                IsAlpha, (_) => AddIdentifierToken()),
+                IsAlpha, _ => AddIdentifierToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                IsDigit, (_) => AddNumberToken()),
+                IsDigit, _ => AddNumberToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                (ch) => ch == '\'', (_) => AddCharToken()),
+                ch => ch == '\'', _ => AddCharToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                (ch) => ch == '"', (_) => AddStringToken()),
+                ch => ch == '"', _ => AddStringToken()),
             Tuple.Create<TokenPredicate, TokenHandler>(
-                (ch) => ch == '\n', (_) => StartNewLine())
+                ch => ch == '\n', _ => StartNewLine())
         };
     }
 
@@ -145,16 +145,14 @@ public class WarblerScanner
     {
         var ch = ReadNextChar();
         var handled = false;
-        foreach (var handler in _tokenHandlers)
+        foreach (var (matchesPredicate, addToken) in _tokenHandlers)
         {
-            var matchesPredicate = handler.Item1;
-            var addToken = handler.Item2;
-            if (matchesPredicate(ch))
-            {
-                handled = true;
-                addToken(ch);
-                break;
-            }
+            if (!matchesPredicate(ch))
+                continue;
+
+            handled = true;
+            addToken(ch);
+            break;
         }
 
         if (!handled)
@@ -166,19 +164,18 @@ public class WarblerScanner
 
     private static bool IsBlankChar(char ch)
     {
-        return ch == ' ' || ch == '\r' || ch == '\t';
+        return ch is ' ' or '\r' or '\t';
     }
 
     private void AddDoubleToken(char ch)
     {
-        var tokens = doubleTokenChars[ch];
-        var nextChar = tokens.Item1;
-        AddToken(NextCharMatching(nextChar) ? tokens.Item2 : tokens.Item3);
+        var (nextChar, doubleCharMatch, singleCharMatch) = doubleTokenChars[ch];
+        AddToken(NextCharMatching(nextChar) ? doubleCharMatch : singleCharMatch);
     }
 
     private bool CommentChar(char ch)
     {
-        return (ch == '-' || ch == '/') && NextCharMatching(ch);
+        return ch is '-' or '/' && NextCharMatching(ch);
     }
 
     private void AddTripleToken(char ch)
@@ -289,7 +286,8 @@ public class WarblerScanner
             _errorReporter.ErrorAtLine(_currentLine, string.Format(Syntax.EmptyChar, _currentLinePos));
             return;
         }
-        else if (ch == '\\')
+
+        if (ch == '\\')
         {
             var esc = ReadNextChar();
             if (!escapedChars.ContainsKey(esc))
@@ -342,7 +340,7 @@ public class WarblerScanner
 
     private char PeekNext()
     {
-        return (_currentChar + 1 >= _input.Length) ? '\0' : _input[_currentChar + 1];
+        return _currentChar + 1 >= _input.Length ? '\0' : _input[_currentChar + 1];
     }
 
     private bool InputEnded()
@@ -350,14 +348,14 @@ public class WarblerScanner
         return _currentChar >= _input.Length;
     }
 
-    private bool IsDigit(char ch)
+    private static bool IsDigit(char ch)
     {
         return ch is >= '0' and <= '9';
     }
 
-    private bool IsAlpha(char ch)
+    private static bool IsAlpha(char ch)
     {
-        return ch is >= 'a' and <= 'z' || ch is >= 'A' and <= 'Z' || ch == '_';
+        return ch is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_';
     }
 
     private bool IsAlphaNumeric(char ch)

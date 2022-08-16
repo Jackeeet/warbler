@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Warbler.Expressions;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.ParserTests;
 
@@ -46,7 +49,7 @@ public static class Block
         {
             "simpleBlock", new List<Expression?>
             {
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(
@@ -61,7 +64,7 @@ public static class Block
         {
             "multiExpressionBlock", new List<Expression?>
             {
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(
@@ -80,7 +83,7 @@ public static class Block
         {
             "nestedBlock", new List<Expression?>
             {
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(
@@ -88,13 +91,14 @@ public static class Block
                             new Token(TokenKind.Identifier, "a", null, 1),
                             new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                         ) { Line = 1 },
-                        new BlockExpression(new Guid(),
+                        new BlockExpression(new EnvId(new Guid()),
                             new List<Expression?>()
                             {
                                 new VariableDeclarationExpression(
                                     new Token(TokenKind.Int, "int", null, 1),
                                     new Token(TokenKind.Identifier, "a", null, 1),
-                                    new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                                    new LiteralExpression(20)
+                                        { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                                 ) { Line = 1 },
                             }
                         ) { Line = 1 },
@@ -112,7 +116,7 @@ public static class Block
         {
             "twoBlocks", new List<Expression?>
             {
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(
@@ -122,7 +126,7 @@ public static class Block
                         ) { Line = 1 }
                     }
                 ) { Line = 1 },
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(
@@ -142,7 +146,7 @@ public static class Block
                     new Token(TokenKind.Identifier, "a", null, 1),
                     new LiteralExpression(20) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Line = 1 },
-                new BlockExpression(new Guid(),
+                new BlockExpression(new EnvId(new Guid()),
                     new List<Expression?>
                     {
                         new VariableDeclarationExpression(

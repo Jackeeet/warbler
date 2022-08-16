@@ -50,4 +50,16 @@
     <data name="ConditionBranchesMismatch" xml:space="preserve">
         <value>Conditional expression branches must have the same type</value>
     </data>
+    <data name="FunctionSignatureMismatch" xml:space="preserve">
+        <value>The type of the function's body does not match the function's return type</value>
+    </data>
+    <data name="CallUncallable" xml:space="preserve">
+        <value>Cannot call {0}</value>
+    </data>
+    <data name="ArgumentCountMismatch" xml:space="preserve">
+        <value>Expected {0} arguments</value>
+    </data>
+    <data name="ArgumentTypeMismatch" xml:space="preserve">
+        <value>Expected an argument of type {0}</value>
+    </data>
 </root>

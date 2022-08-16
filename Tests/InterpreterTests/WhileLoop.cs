@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.InterpreterTests;
 
@@ -31,7 +34,7 @@ public static class WhileLoop
                     new Token(TokenKind.NotEqual, "!=", null, 1),
                     new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                new BlockExpression(new TestGuidProvider().Get(),
+                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                     new List<Expression?>
                     {
                         new AssignmentExpression(
@@ -56,7 +59,7 @@ public static class WhileLoop
                     new Token(TokenKind.LessThan, "<", null, 1),
                     new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                new BlockExpression(new TestGuidProvider().Get(),
+                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                     new List<Expression?>
                     {
                         new AssignmentExpression(
@@ -83,7 +86,7 @@ public static class WhileLoop
                     new Token(TokenKind.LessThan, "<", null, 1),
                     new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                 ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                new BlockExpression(new TestGuidProvider().Get(),
+                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                     new List<Expression?>
                     {
                         new WhileLoopExpression(
@@ -93,7 +96,7 @@ public static class WhileLoop
                                 new Token(TokenKind.LessThan, "<", null, 1),
                                 new LiteralExpression(10) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                             ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                            new BlockExpression(new Guid("00000000-0000-0000-0000-000000000001"),
+                            new BlockExpression(new EnvId(new Guid("00000000-0000-0000-0000-000000000001")),
                                 new List<Expression?>
                                 {
                                     new AssignmentExpression(

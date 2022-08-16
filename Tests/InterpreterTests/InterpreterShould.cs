@@ -4,6 +4,9 @@ using Tests.Mocks;
 using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.Interpreter;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.InterpreterTests;
 
@@ -11,57 +14,59 @@ namespace Tests.InterpreterTests;
 public class InterpreterShould
 {
     private TestReporter _errorReporter = null!;
-    private TestGuidProvider _guidProvider = null!;
-    private WarblerEnvironment _environment = null!;
+
+    private TestIdProvider _idProvider = null!;
+
+    // private WarblerEnvironment _environment = null!;
     private WarblerInterpreter _interpreter = null!;
 
     [OneTimeSetUp]
     public void BeforeFixture()
     {
         _errorReporter = new TestReporter();
-        _guidProvider = new TestGuidProvider();
+        _idProvider = new TestIdProvider();
     }
 
     [SetUp]
     public void BeforeTest()
     {
         _errorReporter.Reset();
-        _environment = new WarblerEnvironment();
+        // _environment = new WarblerEnvironment();
+        _interpreter = new WarblerInterpreter(_errorReporter);
         PredefineVariables();
-        _interpreter = new WarblerInterpreter(_errorReporter, _environment);
     }
 
     private void PredefineVariables()
     {
         DefineGlobals();
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "intVar", null, 1), 10);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignInt", null, 1), 0);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignDouble", null, 1), 0.0d);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignBool", null, 1), false);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignChar", null, 1), '0');
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignString", null, 1), "");
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignExpression", null, 1), 0);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "reassignVariable", null, 1), 0);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "i", null, 1), 0);
-        _environment.Assign(
+        _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "j", null, 1), 0);
     }
 
     // this is one of the dumbest methods i've ever written
     private void DefineGlobals()
     {
-        _environment.Define("intVar", new WarblerType(ExpressionType.Integer));
-        _environment.Define("i", new WarblerType(ExpressionType.Integer));
-        _environment.Define("j", new WarblerType(ExpressionType.Integer));
+        _interpreter.GlobalEnvironment.Define("intVar", new WarblerType(ExpressionType.Integer));
+        _interpreter.GlobalEnvironment.Define("i", new WarblerType(ExpressionType.Integer));
+        _interpreter.GlobalEnvironment.Define("j", new WarblerType(ExpressionType.Integer));
 
         foreach (var name in Variable.DeclarationNames)
         {
@@ -76,7 +81,7 @@ public class InterpreterShould
                     _ => new WarblerType(ExpressionType.Integer)
                 };
 
-            _environment.Define(name, type);
+            _interpreter.GlobalEnvironment.Define(name, type);
         }
 
         foreach (var name in Variable.AssignmentNames)
@@ -90,7 +95,7 @@ public class InterpreterShould
                 _ => new WarblerType(ExpressionType.Integer)
             };
 
-            _environment.Define(name, type);
+            _interpreter.GlobalEnvironment.Define(name, type);
         }
     }
 
@@ -190,12 +195,12 @@ public class InterpreterShould
         // it is possible to check whether the value being assigned
         // matches the declared type
         // thus before a vardecl expression is evaluated (and assigned), the name is already defined
-        Assert.True(_environment.Defined(inputName));
+        Assert.True(_interpreter.GlobalEnvironment.Defined(inputName));
         var expected = Variable.Outputs[inputName];
 
         var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
-        Assert.True(_environment.Assigned(inputName));
-        var (_, storedValue) = _environment.Get(
+        Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
+        var (_, storedValue) = _interpreter.GlobalEnvironment.Get(
             new Token(TokenKind.Identifier, inputName, null, 1));
 
         Assert.AreEqual(expected, storedValue);
@@ -206,15 +211,15 @@ public class InterpreterShould
     [TestCaseSource(typeof(Variable), nameof(Variable.AssignmentNames))]
     public void EvaluateValidVariableAssignmentExpressions(string inputName)
     {
-        Assert.True(_environment.Assigned(inputName));
+        Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
         var variableToken = new Token(TokenKind.Identifier, inputName, null, 1);
 
-        var initialValue = _environment.Get(variableToken);
+        var initialValue = _interpreter.GlobalEnvironment.Get(variableToken);
         var expected = Variable.Outputs[inputName];
 
         var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
-        Assert.True(_environment.Assigned(inputName));
-        var (_, storedValue) = _environment.Get(variableToken);
+        Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
+        var (_, storedValue) = _interpreter.GlobalEnvironment.Get(variableToken);
 
         Assert.AreEqual(expected, storedValue);
         Assert.AreNotEqual(initialValue, storedValue);
@@ -237,16 +242,16 @@ public class InterpreterShould
         var outerBlockId = Block.OuterBlockId;
         var innerBlockId = Block.InnerBlockId;
 
-        _environment.NewSubEnvironment(outerBlockId);
-        _environment
+        _interpreter.GlobalEnvironment.AddSubEnvironment(outerBlockId);
+        _interpreter.GlobalEnvironment
             .GetSubEnvironment(outerBlockId)
             .Define("block", new WarblerType(ExpressionType.Integer));
-        _environment
+        _interpreter.GlobalEnvironment
             .GetSubEnvironment(outerBlockId)
             .Define("block2", new WarblerType(ExpressionType.Integer));
 
-        _environment.GetSubEnvironment(outerBlockId).NewSubEnvironment(innerBlockId);
-        _environment
+        _interpreter.GlobalEnvironment.GetSubEnvironment(outerBlockId).AddSubEnvironment(innerBlockId);
+        _interpreter.GlobalEnvironment
             .GetSubEnvironment(outerBlockId)
             .GetSubEnvironment(innerBlockId)
             .Define("block", new WarblerType(ExpressionType.Integer));
@@ -262,9 +267,9 @@ public class InterpreterShould
     [TestCaseSource(typeof(WhileLoop), nameof(WhileLoop.ValidNames))]
     public void EvaluateValidWhileLoops(string inputName)
     {
-        _environment.NewSubEnvironment(_guidProvider.Get());
-        _environment.GetSubEnvironment(_guidProvider.Get())
-            .NewSubEnvironment(new Guid("00000000-0000-0000-0000-000000000001"));
+        _interpreter.GlobalEnvironment.AddSubEnvironment(_idProvider.GetEnvironmentId());
+        _interpreter.GlobalEnvironment.GetSubEnvironment(_idProvider.GetEnvironmentId())
+            .AddSubEnvironment(new EnvId(new Guid("00000000-0000-0000-0000-000000000001")));
 
         var expected = WhileLoop.Outputs[inputName];
 

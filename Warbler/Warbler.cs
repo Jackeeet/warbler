@@ -5,14 +5,15 @@ using Warbler.Interpreter;
 using Warbler.Parser;
 using Warbler.Scanner;
 using Warbler.TypeChecker;
-using Warbler.Utils;
+using Warbler.Utils.Id;
 
 namespace Warbler;
 
 public class Warbler
 {
     private readonly IErrorReporter _errorReporter = new ConsoleReporter();
-    private readonly WarblerEnvironment _environment = new();
+    private readonly IIdProvider _idProvider = new DefaultIdProvider();
+    private readonly WarblerEnvironment _globalEnvironment = new();
 
     public void RunFile(string path)
     {
@@ -33,7 +34,7 @@ public class Warbler
         {
             Console.Write(":> ");
             var input = Console.ReadLine();
-            if (input is null || input == "exit")
+            if (input is null or "exit")
             {
                 break;
             }
@@ -48,12 +49,12 @@ public class Warbler
         var scanner = new WarblerScanner(input, _errorReporter);
         var tokens = scanner.Scan();
 
-        var parser = new WarblerParser(tokens, _errorReporter, new DefaultGuidProvider());
+        var parser = new WarblerParser(tokens, _errorReporter, new DefaultIdProvider());
         var expressions = parser.Parse();
         if (_errorReporter.HadError)
             return;
 
-        var checker = new WarblerChecker(_errorReporter, _environment);
+        var checker = new WarblerChecker(_errorReporter, _idProvider, _globalEnvironment);
         foreach (var expression in expressions)
         {
             Debug.Assert(expression != null, nameof(expression) + " != null");
@@ -63,7 +64,7 @@ public class Warbler
         if (_errorReporter.HadError || _errorReporter.HadRuntimeError)
             return;
 
-        var interpreter = new WarblerInterpreter(_errorReporter, _environment);
+        var interpreter = new WarblerInterpreter(_errorReporter, _globalEnvironment);
         foreach (var expression in expressions)
         {
             Debug.Assert(expression != null, nameof(expression) + " != null");

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Tests.CheckerTests;
 
@@ -176,7 +178,7 @@ public static class Variable
 
         {
             "singleExpressionBlock", new BlockExpression(
-                new TestGuidProvider().Get(),
+                new TestIdProvider().GetEnvironmentId(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -189,7 +191,7 @@ public static class Variable
         },
         {
             "multipleExpressionsBlock", new BlockExpression(
-                new TestGuidProvider().Get(),
+                new TestIdProvider().GetEnvironmentId(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -379,7 +381,7 @@ public static class Variable
 
         {
             "singleExpressionBlock", new BlockExpression(
-                new TestGuidProvider().Get(),
+                new TestIdProvider().GetEnvironmentId(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(
@@ -393,7 +395,7 @@ public static class Variable
 
         {
             "multipleExpressionsBlock", new BlockExpression(
-                new TestGuidProvider().Get(),
+                new TestIdProvider().GetEnvironmentId(),
                 new List<Expression?>
                 {
                     new VariableDeclarationExpression(

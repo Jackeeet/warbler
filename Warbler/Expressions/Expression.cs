@@ -1,4 +1,7 @@
-using Warbler.Utils;
+using Warbler.Utils.General;
+using Warbler.Utils.Id;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Warbler.Expressions;
 
@@ -246,12 +249,12 @@ public class AssignmentExpression : Expression
 
 public class BlockExpression : Expression
 {
-    public readonly BlockId BlockId;
+    public readonly EnvId EnvironmentId;
     public readonly List<Expression?> Expressions;
 
-    public BlockExpression(Guid blockid, List<Expression?> expressions)
+    public BlockExpression(EnvId environmentid, List<Expression?> expressions)
     {
-        BlockId = new BlockId(blockid);
+        EnvironmentId = environmentid;
         Expressions = expressions;
     }
 
@@ -262,7 +265,7 @@ public class BlockExpression : Expression
 
     protected bool Equals(BlockExpression other)
     {
-        return Type.Equals(other.Type) && Line.Equals(other.Line) && BlockId.Equals(other.BlockId) &&
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && EnvironmentId.Equals(other.EnvironmentId) &&
                Expressions.AllEquals(other.Expressions);
     }
 
@@ -273,7 +276,7 @@ public class BlockExpression : Expression
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(BlockId, Expressions);
+        return HashCode.Combine(EnvironmentId, Expressions);
     }
 }
 
@@ -347,16 +350,18 @@ public class WhileLoopExpression : Expression
     }
 }
 
-public class FunctionDefinitionExpression : Expression
+public class FunctionDeclarationExpression : Expression
 {
+    public readonly EnvId EnvironmentId;
     public readonly Token Name;
-    public readonly List<Tuple<Token, Token>> Parameters;
-    public readonly Token ReturnType;
+    public readonly List<Tuple<TypeData, Token>> Parameters;
+    public readonly TypeData ReturnType;
     public readonly BlockExpression Body;
 
-    public FunctionDefinitionExpression(Token name, List<Tuple<Token, Token>> parameters, Token returntype,
-        BlockExpression body)
+    public FunctionDeclarationExpression(EnvId environmentid, Token name, List<Tuple<TypeData, Token>> parameters,
+        TypeData returntype, BlockExpression body)
     {
+        EnvironmentId = environmentid;
         Name = name;
         Parameters = parameters;
         ReturnType = returntype;
@@ -365,24 +370,25 @@ public class FunctionDefinitionExpression : Expression
 
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
-        return visitor.VisitFunctionDefinitionExpression(this);
+        return visitor.VisitFunctionDeclarationExpression(this);
     }
 
-    protected bool Equals(FunctionDefinitionExpression other)
+    protected bool Equals(FunctionDeclarationExpression other)
     {
-        return Type.Equals(other.Type) && Line.Equals(other.Line) && Name.Equals(other.Name)
-               && Parameters.AllEquals(other.Parameters)
+        return Type.Equals(other.Type) && Line.Equals(other.Line) && EnvironmentId.Equals(other.EnvironmentId) &&
+               Name.Equals(other.Name) &&
+               Parameters.AllEquals(other.Parameters)
                && ReturnType.Equals(other.ReturnType) && Body.Equals(other.Body);
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is FunctionDefinitionExpression other && Equals(other);
+        return obj is FunctionDeclarationExpression other && Equals(other);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Name, Parameters, ReturnType, Body);
+        return HashCode.Combine(EnvironmentId, Name, Parameters, ReturnType, Body);
     }
 }
 

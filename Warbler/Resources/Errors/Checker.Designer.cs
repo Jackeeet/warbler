@@ -21,14 +21,14 @@ namespace Warbler.Resources.Errors {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Type {
+    internal class Checker {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Type() {
+        internal Checker() {
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace Warbler.Resources.Errors {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Warbler.Resources.Errors.Type", typeof(Type).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Warbler.Resources.Errors.Checker", typeof(Checker).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,6 +60,33 @@ namespace Warbler.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected {0} arguments.
+        /// </summary>
+        internal static string ArgumentCountMismatch {
+            get {
+                return ResourceManager.GetString("ArgumentCountMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected an argument of type {0}.
+        /// </summary>
+        internal static string ArgumentTypeMismatch {
+            get {
+                return ResourceManager.GetString("ArgumentTypeMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot call {0}.
+        /// </summary>
+        internal static string CallUncallable {
+            get {
+                return ResourceManager.GetString("CallUncallable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot compare expressions of types {0} and {1}.
         /// </summary>
         internal static string ComparisonOperandsMismatch {
@@ -74,6 +101,15 @@ namespace Warbler.Resources.Errors {
         internal static string ConditionBranchesMismatch {
             get {
                 return ResourceManager.GetString("ConditionBranchesMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the function&apos;s body does not match the function&apos;s return type.
+        /// </summary>
+        internal static string FunctionSignatureMismatch {
+            get {
+                return ResourceManager.GetString("FunctionSignatureMismatch", resourceCulture);
             }
         }
         

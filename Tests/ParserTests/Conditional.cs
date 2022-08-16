@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tests.Mocks;
 using Warbler.Expressions;
+using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 using Expression = Warbler.Expressions.Expression;
 using ExpressionType = Warbler.Expressions.ExpressionType;
 
@@ -71,7 +73,7 @@ public static class Conditional
             {
                 new ConditionalExpression(
                     new LiteralExpression(true) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -90,7 +92,7 @@ public static class Conditional
             {
                 new ConditionalExpression(
                     new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -100,7 +102,7 @@ public static class Conditional
                             ) { Line = 1 }
                         }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -122,7 +124,7 @@ public static class Conditional
                         new Token(TokenKind.GreaterThan, ">", null, 1),
                         new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -138,7 +140,7 @@ public static class Conditional
                             new Token(TokenKind.DoubleEqual, "==", null, 3),
                             new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                         ) { Line = 3 },
-                        new BlockExpression(new TestGuidProvider().Get(),
+                        new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                             new List<Expression?>
                             {
                                 new VariableDeclarationExpression(
@@ -164,7 +166,7 @@ public static class Conditional
                         new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
                     // int a = 1
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -182,7 +184,7 @@ public static class Conditional
                             new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                         ) { Line = 3 },
                         // int a = 2
-                        new BlockExpression(new TestGuidProvider().Get(),
+                        new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                             new List<Expression?>
                             {
                                 new VariableDeclarationExpression(
@@ -193,7 +195,7 @@ public static class Conditional
                             }
                         ) { Line = 3 },
                         // else int a = 0
-                        new BlockExpression(new TestGuidProvider().Get(),
+                        new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                             new List<Expression?>
                             {
                                 new VariableDeclarationExpression(
@@ -216,7 +218,7 @@ public static class Conditional
                         new Token(TokenKind.LessThan, "<", null, 1),
                         new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
                     ) { Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -232,7 +234,7 @@ public static class Conditional
                                     new Token(TokenKind.NotEqual, "!=", null, 3),
                                     new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 3 }
                                 ) { Line = 3 },
-                                new BlockExpression(new TestGuidProvider().Get(),
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(
@@ -255,9 +257,9 @@ public static class Conditional
             {
                 new ConditionalExpression(
                     new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                    new BlockExpression(new TestGuidProvider().Get(), 
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(), 
                         new List<Expression?>()) {Line = 1},
-                    new BlockExpression(new TestGuidProvider().Get(),
+                    new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                         new List<Expression?>
                         {
                             new VariableDeclarationExpression(
@@ -273,7 +275,7 @@ public static class Conditional
                                     new Token(TokenKind.DoubleEqual, "==", null, 4),
                                     new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 4 }
                                 ) { Line = 4 },
-                                new BlockExpression(new TestGuidProvider().Get(),
+                                new BlockExpression(new TestIdProvider().GetEnvironmentId(),
                                     new List<Expression?>
                                     {
                                         new AssignmentExpression(
