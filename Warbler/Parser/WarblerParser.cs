@@ -26,7 +26,7 @@ public class WarblerParser
         { TokenKind.Double, ExpressionType.Double },
         { TokenKind.Bool, ExpressionType.Boolean },
         { TokenKind.Char, ExpressionType.Char },
-        { TokenKind.String, ExpressionType.String },
+        { TokenKind.String, ExpressionType.String }
     };
 
     public WarblerParser(List<Token> tokens, IErrorReporter errorReporter, IIdProvider idProvider)

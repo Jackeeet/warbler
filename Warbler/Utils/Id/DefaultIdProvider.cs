@@ -6,9 +6,4 @@ public class DefaultIdProvider : IIdProvider
     {
         return new EnvId(Guid.NewGuid());
     }
-
-    public SignatureId GetSignatureId()
-    {
-        return new SignatureId(Guid.NewGuid());
-    }
 }

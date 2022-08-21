@@ -17,7 +17,6 @@ public class InterpreterShould
 
     private TestIdProvider _idProvider = null!;
 
-    // private WarblerEnvironment _environment = null!;
     private WarblerInterpreter _interpreter = null!;
 
     [OneTimeSetUp]
@@ -31,8 +30,7 @@ public class InterpreterShould
     public void BeforeTest()
     {
         _errorReporter.Reset();
-        // _environment = new WarblerEnvironment();
-        _interpreter = new WarblerInterpreter(_errorReporter);
+        _interpreter = new WarblerInterpreter(_errorReporter, new WarblerEnvironment());
         PredefineVariables();
     }
 

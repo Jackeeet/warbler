@@ -358,7 +358,7 @@ public class WarblerScanner
         return ch is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_';
     }
 
-    private bool IsAlphaNumeric(char ch)
+    private static bool IsAlphaNumeric(char ch)
     {
         return IsAlpha(ch) || IsDigit(ch);
     }

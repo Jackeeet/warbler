@@ -1,0 +1,7 @@
+﻿\ getCallback() fn(int, double): bool :>
+    \ callback(int a, double b) bool :>
+        a >= b
+    <:
+<:
+
+getCallback()(3, 4.0)

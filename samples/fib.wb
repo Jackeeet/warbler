@@ -7,7 +7,6 @@
     else :>
        fib(n - 1) + fib(n - 2)
     <:
-   --  n == 0 ? 1 : n == 1 ? 1 : fib(n - 1) + fib(n - 2)
 <:
 
 \ run() int :>
@@ -17,7 +16,6 @@
    
    def num = 5
    fib(num)
-   -- fib(5) 
 <:
 
 run()

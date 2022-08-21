@@ -4,7 +4,6 @@ using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
 using Warbler.Resources.Errors;
-using Warbler.Utils.Id;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
 
@@ -33,14 +32,12 @@ public class WarblerChecker : IExpressionVisitor<object?>
     };
 
     private readonly IErrorReporter _errorReporter;
-    private readonly IIdProvider _idProvider;
     private WarblerEnvironment _environment;
 
-    public WarblerChecker(IErrorReporter errorReporter, IIdProvider idProvider, WarblerEnvironment environment)
+    public WarblerChecker(IErrorReporter errorReporter, WarblerEnvironment environment)
     {
         _errorReporter = errorReporter;
         _environment = environment;
-        _idProvider = idProvider;
     }
 
     public bool CheckTypes(Expression expression)
@@ -231,7 +228,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     public object? VisitVariableExpression(VariableExpression expression)
     {
-        var storedType = _environment.Get(expression.Name, typeOnly: true).Item1;
+        var storedType = _environment.Get(expression.Name).Item1;
         expression.Type = storedType;
         return null;
     }
@@ -239,7 +236,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     public object? VisitAssignmentExpression(AssignmentExpression expression)
     {
         AssignExpressionType(expression.Value);
-        var storedType = _environment.Get(expression.Name, typeOnly: true).Item1;
+        var storedType = _environment.Get(expression.Name).Item1;
         if (expression.Value.Type != storedType)
         {
             throw HandleTypeError(expression,
@@ -317,7 +314,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         _environment = previousEnvironment;
     }
 
-    private WarblerType GetFunctionType(FunctionDeclarationExpression expression)
+    private static WarblerType GetFunctionType(FunctionDeclarationExpression expression)
     {
         var returnType = WarblerTypeUtils.ToWarblerType(expression.ReturnType);
         var parameterTypes = new List<WarblerType>();

@@ -12,7 +12,6 @@ namespace Warbler;
 public class Warbler
 {
     private readonly IErrorReporter _errorReporter = new ConsoleReporter();
-    private readonly IIdProvider _idProvider = new DefaultIdProvider();
     private readonly WarblerEnvironment _globalEnvironment = new();
 
     public void RunFile(string path)
@@ -32,7 +31,7 @@ public class Warbler
     {
         while (true)
         {
-            Console.Write(":> ");
+            Console.Write(@":> ");
             var input = Console.ReadLine();
             if (input is null or "exit")
             {
@@ -54,7 +53,7 @@ public class Warbler
         if (_errorReporter.HadError)
             return;
 
-        var checker = new WarblerChecker(_errorReporter, _idProvider, _globalEnvironment);
+        var checker = new WarblerChecker(_errorReporter, _globalEnvironment);
         foreach (var expression in expressions)
         {
             Debug.Assert(expression != null, nameof(expression) + " != null");

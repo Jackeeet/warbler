@@ -30,7 +30,7 @@ public class CheckerShould
         _errorReporter.Reset();
         _environment = new WarblerEnvironment();
         PredefineVariables();
-        _checker = new WarblerChecker(_errorReporter, _environment, _idProvider);
+        _checker = new WarblerChecker(_errorReporter, _environment);
     }
 
     private void PredefineVariables()

@@ -33,18 +33,23 @@ public class WarblerEnvironment
         _enclosing = enclosing;
 
         foreach (var env in subEnvironments)
-            _subEnvironments[env.Key] = env.Value.Copy();
+            _subEnvironments[env.Key] = env.Value.Copy(this);
 
         foreach (var env in functionEnvironments)
-            _functionEnvironments[env.Key] = env.Value.Copy();
+            _functionEnvironments[env.Key] = env.Value.Copy(this);
 
         foreach (var (name, value) in values)
             _values[name] = value;
     }
 
-    public WarblerEnvironment Copy()
+    public WarblerEnvironment Copy(WarblerEnvironment? enclosing = null)
     {
-        return new WarblerEnvironment(_enclosing, _subEnvironments, _functionEnvironments, _values);
+        return new WarblerEnvironment(
+            enclosing ?? _enclosing,
+            _subEnvironments,
+            _functionEnvironments,
+            _values
+        );
     }
 
     public bool HasSubEnvironment(EnvId environmentId)
@@ -68,13 +73,6 @@ public class WarblerEnvironment
         return _functionEnvironments[functionName];
     }
 
-    public void DeleteSubEnvironment(EnvId environmentId)
-    {
-        var removed = _subEnvironments.Remove(environmentId);
-        if (!removed)
-            throw new EnvironmentException($"could not delete a subenvironment with id {environmentId}");
-    }
-
     public WarblerEnvironment GetSubEnvironment(EnvId environmentId)
     {
         if (!_subEnvironments.ContainsKey(environmentId))
@@ -84,9 +82,13 @@ public class WarblerEnvironment
 
     public WarblerEnvironment GetFunctionEnvironment(string functionName)
     {
-        if (!_functionEnvironments.ContainsKey(functionName))
-            throw new EnvironmentException($"no function environment with name {functionName}");
-        return _functionEnvironments[functionName];
+        if (_functionEnvironments.ContainsKey(functionName))
+            return _functionEnvironments[functionName];
+
+        if (_enclosing is not null)
+            return _enclosing.GetFunctionEnvironment(functionName);
+
+        throw new EnvironmentException($"no function environment with name {functionName}");
     }
 
     public void Define(string name, WarblerType type, object? value = null)
@@ -112,7 +114,7 @@ public class WarblerEnvironment
         return Defined(name) && (assignedLocal || assignedEnclosing);
     }
 
-    public Tuple<WarblerType, object?> Get(Token name, bool typeOnly = false)
+    public Tuple<WarblerType, object?> Get(Token name)
     {
         if (_values.ContainsKey(name.Lexeme))
             return _values[name.Lexeme];

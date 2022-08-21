@@ -4,7 +4,6 @@ using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
 using Warbler.Resources.Errors;
-using Warbler.Utils.Exceptions;
 using Warbler.Utils.General;
 using Warbler.Utils.Token;
 
@@ -311,7 +310,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     public object VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)
     {
         var func = new WarblerFunction(expression);
-        _environment.Define(expression.Name.Lexeme, expression.Type, func);
+        _environment.Define(expression.Name.Lexeme, expression.Type, func); // this should be Assign
         return func;
     }
 

@@ -8,3 +8,11 @@ int b = 20
 <:
 
 int c = a + b
+
+\ blockInFunc() int :>
+    :> 5 <:
+<:
+
+"before call"
+blockInFunc()
+"after call"

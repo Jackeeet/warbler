@@ -3,5 +3,4 @@
 public interface IIdProvider
 {
     public EnvId GetEnvironmentId();
-    public SignatureId GetSignatureId();
 }

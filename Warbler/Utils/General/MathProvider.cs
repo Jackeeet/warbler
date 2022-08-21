@@ -8,7 +8,6 @@ internal abstract class MathProvider<T> where T : struct
     public abstract T Modulo(T left, T right);
     public abstract T Add(T left, T right);
     public abstract T Subtract(T left, T right);
-    public abstract T Negate(T number);
 }
 
 internal class DoubleMathProvider : MathProvider<double>
@@ -24,8 +23,6 @@ internal class DoubleMathProvider : MathProvider<double>
     public override double Add(double left, double right) => left + right;
 
     public override double Subtract(double left, double right) => left - right;
-
-    public override double Negate(double number) => -number;
 }
 
 internal class IntMathProvider : MathProvider<int>
@@ -41,6 +38,4 @@ internal class IntMathProvider : MathProvider<int>
     public override int Add(int left, int right) => left + right;
 
     public override int Subtract(int left, int right) => left - right;
-
-    public override int Negate(int number) => -number;
 }

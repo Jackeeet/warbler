@@ -1,0 +1,12 @@
+﻿\ runLoop(int n) int :>
+    while n > 0 :>
+        n = n - 1
+    <:
+<:
+
+runLoop(10)
+
+def x = 5
+while x > 0 :>
+    x = x - 1
+<:
