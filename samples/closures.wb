@@ -1,0 +1,11 @@
+﻿def a = "global"
+
+:>
+    \ showA() string :>
+        a
+    <:
+    
+    showA()
+    def a = "block"
+    showA()
+<:

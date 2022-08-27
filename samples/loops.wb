@@ -2,11 +2,11 @@
     while n > 0 :>
         n = n - 1
     <:
-<:
+<:                              -- prints \ runLoop (Integer)
 
-runLoop(10)
+runLoop(10)                     -- prints 10 (10 iterations)
 
-def x = 5
+def x = 5                       -- prints 5
 while x > 0 :>
     x = x - 1
-<:
+<:                              -- prints 5 (5 iterations)

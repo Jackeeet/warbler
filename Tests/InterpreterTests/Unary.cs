@@ -18,7 +18,6 @@ public static class Unary
     {
         "notNumber",
         "minusBoolean",
-        "unknownOperator",
         "nullExpression",
     };
 
@@ -61,13 +60,6 @@ public static class Unary
             ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
         },
         {
-            "unknownOperator",
-            new UnaryExpression(
-                new Token(TokenKind.Question, "?", null, 1),
-                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
-            ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
-        },
-        {
             "nullExpression",
             new UnaryExpression(
                 new Token(TokenKind.Minus, "-", null, 1),
@@ -83,7 +75,6 @@ public static class Unary
         { "notBoolean", true },
         { "notNumber", new object() },
         { "minusBoolean", new object() },
-        { "unknownOperator", new object() },
         { "nullExpression", new object() },
     };
 }

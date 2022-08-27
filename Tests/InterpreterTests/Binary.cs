@@ -40,7 +40,6 @@ public static class Binary
 
     public static readonly List<string> InvalidNames = new()
     {
-        "unexpectedOperator",
         "nullLeftExpression",
         "nullRightExpression"
     };
@@ -235,13 +234,6 @@ public static class Binary
 
         #region invalid
 
-        {
-            "unexpectedOperator", new BinaryExpression(
-                new LiteralExpression("warb") { Type = new WarblerType(ExpressionType.String), Line = 1 },
-                new Token(TokenKind.Question, "?", null, 1),
-                new LiteralExpression("ler") { Type = new WarblerType(ExpressionType.String), Line = 1 }
-            ) { Type = new WarblerType(ExpressionType.String), Line = 1 }
-        },
         {
             "nullLeftExpression", new BinaryExpression(
                 null!,

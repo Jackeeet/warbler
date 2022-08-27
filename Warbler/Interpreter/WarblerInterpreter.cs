@@ -4,6 +4,7 @@ using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
 using Warbler.Resources.Errors;
+using Warbler.Utils.Exceptions;
 using Warbler.Utils.General;
 using Warbler.Utils.Token;
 
@@ -72,8 +73,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
                 throw new ArgumentException();
         }
 
-        // unreachable
-        throw new ArgumentException();
+        throw new UnreachableException();
     }
 
     public object VisitBinaryExpression(BinaryExpression expression)
@@ -109,8 +109,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
             return EvaluateRelationalBinary(left, right, opKind);
         }
 
-        // unreachable
-        throw new ArgumentException("Unexpected operator");
+        throw new UnreachableException("Unexpected operator");
     }
 
     private static object EvaluateRelationalBinary(object left, object right, TokenKind opKind)
@@ -199,7 +198,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         if (!_environment.Assigned(expression.Name.Lexeme))
             throw new ArgumentException();
 
-        var (storedType, storedValue) = _environment.Get(expression.Name);
+        var (storedType, storedValue) = _environment.GetAssigned(expression.Name);
         Debug.Assert(storedValue != null, nameof(storedValue) + " != null");
 
         return storedType.BaseType switch
@@ -261,7 +260,6 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     public object? VisitBlockExpression(BlockExpression expression)
     {
         // if a block is in a function, it does not get defined until the interpreting stage
-        // I'm not happy with how this works but at least it works
         var blockEnvironment = _environment.HasSubEnvironment(expression.EnvironmentId)
             ? _environment.GetSubEnvironment(expression.EnvironmentId)
             : _environment.AddSubEnvironment(expression.EnvironmentId);
@@ -310,7 +308,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     public object VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)
     {
         var func = new WarblerFunction(expression);
-        _environment.Define(expression.Name.Lexeme, expression.Type, func); // this should be Assign
+        _environment.Define(expression.Name.Lexeme, expression.Type, func); // todo this should be Assign
         return func;
     }
 

@@ -4,6 +4,7 @@ using Tests.Mocks;
 using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.TypeChecker;
+using Warbler.Utils.Exceptions;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
 
@@ -164,7 +165,7 @@ public class CheckerShould
     [Test]
     public void ThrowOnUnexpectedBinaryOp()
     {
-        Assert.Throws<ArgumentException>(() => _checker!.CheckTypes(
+        Assert.Throws<UnreachableException>(() => _checker!.CheckTypes(
                 new BinaryExpression(
                     new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                     new Token(TokenKind.Question, "?", null, 1),

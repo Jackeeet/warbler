@@ -4,6 +4,7 @@ using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
 using Warbler.Resources.Errors;
+using Warbler.Utils.Exceptions;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
 
@@ -53,6 +54,8 @@ public class WarblerChecker : IExpressionVisitor<object?>
         }
         catch (RuntimeError error)
         {
+            // reporting a RUNTIME error at CHECKING stage doesn't make sense
+            // todo figure out how to handle errors like that
             _errorReporter.ReportRuntimeError(error);
             return false;
         }
@@ -132,8 +135,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         else if (relationalOperators.Contains(opKind))
             TypeRelationalBinary(expression);
         else
-            // unreachable
-            throw new ArgumentException($"Unexpected operator {expression.Op.Lexeme}");
+            throw new UnreachableException($"Unexpected operator {expression.Op.Lexeme}");
 
         return null;
     }
@@ -228,7 +230,8 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     public object? VisitVariableExpression(VariableExpression expression)
     {
-        var storedType = _environment.Get(expression.Name).Item1;
+        // this may throw a RuntimeError
+        var storedType = _environment.GetDefined(expression.Name).Item1;
         expression.Type = storedType;
         return null;
     }
@@ -236,7 +239,8 @@ public class WarblerChecker : IExpressionVisitor<object?>
     public object? VisitAssignmentExpression(AssignmentExpression expression)
     {
         AssignExpressionType(expression.Value);
-        var storedType = _environment.Get(expression.Name).Item1;
+        // this may throw a RuntimeError
+        var storedType = _environment.GetDefined(expression.Name).Item1;
         if (expression.Value.Type != storedType)
         {
             throw HandleTypeError(expression,

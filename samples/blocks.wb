@@ -1,18 +1,18 @@
-﻿int a = 10
-int b = 20
+﻿int a = 10                  -- prints 10
+int b = 20                  -- prints 20
 
 :> 
     double a = 15.0
     int b = 30
     -- double d = a + b // throws error
-<:
+<:                          -- prints 30 (b) 
 
-int c = a + b
+int c = a + b               -- prints 30
 
 \ blockInFunc() int :>
-    :> 5 <:
-<:
+    :> 5 <:                 -- returns 5
+<:                          -- returns 5
 
-"before call"
-blockInFunc()
-"after call"
+"before call"               -- prints the string
+blockInFunc()               -- prints 5
+"after call"                -- prints the string

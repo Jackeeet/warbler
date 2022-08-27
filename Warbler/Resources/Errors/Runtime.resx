@@ -24,7 +24,7 @@
     <data name="UndefinedVariable" xml:space="preserve">
         <value>Undefined variable {0}</value>
     </data>
-    <data name="UninitializedVariable" xml:space="preserve">
+    <data name="UnassignedVariable" xml:space="preserve">
         <value>Uninitialized variable {0}</value>
     </data>
 </root>

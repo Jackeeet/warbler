@@ -17,7 +17,7 @@
     <data name="UndefinedVariable" xml:space="preserve">
         <value>Переменная {0} не определена</value>
     </data>
-    <data name="UninitializedVariable" xml:space="preserve">
+    <data name="UnassignedVariable" xml:space="preserve">
         <value>Переменная {0} не инициализирована</value>
     </data>
 </root>

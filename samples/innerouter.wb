@@ -1,0 +1,15 @@
+﻿string a = "outer"              -- prints "outer"
+:>
+    string b = a
+    string a = "inner"
+    a                           -- returns "inner"
+<:                              -- prints "inner"
+
+
+
+string c = "outer 2"            -- prints "outer 2"
+:>
+    string d = c
+    string c = "inner 2"
+    d                           -- returns "outer 2"
+<:                              -- prints "outer 2"

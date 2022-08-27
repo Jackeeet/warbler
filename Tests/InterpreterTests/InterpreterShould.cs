@@ -4,6 +4,7 @@ using Tests.Mocks;
 using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.Interpreter;
+using Warbler.Utils.Exceptions;
 using Warbler.Utils.Id;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
@@ -127,6 +128,19 @@ public class InterpreterShould
     }
 
     [Test]
+    public void ThrowOnUnknownUnaryOperator()
+    {
+        Assert.Throws<UnreachableException>(() =>
+            _interpreter.Interpret(
+                new UnaryExpression(
+                    new Token(TokenKind.Question, "?", null, 1),
+                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
+            )
+        );
+    }
+
+    [Test]
     [TestCaseSource(typeof(Binary), nameof(Binary.ValidNames))]
     [DefaultFloatingPointTolerance(0.000001)]
     public void EvaluateValidBinaryExpressions(string inputName)
@@ -166,6 +180,20 @@ public class InterpreterShould
     }
 
     [Test]
+    public void ThrowOnUnknownBinaryOperator()
+    {
+        Assert.Throws<UnreachableException>(() =>
+            _interpreter.Interpret(
+                new BinaryExpression(
+                    new LiteralExpression("warb") { Type = new WarblerType(ExpressionType.String), Line = 1 },
+                    new Token(TokenKind.Question, "?", null, 1),
+                    new LiteralExpression("ler") { Type = new WarblerType(ExpressionType.String), Line = 1 }
+                ) { Type = new WarblerType(ExpressionType.String), Line = 1 }
+            )
+        );
+    }
+
+    [Test]
     [TestCaseSource(typeof(Ternary), nameof(Ternary.ValidNames))]
     public void EvaluateValidTernaryExpressions(string inputName)
     {
@@ -198,7 +226,7 @@ public class InterpreterShould
 
         var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
         Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
-        var (_, storedValue) = _interpreter.GlobalEnvironment.Get(
+        var (_, storedValue) = _interpreter.GlobalEnvironment.GetDefined(
             new Token(TokenKind.Identifier, inputName, null, 1));
 
         Assert.AreEqual(expected, storedValue);
@@ -212,12 +240,12 @@ public class InterpreterShould
         Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
         var variableToken = new Token(TokenKind.Identifier, inputName, null, 1);
 
-        var initialValue = _interpreter.GlobalEnvironment.Get(variableToken);
+        var initialValue = _interpreter.GlobalEnvironment.GetDefined(variableToken);
         var expected = Variable.Outputs[inputName];
 
         var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
         Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
-        var (_, storedValue) = _interpreter.GlobalEnvironment.Get(variableToken);
+        var (_, storedValue) = _interpreter.GlobalEnvironment.GetDefined(variableToken);
 
         Assert.AreEqual(expected, storedValue);
         Assert.AreNotEqual(initialValue, storedValue);

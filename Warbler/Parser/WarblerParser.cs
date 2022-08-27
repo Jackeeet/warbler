@@ -2,6 +2,7 @@
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
+using Warbler.Utils.Exceptions;
 using Warbler.Utils.Id;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
@@ -369,7 +370,7 @@ public class WarblerParser
                 TokenKind.DoubleLiteral => ExpressionType.Double,
                 TokenKind.StringLiteral => ExpressionType.String,
                 TokenKind.CharLiteral => ExpressionType.Char,
-                _ => throw new ArgumentException() // unreachable
+                _ => throw new UnreachableException()
             };
             Debug.Assert(PreviousToken.Literal != null, "PreviousToken.Literal != null");
             return new LiteralExpression(PreviousToken.Literal)

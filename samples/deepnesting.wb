@@ -1,0 +1,11 @@
+﻿string a = "global"         -- prints "global"
+:>
+    string b = "block 1"    
+    :>
+        string c = "block 2"
+        c                   -- returns "block 2"      
+    <: 
+<:                          -- returns "block 2"
+
+                            -- prints "block 2"
+

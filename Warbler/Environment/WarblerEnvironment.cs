@@ -106,25 +106,6 @@ public class WarblerEnvironment
         return _values.ContainsKey(name);
     }
 
-    public bool Assigned(string name)
-    {
-        var assignedLocal = _values.ContainsKey(name) && _values[name].Item2 is not null;
-        var assignedEnclosing = _enclosing is not null && _enclosing.Assigned(name);
-
-        return Defined(name) && (assignedLocal || assignedEnclosing);
-    }
-
-    public Tuple<WarblerType, object?> Get(Token name)
-    {
-        if (_values.ContainsKey(name.Lexeme))
-            return _values[name.Lexeme];
-
-        if (_enclosing is not null)
-            return _enclosing.Get(name);
-
-        throw new RuntimeError(name, string.Format(Runtime.UndefinedVariable, name.Lexeme));
-    }
-
     public void Assign(Token name, object? value)
     {
         if (DefinedLocal(name.Lexeme))
@@ -136,6 +117,62 @@ public class WarblerEnvironment
 
         if (_enclosing is null)
             throw new RuntimeError(name, Runtime.UndefinedVariable);
+
         _enclosing.Assign(name, value);
+    }
+
+    public bool Assigned(string name)
+    {
+        var assignedEnclosing = _enclosing is not null && _enclosing.Assigned(name);
+        return Defined(name) && (AssignedLocal(name) || assignedEnclosing);
+    }
+
+    private bool AssignedLocal(string name)
+    {
+        return _values.ContainsKey(name) && _values[name].Item2 is not null;
+    }
+
+    public Tuple<WarblerType, object?> GetDefined(Token name)
+    {
+        if (DefinedLocal(name.Lexeme))
+        {
+            return _values[name.Lexeme];
+        }
+
+        if (_enclosing is not null)
+        {
+            return _enclosing.GetDefined(name);
+        }
+
+        // an undefined variable really should not be a runtime error
+        // because we can find undefined variables at checking stage
+        // todo throw a more appropriate error
+        throw new RuntimeError(name, string.Format(Runtime.UndefinedVariable, name.Lexeme));
+    }
+
+    public Tuple<WarblerType, object?> GetAssigned(Token name)
+    {
+        if (AssignedLocal(name.Lexeme))
+        {
+            return _values[name.Lexeme];
+        }
+
+        if (_enclosing is not null)
+        {
+            return _enclosing.GetAssigned(name);
+        }
+
+        throw new RuntimeError(name, string.Format(Runtime.UnassignedVariable, name.Lexeme));
+    }
+
+    public Tuple<WarblerType, object?> GetEnclosing(Token name)
+    {
+        if (_enclosing is null)
+            throw new ArgumentException();
+
+        if (_enclosing.Assigned(name.Lexeme))
+            return _enclosing.GetDefined(name);
+
+        throw new UnreachableException();
     }
 }
