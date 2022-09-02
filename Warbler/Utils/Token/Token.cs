@@ -1,6 +1,8 @@
-﻿namespace Warbler.Utils.Token;
+﻿using Warbler.Utils.General;
 
-public class Token
+namespace Warbler.Utils.Token;
+
+public class Token : IRepresentable
 {
     public TokenKind Kind { get; }
     public string Lexeme { get; }
@@ -20,6 +22,11 @@ public class Token
         return Literal is null
             ? $"{Kind} \"{Lexeme}\" (line {LineNumber})"
             : $"{Kind} \"{Lexeme}\" {Literal} (line {LineNumber})";
+    }
+
+    public string DefaultRepresentation()
+    {
+        return $"new Token(TokenKind.{Kind}, \"{Lexeme}\", {Literal ?? "null"}, {LineNumber})";
     }
 
     public override bool Equals(object? obj)

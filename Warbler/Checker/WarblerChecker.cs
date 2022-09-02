@@ -3,12 +3,11 @@ using Warbler.Environment;
 using Warbler.ErrorReporting;
 using Warbler.Errors;
 using Warbler.Expressions;
-using Warbler.Resources.Errors;
 using Warbler.Utils.Exceptions;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;
 
-namespace Warbler.TypeChecker;
+namespace Warbler.Checker;
 
 public class WarblerChecker : IExpressionVisitor<object?>
 {
@@ -114,10 +113,10 @@ public class WarblerChecker : IExpressionVisitor<object?>
             throw new ArgumentException("Unexpected unary operator");
 
         if (expression.Op.Kind == TokenKind.Not && innerType.BaseType != ExpressionType.Boolean)
-            throw HandleTypeError(expression, Checker.NegateNonBoolean);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NegateNonBoolean);
 
         if (expression.Op.Kind == TokenKind.Minus && !IsNumeric(innerType))
-            throw HandleTypeError(expression, Checker.NegateNonNumeric);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NegateNonNumeric);
 
         expression.Type = innerType;
     }
@@ -148,7 +147,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (!(left.Type == right.Type || numeric))
         {
             throw HandleTypeError(expression,
-                string.Format(Checker.ComparisonOperandsMismatch, left.Type, right.Type));
+                string.Format(Resources.Errors.Checker.ComparisonOperandsMismatch, left.Type, right.Type));
         }
 
         if (numeric)
@@ -162,7 +161,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         var left = expression.Left;
         var right = expression.Right;
         if (!CheckNumericOperands(left, right))
-            throw HandleTypeError(expression, Checker.NonNumericBinaryOperands);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NonNumericBinaryOperands);
 
         expression.Type = CoerceNumeric(left, right);
     }
@@ -171,7 +170,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         if (expression.Left.Type.BaseType != ExpressionType.String ||
             expression.Right.Type.BaseType != ExpressionType.String)
-            throw HandleTypeError(expression, Checker.NonStringConcatenation);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NonStringConcatenation);
         expression.Type = new WarblerType(ExpressionType.String);
     }
 
@@ -179,7 +178,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     {
         AssignExpressionType(expression.Condition);
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
-            throw HandleTypeError(expression, Checker.NonBooleanCondition);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
         var thenBranch = expression.ThenBranch;
         var elseBranch = expression.ElseBranch;
@@ -188,7 +187,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         var numeric = CheckNumericOperands(thenBranch, elseBranch);
 
         if (!(thenBranch.Type == elseBranch.Type || numeric))
-            throw HandleTypeError(expression, Checker.TernaryBranchesMismatch);
+            throw HandleTypeError(expression, Resources.Errors.Checker.TernaryBranchesMismatch);
 
         if (numeric)
             CoerceNumeric(thenBranch, elseBranch);
@@ -220,7 +219,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
             expression.VarType.Kind != types[expression.Initializer.Type.BaseType])
         {
             throw HandleTypeError(expression,
-                string.Format(Checker.VariableAssignmentMismatch, expression.VarType.Kind));
+                string.Format(Resources.Errors.Checker.VariableAssignmentMismatch, expression.VarType.Kind));
         }
 
         expression.Type = expression.Initializer.Type;
@@ -244,7 +243,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (expression.Value.Type != storedType)
         {
             throw HandleTypeError(expression,
-                string.Format(Checker.VariableAssignmentMismatch, expression.Value.Type));
+                string.Format(Resources.Errors.Checker.VariableAssignmentMismatch, expression.Value.Type));
         }
 
         expression.Type = expression.Value.Type;
@@ -263,14 +262,14 @@ public class WarblerChecker : IExpressionVisitor<object?>
         AssignExpressionType(expression.Condition);
 
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
-            throw HandleTypeError(expression, Checker.NonBooleanCondition);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
         AssignExpressionType(expression.ThenBranch);
         if (expression.ElseBranch is not null)
         {
             AssignExpressionType(expression.ElseBranch);
             if (expression.ThenBranch.Type != expression.ElseBranch.Type)
-                throw HandleTypeError(expression, Checker.ConditionBranchesMismatch);
+                throw HandleTypeError(expression, Resources.Errors.Checker.ConditionBranchesMismatch);
         }
 
         expression.Type = expression.ThenBranch.Type;
@@ -282,7 +281,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         AssignExpressionType(expression.Condition);
 
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
-            throw HandleTypeError(expression, Checker.NonBooleanCondition);
+            throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
         AssignExpressionType(expression.Actions);
 
@@ -313,7 +312,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         // signature is not null because the method calling this method
         // checks signature for null before the call
         if (expression.Body.Type != functionType.Signature!.ReturnType)
-            throw HandleTypeError(expression, Checker.FunctionSignatureMismatch);
+            throw HandleTypeError(expression, Resources.Errors.Checker.FunctionSignatureMismatch);
 
         _environment = previousEnvironment;
     }
@@ -337,13 +336,13 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (signature is null)
         {
             throw HandleTypeError(expression,
-                string.Format(Checker.CallUncallable, expression.Called));
+                string.Format(Resources.Errors.Checker.CallUncallable, expression.Called));
         }
 
         if (signature.Parameters.Count != expression.Args.Count)
         {
             throw HandleTypeError(expression,
-                string.Format(Checker.ArgumentCountMismatch, signature.Parameters.Count));
+                string.Format(Resources.Errors.Checker.ArgumentCountMismatch, signature.Parameters.Count));
         }
 
         for (int i = 0; i < signature.Parameters.Count; i++)
@@ -352,7 +351,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
             if (expression.Args[i].Type != signature.Parameters[i])
             {
                 throw HandleTypeError(expression,
-                    string.Format(Checker.ArgumentTypeMismatch, signature.Parameters[i]));
+                    string.Format(Resources.Errors.Checker.ArgumentTypeMismatch, signature.Parameters[i]));
             }
         }
 

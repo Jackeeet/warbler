@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Tests.Mocks;
-using Warbler.Environment;
 using Warbler.Expressions;
 using Warbler.Interpreter;
+using Warbler.Resolver;
 using Warbler.Utils.Exceptions;
 using Warbler.Utils.Id;
 using Warbler.Utils.Token;
@@ -18,26 +19,53 @@ public class InterpreterShould
 
     private TestIdProvider _idProvider = null!;
 
+    private WarblerResolver _resolver = null!;
+
     private WarblerInterpreter _interpreter = null!;
+
+    private Stack<Dictionary<string, bool>> _scopes = null!;
 
     [OneTimeSetUp]
     public void BeforeFixture()
     {
         _errorReporter = new TestReporter();
         _idProvider = new TestIdProvider();
+        _scopes = new Stack<Dictionary<string, bool>>();
     }
 
     [SetUp]
     public void BeforeTest()
     {
         _errorReporter.Reset();
-        _interpreter = new WarblerInterpreter(_errorReporter, new WarblerEnvironment());
-        PredefineVariables();
+        // _interpreter = new WarblerInterpreter(_errorReporter, new WarblerEnvironment());
+        SetupGlobalScope();
+        _resolver = new WarblerResolver(_errorReporter);
+        SetupGlobalEnvironment();
     }
 
-    private void PredefineVariables()
+    private void SetupGlobalScope()
+    {
+        var globalScope = new Dictionary<string, bool>
+        {
+            ["intVar"] = true,
+            ["reassignInt"] = true,
+            ["reassignDouble"] = true,
+            ["reassignBool"] = true,
+            ["reassignChar"] = true,
+            ["reassignString"] = true,
+            ["reassignExpression"] = true,
+            ["reassignVariable"] = true,
+            ["i"] = true,
+            ["j"] = true,
+            ["undef"] = false,
+        };
+        _scopes.Push(globalScope);
+    }
+
+    private void SetupGlobalEnvironment()
     {
         DefineGlobals();
+
         _interpreter.GlobalEnvironment.Assign(
             new Token(TokenKind.Identifier, "intVar", null, 1), 10);
         _interpreter.GlobalEnvironment.Assign(
@@ -102,9 +130,11 @@ public class InterpreterShould
     [TestCaseSource(typeof(Literal), nameof(Literal.ValidNames))]
     public void EvaluateValidLiteralExpressions(string inputName)
     {
+        var expr = Literal.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = Literal.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(Literal.Inputs[inputName]);
+        var actual = _interpreter.Interpret(expr);
 
         Assert.AreEqual(expected, actual);
     }
@@ -113,9 +143,11 @@ public class InterpreterShould
     [TestCaseSource(typeof(Unary), nameof(Unary.ValidNames))]
     public void EvaluateValidUnaryExpressions(string inputName)
     {
+        var expr = Unary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr! });
         var expected = Unary.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(Unary.Inputs[inputName]);
+        var actual = _interpreter.Interpret(expr!);
 
         Assert.AreEqual(expected, actual);
     }
@@ -124,19 +156,21 @@ public class InterpreterShould
     [TestCaseSource(typeof(Unary), nameof(Unary.InvalidNames))]
     public void ThrowOnInvalidUnaryExpressions(string inputName)
     {
-        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(Unary.Inputs[inputName]));
+        var expr = Unary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr! });
+        Assert.Throws<ArgumentException>(() =>
+            _interpreter.Interpret(expr!)
+        );
     }
 
     [Test]
     public void ThrowOnUnknownUnaryOperator()
     {
+        var expr = Unary.Inputs["unknownOperator"];
+        _resolver.Resolve(new List<Expression> { expr! });
+
         Assert.Throws<UnreachableException>(() =>
-            _interpreter.Interpret(
-                new UnaryExpression(
-                    new Token(TokenKind.Question, "?", null, 1),
-                    new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
-                ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
-            )
+            _interpreter.Interpret(expr!)
         );
     }
 
@@ -145,6 +179,8 @@ public class InterpreterShould
     [DefaultFloatingPointTolerance(0.000001)]
     public void EvaluateValidBinaryExpressions(string inputName)
     {
+        var expr = Binary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = Binary.Outputs[inputName];
 
         var actual = _interpreter.Interpret(Binary.Inputs[inputName]);
@@ -155,7 +191,8 @@ public class InterpreterShould
     [Test]
     public void HandleDivisionByZero()
     {
-        var divByZero = new BinaryExpression(
+        // todo move to Binary.cs
+        var expr = new BinaryExpression(
             new LiteralExpression(39) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
             new Token(TokenKind.Slash, "/", null, 1),
             new BinaryExpression(
@@ -165,7 +202,8 @@ public class InterpreterShould
             ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
         ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 };
 
-        var value = _interpreter.Interpret(divByZero);
+        _resolver.Resolve(new List<Expression> { expr });
+        var value = _interpreter.Interpret(expr);
 
         Assert.IsTrue(_errorReporter.HadRuntimeError);
         Assert.IsNull(value);
@@ -176,20 +214,26 @@ public class InterpreterShould
     [TestCaseSource(typeof(Binary), nameof(Binary.InvalidNames))]
     public void ThrowOnInvalidBinaryExpressions(string inputName)
     {
-        Assert.Throws<ArgumentException>(() => _interpreter.Interpret(Binary.Inputs[inputName]));
+        var expr = Binary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
+        Assert.Throws<ArgumentException>(() =>
+            _interpreter.Interpret(Binary.Inputs[inputName]));
     }
 
     [Test]
     public void ThrowOnUnknownBinaryOperator()
     {
+        // todo move to Binary.cs
+        var expr = new BinaryExpression(
+            new LiteralExpression("warb") { Type = new WarblerType(ExpressionType.String), Line = 1 },
+            new Token(TokenKind.Question, "?", null, 1),
+            new LiteralExpression("ler") { Type = new WarblerType(ExpressionType.String), Line = 1 }
+        ) { Type = new WarblerType(ExpressionType.String), Line = 1 };
+
+        _resolver.Resolve(new List<Expression> { expr });
+
         Assert.Throws<UnreachableException>(() =>
-            _interpreter.Interpret(
-                new BinaryExpression(
-                    new LiteralExpression("warb") { Type = new WarblerType(ExpressionType.String), Line = 1 },
-                    new Token(TokenKind.Question, "?", null, 1),
-                    new LiteralExpression("ler") { Type = new WarblerType(ExpressionType.String), Line = 1 }
-                ) { Type = new WarblerType(ExpressionType.String), Line = 1 }
-            )
+            _interpreter.Interpret(expr)
         );
     }
 
@@ -197,6 +241,8 @@ public class InterpreterShould
     [TestCaseSource(typeof(Ternary), nameof(Ternary.ValidNames))]
     public void EvaluateValidTernaryExpressions(string inputName)
     {
+        var expr = Ternary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = Ternary.Outputs[inputName];
 
         var actual = _interpreter.Interpret(Ternary.Inputs[inputName]);
@@ -208,6 +254,8 @@ public class InterpreterShould
     [TestCaseSource(typeof(Ternary), nameof(Ternary.InvalidNames))]
     public void ThrowOnInvalidTernaryExpressions(string inputName)
     {
+        var expr = Ternary.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         Assert.Throws<ArgumentException>(() =>
             _interpreter.Interpret(Ternary.Inputs[inputName])
         );
@@ -222,9 +270,12 @@ public class InterpreterShould
         // matches the declared type
         // thus before a vardecl expression is evaluated (and assigned), the name is already defined
         Assert.True(_interpreter.GlobalEnvironment.Defined(inputName));
+
+        var expr = Variable.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = Variable.Outputs[inputName];
 
-        var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
+        var returnValue = _interpreter.Interpret(expr);
         Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
         var (_, storedValue) = _interpreter.GlobalEnvironment.GetDefined(
             new Token(TokenKind.Identifier, inputName, null, 1));
@@ -242,8 +293,10 @@ public class InterpreterShould
 
         var initialValue = _interpreter.GlobalEnvironment.GetDefined(variableToken);
         var expected = Variable.Outputs[inputName];
+        var expr = Variable.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
 
-        var returnValue = _interpreter.Interpret(Variable.Inputs[inputName]);
+        var returnValue = _interpreter.Interpret(expr);
         Assert.True(_interpreter.GlobalEnvironment.Assigned(inputName));
         var (_, storedValue) = _interpreter.GlobalEnvironment.GetDefined(variableToken);
 
@@ -256,6 +309,8 @@ public class InterpreterShould
     [TestCaseSource(typeof(Variable), nameof(Variable.InvalidNames))]
     public void ThrowOnUndefinedVariable(string inputName)
     {
+        var expr = Variable.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         Assert.Throws<ArgumentException>(() =>
             _interpreter.Interpret(Variable.Inputs[inputName])
         );
@@ -282,9 +337,11 @@ public class InterpreterShould
             .GetSubEnvironment(innerBlockId)
             .Define("block", new WarblerType(ExpressionType.Integer));
 
+        var expr = Block.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = Block.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(Block.Inputs[inputName]);
+        var actual = _interpreter.Interpret(expr);
 
         Assert.AreEqual(expected, actual);
     }
@@ -297,9 +354,11 @@ public class InterpreterShould
         _interpreter.GlobalEnvironment.GetSubEnvironment(_idProvider.GetEnvironmentId())
             .AddSubEnvironment(new EnvId(new Guid("00000000-0000-0000-0000-000000000001")));
 
+        var expr = WhileLoop.Inputs[inputName];
+        _resolver.Resolve(new List<Expression> { expr });
         var expected = WhileLoop.Outputs[inputName];
 
-        var actual = _interpreter.Interpret(WhileLoop.Inputs[inputName]);
+        var actual = _interpreter.Interpret(expr);
 
         Assert.AreEqual(expected, actual);
     }

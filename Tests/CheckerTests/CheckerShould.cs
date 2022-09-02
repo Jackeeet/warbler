@@ -1,9 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
 using Tests.Mocks;
+using Warbler.Checker;
 using Warbler.Environment;
 using Warbler.Expressions;
-using Warbler.TypeChecker;
 using Warbler.Utils.Exceptions;
 using Warbler.Utils.Token;
 using Warbler.Utils.Type;

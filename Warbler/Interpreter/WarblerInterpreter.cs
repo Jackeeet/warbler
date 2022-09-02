@@ -7,6 +7,7 @@ using Warbler.Resources.Errors;
 using Warbler.Utils.Exceptions;
 using Warbler.Utils.General;
 using Warbler.Utils.Token;
+using Warbler.Utils.Type;
 
 namespace Warbler.Interpreter;
 
@@ -24,13 +25,15 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
     };
 
     private readonly IErrorReporter _errorReporter;
-
     public readonly WarblerEnvironment GlobalEnvironment;
     private WarblerEnvironment _environment;
+    private readonly Dictionary<Expression, int?> _locals;
 
-    public WarblerInterpreter(IErrorReporter errorReporter, WarblerEnvironment globalEnvironment)
+    public WarblerInterpreter(IErrorReporter errorReporter, WarblerEnvironment globalEnvironment,
+        Dictionary<Expression, int?> locals)
     {
         GlobalEnvironment = globalEnvironment;
+        _locals = locals;
         _errorReporter = errorReporter;
         _environment = GlobalEnvironment;
     }
@@ -195,10 +198,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object VisitVariableExpression(VariableExpression expression)
     {
-        if (!_environment.Assigned(expression.Name.Lexeme))
-            throw new ArgumentException();
-
-        var (storedType, storedValue) = _environment.GetAssigned(expression.Name);
+        var (storedType, storedValue) = LookupVariable(expression.Name, expression);
         Debug.Assert(storedValue != null, nameof(storedValue) + " != null");
 
         return storedType.BaseType switch
@@ -213,6 +213,15 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         };
     }
 
+    private Tuple<WarblerType, object?> LookupVariable(Token name, Expression expression)
+    {
+        var level = _locals[expression];
+        var variable = level is not null
+            ? _environment.GetAt(level.Value, name.Lexeme)
+            : GlobalEnvironment.GetAssigned(name);
+        return variable;
+    }
+
     public object VisitAssignmentExpression(AssignmentExpression expression)
     {
         if (!_environment.Defined(expression.Name.Lexeme))
@@ -221,6 +230,16 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         var value = Evaluate(expression.Value);
         if (value is null)
             throw new ArgumentException();
+
+        var level = _locals[expression];
+        if (level is null)
+        {
+            GlobalEnvironment.Assign(expression.Name, value);
+        }
+        else
+        {
+            _environment.AssignAt(level.Value, expression.Name, value);
+        }
 
         _environment.Assign(expression.Name, value);
         return value;

@@ -1,4 +1,5 @@
-﻿using Warbler.Errors;
+﻿using System.Diagnostics;
+using Warbler.Errors;
 using Warbler.Resources.Errors;
 using Warbler.Utils.Exceptions;
 using Warbler.Utils.Id;
@@ -165,14 +166,29 @@ public class WarblerEnvironment
         throw new RuntimeError(name, string.Format(Runtime.UnassignedVariable, name.Lexeme));
     }
 
-    public Tuple<WarblerType, object?> GetEnclosing(Token name)
+    public Tuple<WarblerType, object?> GetAt(int level, string name)
     {
-        if (_enclosing is null)
-            throw new ArgumentException();
+        return Ancestor(level)._values[name];
+    }
 
-        if (_enclosing.Assigned(name.Lexeme))
-            return _enclosing.GetDefined(name);
+    public void AssignAt(int level, Token name, object? value)
+    {
+        var env = Ancestor(level);
+        var type = env._values[name.Lexeme].Item1;
+        env._values[name.Lexeme] = Tuple.Create(type, value);
+    }
 
-        throw new UnreachableException();
+    public WarblerEnvironment Ancestor(int level)
+    {
+        var env = this;
+        for (int i = 0; i < level - 1; i++)
+        // for (int i = 0; i < level; i++)
+        {
+            Debug.Assert(env != null, nameof(env) + " != null");
+            env = env._enclosing;
+        }
+
+        Debug.Assert(env != null, nameof(env) + " != null");
+        return env;
     }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text;
 using Warbler.Utils.General;
 using Warbler.Utils.Id;
 using Warbler.Utils.Token;
@@ -5,7 +7,7 @@ using Warbler.Utils.Type;
 
 namespace Warbler.Expressions;
 
-public abstract class Expression
+public abstract class Expression : IRepresentable
 {
     public WarblerType Type { get; set; }
 
@@ -14,6 +16,8 @@ public abstract class Expression
     public abstract T Accept<T>(IExpressionVisitor<T> visitor);
 
     public override string ToString() => $"Type: {Type}, Line: {Line}";
+
+    public abstract string DefaultRepresentation();
 }
 
 public class UnaryExpression : Expression
@@ -30,6 +34,14 @@ public class UnaryExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitUnaryExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        return "new UnaryExpression(\n" +
+               $"    {Op.DefaultRepresentation()},\n" +
+               $"    {Expression.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
     }
 
     protected bool Equals(UnaryExpression other)
@@ -67,6 +79,15 @@ public class BinaryExpression : Expression
         return visitor.VisitBinaryExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        return "new BinaryExpression(\n" +
+               $"    {Left.DefaultRepresentation()},\n" +
+               $"    {Op.DefaultRepresentation()},\n" +
+               $"    {Right.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
+    }
+
     protected bool Equals(BinaryExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && Left.Equals(other.Left) && Op.Equals(other.Op) &&
@@ -102,6 +123,15 @@ public class TernaryExpression : Expression
         return visitor.VisitTernaryExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        return "new TernaryExpression(\n" +
+               $"    {Condition.DefaultRepresentation()},\n" +
+               $"    {ThenBranch.DefaultRepresentation()},\n" +
+               $"    {ElseBranch.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
+    }
+
     protected bool Equals(TernaryExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && Condition.Equals(other.Condition) &&
@@ -131,6 +161,19 @@ public class LiteralExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitLiteralExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        var constr = "new LiteralExpression(";
+        var type = ") {{ Type = new {Type}, Line = 1 }}";
+        if (Value is string)
+            return constr + $"\"{Value}\"" + type;
+
+        if (Value is char)
+            return constr + $"\'{Value}\'" + type;
+
+        return constr + $"{Value}" + type;
     }
 
     protected bool Equals(LiteralExpression other)
@@ -167,6 +210,15 @@ public class VariableDeclarationExpression : Expression
         return visitor.VisitVariableDeclarationExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        return "new VariableDeclarationExpression(\n" +
+               $"    {VarType.DefaultRepresentation()},\n" +
+               $"    {Name.DefaultRepresentation()},\n" +
+               $"    {Initializer.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
+    }
+
     protected bool Equals(VariableDeclarationExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && VarType.Equals(other.VarType) &&
@@ -196,6 +248,13 @@ public class VariableExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitVariableExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        return "new VariableExpression(\n" +
+               $"    {Name.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
     }
 
     protected bool Equals(VariableExpression other)
@@ -230,6 +289,14 @@ public class AssignmentExpression : Expression
         return visitor.VisitAssignmentExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        return "new VariableDeclarationExpression(\n" +
+               $"    {Name.DefaultRepresentation()},\n" +
+               $"    {Value.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
+    }
+
     protected bool Equals(AssignmentExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && Name.Equals(other.Name) &&
@@ -261,6 +328,24 @@ public class BlockExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitBlockExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        var builder = new StringBuilder("new BlockExpression(\n" +
+                                        "    new EnvId(new Guid()),\n" +
+                                        "    new List<Expression?> {\n");
+        foreach (var expr in Expressions)
+        {
+            Debug.Assert(expr != null, nameof(expr) + " != null");
+            builder.Append(expr.DefaultRepresentation());
+            builder.Append(",\n");
+        }
+
+        builder.Append("    }\n" +
+                       $") {{ Type = new {Type}, Line = 1 }} ");
+
+        return builder.ToString();
     }
 
     protected bool Equals(BlockExpression other)
@@ -298,6 +383,16 @@ public class ConditionalExpression : Expression
         return visitor.VisitConditionalExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        var elseBranch = ElseBranch is null ? "null" : ElseBranch.DefaultRepresentation();
+        return "new ConditionalExpression(\n" +
+               $"    {Condition.DefaultRepresentation()},\n" +
+               $"    {ThenBranch.DefaultRepresentation()},\n" +
+               $"    {elseBranch}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
+    }
+
     protected bool Equals(ConditionalExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && Condition.Equals(other.Condition) &&
@@ -331,6 +426,14 @@ public class WhileLoopExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitWhileLoopExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        return "new WhileLoopExpression(\n" +
+               $"    {Condition.DefaultRepresentation()},\n" +
+               $"    {Actions.DefaultRepresentation()}\n" +
+               $") {{ Type = new {Type}, Line = 1 }}";
     }
 
     protected bool Equals(WhileLoopExpression other)
@@ -373,6 +476,26 @@ public class FunctionDeclarationExpression : Expression
         return visitor.VisitFunctionDeclarationExpression(this);
     }
 
+    public override string DefaultRepresentation()
+    {
+        var builder = new StringBuilder("new FunctionDeclarationExpression(\n" +
+                                        "    new EnvId(new Guid()),\n" +
+                                        $"    {Name.DefaultRepresentation()},\n" +
+                                        "    new List<Tuple<TypeData, Token>> {\n");
+        foreach (var (type, token) in Parameters)
+        {
+            builder.Append("    Tuple.Create(\n" +
+                           $"        new {type},\n" +
+                           $"        {token.DefaultRepresentation()}\n" +
+                           "    ), \n},");
+        }
+
+        builder.Append($"new {ReturnType},\n");
+        builder.Append(Body.DefaultRepresentation());
+        builder.Append($"\n) {{ Type = {Type}, Line = 1 }}");
+        return builder.ToString();
+    }
+
     protected bool Equals(FunctionDeclarationExpression other)
     {
         return Type.Equals(other.Type) && Line.Equals(other.Line) && EnvironmentId.Equals(other.EnvironmentId) &&
@@ -406,6 +529,22 @@ public class CallExpression : Expression
     public override T Accept<T>(IExpressionVisitor<T> visitor)
     {
         return visitor.VisitCallExpression(this);
+    }
+
+    public override string DefaultRepresentation()
+    {
+        var builder = new StringBuilder("new CallExpression(\n" +
+                                        $"    {Called.DefaultRepresentation()},\n" +
+                                        "    new List<Expression> {\n");
+
+        foreach (var arg in Args)
+        {
+            builder.Append($"        {arg.DefaultRepresentation()},\n");
+        }
+
+        builder.Append($"}}\n) {{ Type = {Type}, Line = 1 }} ");
+
+        return builder.ToString();
     }
 
     protected bool Equals(CallExpression other)

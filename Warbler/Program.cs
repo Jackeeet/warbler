@@ -16,6 +16,9 @@ internal class Program
             case 1:
                 warbler.RunFile(args[0]);
                 break;
+            case 2:
+                warbler.RunExpressionsGenerator(args[0], args[1]);
+                break;
             default:
                 Console.WriteLine(Common.Usage);
                 break;

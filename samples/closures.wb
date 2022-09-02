@@ -9,3 +9,4 @@
     def a = "block"
     showA()
 <:
+
