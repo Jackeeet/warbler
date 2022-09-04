@@ -15,8 +15,6 @@ public class WarblerResolver : IExpressionVisitor<object?>
     {
         _errorReporter = errorReporter;
         _scopes = new Stack<Dictionary<string, bool>>();
-        // global scope
-        // _scopes.Push(new Dictionary<string, bool>());
     }
 
     public Dictionary<Expression, int?> Resolve(List<Expression> expressions)
@@ -42,13 +40,12 @@ public class WarblerResolver : IExpressionVisitor<object?>
         {
             if (scopes[i].ContainsKey(name.Lexeme))
             {
-                // _locals[expression] = scopes.Length - i - 1;
-                _locals[expression] = scopes.Length - i - 2;
+                _locals[expression] = scopes.Length - i - 1;
                 return;
             }
         }
 
-        // this means that the variable is supposed to be a global one
+        // this means that the variable is global
         _locals[expression] = null;
     }
 

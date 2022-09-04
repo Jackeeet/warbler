@@ -23,8 +23,12 @@ public class WarblerFunction : ICallable
             var (_, name) = _declaration.Parameters[i];
             functionEnvironment.Assign(name, args[i]);
         }
-
+        
         var functionBodyEnvironment = functionEnvironment.GetSubEnvironment(_declaration.Body.EnvironmentId);
+        // this is a temporary solution -
+        // todo merge funcEnv and funcBodyEnv
+        WarblerEnvironment.CopyValues(functionEnvironment, functionBodyEnvironment);
+        
         return interpreter.InterpretBlock(_declaration.Body, functionBodyEnvironment) ?? throw new ArgumentException();
     }
 

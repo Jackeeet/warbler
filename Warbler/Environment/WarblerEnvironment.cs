@@ -53,6 +53,14 @@ public class WarblerEnvironment
         );
     }
 
+    public static void CopyValues(WarblerEnvironment from, WarblerEnvironment to)
+    {
+        foreach (var pair in from._values)
+        {
+            to._values[pair.Key] = pair.Value;
+        }
+    }
+
     public bool HasSubEnvironment(EnvId environmentId)
     {
         return _subEnvironments.ContainsKey(environmentId);
@@ -182,7 +190,7 @@ public class WarblerEnvironment
     {
         var env = this;
         for (int i = 0; i < level - 1; i++)
-        // for (int i = 0; i < level; i++)
+            // for (int i = 0; i < level; i++)
         {
             Debug.Assert(env != null, nameof(env) + " != null");
             env = env._enclosing;
