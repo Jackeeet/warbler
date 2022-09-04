@@ -293,11 +293,13 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
         // condition is true -> "then" branch gets evaluated
         if (boolCondition)
-            return Evaluate(expression.ThenBranch);
+            return EvaluateBlock(expression.ThenBranch);
+        // return Evaluate(expression.ThenBranch);
 
         // condition is false -> "else" branch exists and gets evaluated
         if (expression.ElseBranch is not null)
-            return Evaluate(expression.ElseBranch);
+            return EvaluateBlock(expression.ElseBranch);
+        // return Evaluate(expression.ElseBranch);
 
         // condition is false and there is no else branch
         return null;
@@ -317,23 +319,28 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         // it is always a basic expression (never null) so evaluated condition is never null as well
         while ((bool)Evaluate(expression.Condition)!)
         {
-            if (expression.Actions is BlockExpression blockActions)
-            {
-                foreach (var expr in blockActions.Expressions)
-                {
-                    Debug.Assert(expr != null, nameof(expr) + " != null");
-                    Evaluate(expr);
-                }
-            }
-            else
-            {
-                Evaluate(expression.Actions);
-            }
-
+            _ = EvaluateBlock(expression.Actions);
             loopCount++;
         }
 
         return loopCount;
+    }
+
+    private object EvaluateBlock(Expression expression)
+    {
+        if (expression is BlockExpression blockExpression)
+        {
+            for (var i = 0; i < blockExpression.Expressions.Count - 1; i++)
+            {
+                var expr = blockExpression.Expressions[i];
+                Debug.Assert(expr != null, nameof(expr) + " != null");
+                Evaluate(expr);
+            }
+
+            return Evaluate(blockExpression.Expressions[^1]!) ?? throw new ArgumentException();
+        }
+
+        return Evaluate(expression) ?? throw new ArgumentException();
     }
 
     public object VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)
