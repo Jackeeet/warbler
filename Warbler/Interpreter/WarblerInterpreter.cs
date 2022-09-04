@@ -317,7 +317,19 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         // it is always a basic expression (never null) so evaluated condition is never null as well
         while ((bool)Evaluate(expression.Condition)!)
         {
-            Evaluate(expression.Actions);
+            if (expression.Actions is BlockExpression blockActions)
+            {
+                foreach (var expr in blockActions.Expressions)
+                {
+                    Debug.Assert(expr != null, nameof(expr) + " != null");
+                    Evaluate(expr);
+                }
+            }
+            else
+            {
+                Evaluate(expression.Actions);
+            }
+
             loopCount++;
         }
 

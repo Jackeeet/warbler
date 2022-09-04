@@ -53,14 +53,6 @@ public class WarblerEnvironment
         );
     }
 
-    public static void CopyValues(WarblerEnvironment from, WarblerEnvironment to)
-    {
-        foreach (var pair in from._values)
-        {
-            to._values[pair.Key] = pair.Value;
-        }
-    }
-
     public bool HasSubEnvironment(EnvId environmentId)
     {
         return _subEnvironments.ContainsKey(environmentId);

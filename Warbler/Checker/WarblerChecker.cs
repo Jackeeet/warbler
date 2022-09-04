@@ -53,8 +53,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         }
         catch (RuntimeError error)
         {
-            // reporting a RUNTIME error at CHECKING stage doesn't make sense
-            // todo figure out how to handle errors like that
+            // todo reporting a RUNTIME error at CHECKING stage doesn't make sense
             _errorReporter.ReportRuntimeError(error);
             return false;
         }
@@ -109,7 +108,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
     private void TypeUnary(UnaryExpression expression, WarblerType innerType)
     {
         if (expression.Op.Kind != TokenKind.Not && expression.Op.Kind != TokenKind.Minus)
-            // this should be handled at parsing stage
+            // this should be handled at parsing stage, so this is a dev error
             throw new ArgumentException("Unexpected unary operator");
 
         if (expression.Op.Kind == TokenKind.Not && innerType.BaseType != ExpressionType.Boolean)
@@ -283,7 +282,20 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
-        AssignExpressionType(expression.Actions);
+        if (expression.Actions is BlockExpression blockActions)
+        {
+            foreach (var expr in blockActions.Expressions)
+            {
+                Debug.Assert(expr != null, nameof(expr) + " != null");
+                AssignExpressionType(expr);
+            }
+
+            blockActions.Type = blockActions.Expressions[^1]!.Type;
+        }
+        else
+        {
+            AssignExpressionType(expression.Actions);
+        }
 
         expression.Type = new WarblerType(ExpressionType.Integer);
         return null;
@@ -308,7 +320,15 @@ public class WarblerChecker : IExpressionVisitor<object?>
         foreach (var (typeData, name) in expression.Parameters)
             _environment.Define(name.Lexeme, WarblerTypeUtils.ToWarblerType(typeData));
 
-        AssignExpressionType(expression.Body);
+        var bodyExpressions = expression.Body.Expressions;
+        foreach (var expr in bodyExpressions)
+        {
+            Debug.Assert(expr != null, nameof(expr) + " != null");
+            AssignExpressionType(expr);
+        }
+
+        expression.Body.Type = bodyExpressions[^1]!.Type;
+
         // signature is not null because the method calling this method
         // checks signature for null before the call
         if (expression.Body.Type != functionType.Signature!.ReturnType)

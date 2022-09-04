@@ -9,7 +9,7 @@ public class WarblerResolver : IExpressionVisitor<object?>
 {
     private readonly IErrorReporter _errorReporter;
     private readonly Stack<Dictionary<string, bool>> _scopes;
-    private Dictionary<Expression, int?> _locals = new();
+    private readonly Dictionary<Expression, int?> _locals = new();
 
     public WarblerResolver(IErrorReporter errorReporter)
     {
@@ -150,7 +150,20 @@ public class WarblerResolver : IExpressionVisitor<object?>
     public object? VisitWhileLoopExpression(WhileLoopExpression expression)
     {
         Resolve(expression.Condition);
-        Resolve(expression.Actions);
+
+        if (expression.Actions is BlockExpression blockActions)
+        {
+            foreach (var expr in blockActions.Expressions)
+            {
+                Debug.Assert(expr != null, nameof(expr) + " != null");
+                Resolve(expr);
+            }
+        }
+        else
+        {
+            Resolve(expression.Actions);
+        }
+
         return null;
     }
 
@@ -171,15 +184,12 @@ public class WarblerResolver : IExpressionVisitor<object?>
             Define(paramName);
         }
 
-        BeginScope();
         foreach (var expr in expression.Body.Expressions)
         {
             Debug.Assert(expr != null, nameof(expr) + " != null");
             Resolve(expr);
         }
 
-        EndScope();
-        // Resolve(expression.Body);
         EndScope();
     }
 
