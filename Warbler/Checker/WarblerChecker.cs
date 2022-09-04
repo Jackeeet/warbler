@@ -263,10 +263,12 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
-        AssignExpressionType(expression.ThenBranch);
+        // AssignExpressionType(expression.ThenBranch);
+        TypeInnerBlock(expression.ThenBranch);
         if (expression.ElseBranch is not null)
         {
-            AssignExpressionType(expression.ElseBranch);
+            // AssignExpressionType(expression.ElseBranch);
+            TypeInnerBlock(expression.ElseBranch);
             if (expression.ThenBranch.Type != expression.ElseBranch.Type)
                 throw HandleTypeError(expression, Resources.Errors.Checker.ConditionBranchesMismatch);
         }
@@ -282,23 +284,28 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (expression.Condition.Type.BaseType != ExpressionType.Boolean)
             throw HandleTypeError(expression, Resources.Errors.Checker.NonBooleanCondition);
 
-        if (expression.Actions is BlockExpression blockActions)
+        TypeInnerBlock(expression.Actions);
+
+        expression.Type = new WarblerType(ExpressionType.Integer);
+        return null;
+    }
+
+    private void TypeInnerBlock(Expression expression)
+    {
+        if (expression is BlockExpression blockExpression)
         {
-            foreach (var expr in blockActions.Expressions)
+            foreach (var expr in blockExpression.Expressions)
             {
                 Debug.Assert(expr != null, nameof(expr) + " != null");
                 AssignExpressionType(expr);
             }
 
-            blockActions.Type = blockActions.Expressions[^1]!.Type;
+            blockExpression.Type = blockExpression.Expressions[^1]!.Type;
         }
         else
         {
-            AssignExpressionType(expression.Actions);
+            AssignExpressionType(expression);
         }
-
-        expression.Type = new WarblerType(ExpressionType.Integer);
-        return null;
     }
 
     public object? VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)

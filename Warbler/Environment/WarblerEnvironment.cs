@@ -178,11 +178,10 @@ public class WarblerEnvironment
         env._values[name.Lexeme] = Tuple.Create(type, value);
     }
 
-    public WarblerEnvironment Ancestor(int level)
+    private WarblerEnvironment Ancestor(int level)
     {
         var env = this;
-        for (int i = 0; i < level - 1; i++)
-            // for (int i = 0; i < level; i++)
+        for (int i = 0; i < level; i++)
         {
             Debug.Assert(env != null, nameof(env) + " != null");
             env = env._enclosing;

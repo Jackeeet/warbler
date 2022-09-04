@@ -35,7 +35,7 @@ public class WarblerResolver : IExpressionVisitor<object?>
 
     private void ResolveLocal(Expression expression, Token name)
     {
-        var scopes = _scopes.ToArray();
+        var scopes = _scopes.Reverse().ToArray();
         for (int i = scopes.Length - 1; i >= 0; i--)
         {
             if (scopes[i].ContainsKey(name.Lexeme))
@@ -141,19 +141,24 @@ public class WarblerResolver : IExpressionVisitor<object?>
     public object? VisitConditionalExpression(ConditionalExpression expression)
     {
         Resolve(expression.Condition);
-        Resolve(expression.ThenBranch);
+        ResolveInnerBlock(expression.ThenBranch);
         if (expression.ElseBranch is not null)
-            Resolve(expression.ElseBranch);
+            ResolveInnerBlock(expression.ElseBranch);
         return null;
     }
 
     public object? VisitWhileLoopExpression(WhileLoopExpression expression)
     {
         Resolve(expression.Condition);
+        ResolveInnerBlock(expression.Actions);
+        return null;
+    }
 
-        if (expression.Actions is BlockExpression blockActions)
+    private void ResolveInnerBlock(Expression expression)
+    {
+        if (expression is BlockExpression blockExpression)
         {
-            foreach (var expr in blockActions.Expressions)
+            foreach (var expr in blockExpression.Expressions)
             {
                 Debug.Assert(expr != null, nameof(expr) + " != null");
                 Resolve(expr);
@@ -161,10 +166,8 @@ public class WarblerResolver : IExpressionVisitor<object?>
         }
         else
         {
-            Resolve(expression.Actions);
+            Resolve(expression);
         }
-
-        return null;
     }
 
     public object? VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)

@@ -77,11 +77,11 @@ public class WarblerParser
         NextToken();
         var line = CurrentToken.LineNumber;
         var name = Consume(TokenKind.Identifier, Syntax.ExpectedIdentifier);
-        
+
         Consume(TokenKind.LeftBracket, Syntax.ExpectedOpeningBracket);
         var parameters = ParseFunctionParameters();
         Consume(TokenKind.RightBracket, Syntax.ExpectedClosingParamsBracket);
-        
+
         var returnType = ParseType();
         var body = (BlockExpression)ParseBlock();
 
@@ -139,9 +139,13 @@ public class WarblerParser
         var line = CurrentToken.LineNumber;
         NextToken();
         var condition = ParseBasicExpression();
-        var actions = ParseBlock();
-
+        var actions = ParseInnerBlock();
         return new WhileLoopExpression(condition, actions) { Line = line };
+    }
+
+    private Expression ParseInnerBlock()
+    {
+        return CurrentToken.Kind == TokenKind.RightBird ? ParseBlock() : ParseExpression();
     }
 
     private Expression ParseConditional()
@@ -150,18 +154,24 @@ public class WarblerParser
         NextToken();
         var condition = ParseBasicExpression();
         Consume(TokenKind.Then, "Expected \"then\" after condition");
-        var thenBranch = ParseBlock();
-        var elseBranch = Matching(TokenKind.Else) ? ParseProgram() : null;
+        var thenBranch = ParseInnerBlock();
+        Expression? elseBranch;
+        if (Matching(TokenKind.Else))
+        {
+            elseBranch = CurrentToken.Kind == TokenKind.If ? ParseConditional() : ParseInnerBlock();
+        }
+        else
+        {
+            elseBranch = null;
+        }
 
         return new ConditionalExpression(condition, thenBranch, elseBranch) { Line = line };
     }
 
     private Expression ParseBlock()
     {
-        if (!Matching(TokenKind.RightBird)) 
-            return ParseExpression();
-        
-        var line = PreviousToken.LineNumber;
+        var line = CurrentToken.LineNumber;
+        NextToken();
         var expressions = new List<Expression?>();
         while (!HasKind(TokenKind.LeftBird) && !IsAtEnd)
             expressions.Add(ParseProgram());

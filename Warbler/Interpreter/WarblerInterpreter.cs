@@ -293,13 +293,11 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
         // condition is true -> "then" branch gets evaluated
         if (boolCondition)
-            return EvaluateBlock(expression.ThenBranch);
-        // return Evaluate(expression.ThenBranch);
+            return EvaluateInnerBlock(expression.ThenBranch);
 
         // condition is false -> "else" branch exists and gets evaluated
         if (expression.ElseBranch is not null)
-            return EvaluateBlock(expression.ElseBranch);
-        // return Evaluate(expression.ElseBranch);
+            return EvaluateInnerBlock(expression.ElseBranch);
 
         // condition is false and there is no else branch
         return null;
@@ -319,14 +317,14 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         // it is always a basic expression (never null) so evaluated condition is never null as well
         while ((bool)Evaluate(expression.Condition)!)
         {
-            _ = EvaluateBlock(expression.Actions);
+            _ = EvaluateInnerBlock(expression.Actions);
             loopCount++;
         }
 
         return loopCount;
     }
 
-    private object EvaluateBlock(Expression expression)
+    private object EvaluateInnerBlock(Expression expression)
     {
         if (expression is BlockExpression blockExpression)
         {

@@ -1,0 +1,8 @@
+﻿\ blockFunc() int :>
+    def a = 1
+    :>
+        def b = a + 2           -- evaluates to 3
+    <:                          -- returns 3
+<:                              -- returns 3
+
+blockFunc()                     -- prints 3
