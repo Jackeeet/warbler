@@ -32,6 +32,9 @@
     <data name="NonNumericBinaryOperands" xml:space="preserve">
         <value>Both operands must be either Integer or Double</value>
     </data>
+    <data name="BinaryOperandsMismatch" xml:space="preserve">
+        <value>Both operands must have the same type</value>
+    </data>
     <data name="NonStringConcatenation" xml:space="preserve">
         <value>The '++' operator can only be used with expressions of type String</value>
     </data>

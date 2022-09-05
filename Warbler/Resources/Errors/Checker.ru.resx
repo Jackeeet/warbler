@@ -20,6 +20,9 @@
     <data name="NonNumericBinaryOperands" xml:space="preserve">
         <value>Оба операнда должны иметь тип Integer или Double</value>
     </data>
+    <data name="BinaryOperandsMismatch" xml:space="preserve">
+        <value>Операнды должны иметь одинаковый тип</value>
+    </data>
     <data name="NonStringConcatenation" xml:space="preserve">
         <value>Оператор '++' может быть применен только к выражениям типа String</value>
     </data>

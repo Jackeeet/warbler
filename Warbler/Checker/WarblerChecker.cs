@@ -74,23 +74,6 @@ public class WarblerChecker : IExpressionVisitor<object?>
         return IsNumeric(left.Type) && IsNumeric(right.Type);
     }
 
-    private static WarblerType CoerceNumeric(Expression left, Expression right)
-    {
-        if (left.Type.BaseType == ExpressionType.Double)
-        {
-            right.Type = new WarblerType(ExpressionType.Double);
-            return right.Type;
-        }
-
-        if (right.Type.BaseType == ExpressionType.Double)
-        {
-            left.Type = new WarblerType(ExpressionType.Double);
-            return left.Type;
-        }
-
-        return new WarblerType(ExpressionType.Integer);
-    }
-
     private TypeError HandleTypeError(Expression expression, string message)
     {
         _errorReporter.ErrorAtExpression(expression, message);
@@ -122,8 +105,12 @@ public class WarblerChecker : IExpressionVisitor<object?>
 
     public object? VisitBinaryExpression(BinaryExpression expression)
     {
-        AssignExpressionType(expression.Left);
-        AssignExpressionType(expression.Right);
+        var left = expression.Left;
+        var right = expression.Right;
+        AssignExpressionType(left);
+        AssignExpressionType(right);
+        if (left.Type != right.Type)
+            throw HandleTypeError(expression, Resources.Errors.Checker.BinaryOperandsMismatch);
 
         var opKind = expression.Op.Kind;
         if (opKind == TokenKind.DoublePlus)
@@ -131,28 +118,11 @@ public class WarblerChecker : IExpressionVisitor<object?>
         else if (numericOperators.Contains(opKind))
             TypeNumericBinary(expression);
         else if (relationalOperators.Contains(opKind))
-            TypeRelationalBinary(expression);
+            expression.Type = new WarblerType(ExpressionType.Boolean);
         else
             throw new UnreachableException($"Unexpected operator {expression.Op.Lexeme}");
 
         return null;
-    }
-
-    private void TypeRelationalBinary(BinaryExpression expression)
-    {
-        var left = expression.Left;
-        var right = expression.Right;
-        var numeric = CheckNumericOperands(left, right);
-        if (!(left.Type == right.Type || numeric))
-        {
-            throw HandleTypeError(expression,
-                string.Format(Resources.Errors.Checker.ComparisonOperandsMismatch, left.Type, right.Type));
-        }
-
-        if (numeric)
-            CoerceNumeric(left, right);
-
-        expression.Type = new WarblerType(ExpressionType.Boolean);
     }
 
     private void TypeNumericBinary(BinaryExpression expression)
@@ -162,7 +132,7 @@ public class WarblerChecker : IExpressionVisitor<object?>
         if (!CheckNumericOperands(left, right))
             throw HandleTypeError(expression, Resources.Errors.Checker.NonNumericBinaryOperands);
 
-        expression.Type = CoerceNumeric(left, right);
+        expression.Type = expression.Left.Type;
     }
 
     private void TypeStringBinary(BinaryExpression expression)
@@ -183,13 +153,9 @@ public class WarblerChecker : IExpressionVisitor<object?>
         var elseBranch = expression.ElseBranch;
         AssignExpressionType(thenBranch);
         AssignExpressionType(elseBranch);
-        var numeric = CheckNumericOperands(thenBranch, elseBranch);
 
-        if (!(thenBranch.Type == elseBranch.Type || numeric))
+        if (thenBranch.Type != elseBranch.Type)
             throw HandleTypeError(expression, Resources.Errors.Checker.TernaryBranchesMismatch);
-
-        if (numeric)
-            CoerceNumeric(thenBranch, elseBranch);
 
         expression.Type = thenBranch.Type;
         return null;

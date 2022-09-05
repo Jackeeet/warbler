@@ -78,6 +78,15 @@ namespace Warbler.Resources.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Both operands must have the same type.
+        /// </summary>
+        internal static string BinaryOperandsMismatch {
+            get {
+                return ResourceManager.GetString("BinaryOperandsMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot call {0}.
         /// </summary>
         internal static string CallUncallable {

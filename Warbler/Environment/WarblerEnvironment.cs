@@ -20,7 +20,7 @@ public class WarblerEnvironment
         _enclosing = null;
     }
 
-    public WarblerEnvironment(WarblerEnvironment enclosing)
+    private WarblerEnvironment(WarblerEnvironment enclosing)
     {
         _enclosing = enclosing;
     }

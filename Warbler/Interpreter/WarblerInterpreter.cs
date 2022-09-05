@@ -184,10 +184,6 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object VisitLiteralExpression(LiteralExpression expression)
     {
-        // an int expression might have had its type set to Double as a result of coercion
-        if (expression.Value is int intValue && expression.Type.BaseType == ExpressionType.Double)
-            return Convert.ToDouble(intValue);
-
         return expression.Value;
     }
 
@@ -352,8 +348,9 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     public object VisitFunctionDeclarationExpression(FunctionDeclarationExpression expression)
     {
-        var func = new WarblerFunction(expression);
-        _environment.Define(expression.Name.Lexeme, expression.Type, func); // todo this should be Assign
+        var envModel = _environment.GetFunctionEnvironment(expression.Name.Lexeme);
+        var func = new WarblerFunction(expression, envModel);
+        _environment.Assign(expression.Name, func);
         return func;
     }
 
@@ -369,7 +366,7 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
         foreach (var arg in expression.Args)
             arguments.Add(Evaluate(arg) ?? throw new ArgumentException());
 
-        return callable.Call(this, _environment, arguments);
+        return callable.Call(this, arguments);
     }
 
     private RuntimeError HandleRuntimeError(Expression expression, string message)

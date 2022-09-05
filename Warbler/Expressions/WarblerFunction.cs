@@ -6,30 +6,24 @@ namespace Warbler.Expressions;
 public class WarblerFunction : ICallable
 {
     private readonly FunctionDeclarationExpression _declaration;
+    private readonly WarblerEnvironment _environmentModel;
 
-    public WarblerFunction(FunctionDeclarationExpression declaration)
+    public WarblerFunction(FunctionDeclarationExpression declaration, WarblerEnvironment environmentModel)
     {
         _declaration = declaration;
+        _environmentModel = environmentModel;
     }
 
-    public object Call(WarblerInterpreter interpreter, WarblerEnvironment callerEnvironment, List<object> args)
+    public object Call(WarblerInterpreter interpreter, List<object> args)
     {
-        var functionEnvironment = callerEnvironment
-            .GetFunctionEnvironment(_declaration.Name.Lexeme)
-            .Copy();
-
+        var localEnvironment = _environmentModel.Copy();
         for (int i = 0; i < _declaration.Parameters.Count; i++)
         {
             var (_, name) = _declaration.Parameters[i];
-            functionEnvironment.Assign(name, args[i]);
+            localEnvironment.Assign(name, args[i]);
         }
 
-        return interpreter.InterpretBlock(_declaration.Body, functionEnvironment) ?? throw new ArgumentException();
-    }
-
-    public int Arity()
-    {
-        return _declaration.Parameters.Count;
+        return interpreter.InterpretBlock(_declaration.Body, localEnvironment) ?? throw new ArgumentException();
     }
 
     public override string ToString()
