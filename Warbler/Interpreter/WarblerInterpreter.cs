@@ -139,8 +139,17 @@ public class WarblerInterpreter : IExpressionVisitor<object?>
 
     private static object EvaluateNumericBinary(object left, object right, TokenKind opKind)
     {
+        if (left is double dl && right is double dr)
+            return EvaluateNumeric(opKind, dl, dr, new DoubleMathProvider());
+
+        // a boxed int can only be unboxed into an int
+        // so "right" gets an explicit cast to int and then an implicit cast to double
         if (left is double dLeft)
-            return EvaluateNumeric(opKind, dLeft, (double)right, new DoubleMathProvider());
+            return EvaluateNumeric(opKind, dLeft, (int)right, new DoubleMathProvider());
+
+        // same thing with "left" here
+        if (right is double dRight)
+            return EvaluateNumeric(opKind, (int)left, dRight, new DoubleMathProvider());
 
         return EvaluateNumeric(opKind, (int)left, (int)right, new IntMathProvider());
     }
