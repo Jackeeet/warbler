@@ -51,7 +51,7 @@ public static class Unary
                 new BinaryExpression(
                     new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer) },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double) }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer) }
                 )
             )
         },
@@ -159,11 +159,11 @@ public static class Unary
             new UnaryExpression(
                 new Token(TokenKind.Minus, "-", null, 1),
                 new BinaryExpression(
-                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Double) },
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer) },
                     new Token(TokenKind.Plus, "+", null, 1),
-                    new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double) }
-                ) { Type = new WarblerType(ExpressionType.Double) }
-            ) { Type = new WarblerType(ExpressionType.Double) }
+                    new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer) }
+                ) { Type = new WarblerType(ExpressionType.Integer) }
+            ) { Type = new WarblerType(ExpressionType.Integer) }
         },
         {
             "notBoolean",

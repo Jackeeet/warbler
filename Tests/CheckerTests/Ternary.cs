@@ -11,7 +11,6 @@ public static class Ternary
     {
         "comparisonCondition",
         "equalityCondition",
-        "numericBranches"
     };
 
     public static readonly List<string> InvalidNames = new()
@@ -20,7 +19,8 @@ public static class Ternary
         "doubleCondition",
         "charCondition",
         "stringCondition",
-        "mismatchingBranches"
+        "mismatchingBranches",
+        "numericBranches"
     };
 
     public static readonly Dictionary<string, Expression> Inputs = new()
@@ -124,14 +124,6 @@ public static class Ternary
                 new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Integer), Line = 1 },
                 new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
             ) { Type = new WarblerType(ExpressionType.Integer), Line = 1 }
-        },
-        {
-            "numericBranches",
-            new TernaryExpression(
-                new LiteralExpression(false) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 },
-                new LiteralExpression(2.0d) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
-                new LiteralExpression(3) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
-            ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
         },
     };
 }

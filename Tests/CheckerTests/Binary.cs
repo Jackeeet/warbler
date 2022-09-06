@@ -12,7 +12,6 @@ public static class Binary
         "addIntegers",
         "subtractIntegers",
         "addDoubles",
-        "addIntAndDouble",
         "chainAddition",
         "power",
         "multiplyIntegers",
@@ -21,7 +20,6 @@ public static class Binary
         "concatenation",
         "compareIntegers",
         "compareDoubles",
-        "compareIntAndDouble",
         "compareStrings",
         "compareChars",
         "compareBooleans",
@@ -31,6 +29,7 @@ public static class Binary
     {
         "addStrings",
         "mismatchedAddition",
+        "addIntAndDouble",
         "booleanPower",
         "mismatchedPower",
         "mismatchedMultiplication",
@@ -41,6 +40,7 @@ public static class Binary
         "concatBooleans",
         "concatChars",
         "mismatchedComparison",
+        "compareIntAndDouble",
         "mismatchedEquality",
     };
 
@@ -316,14 +316,6 @@ public static class Binary
             ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
         },
         {
-            "addIntAndDouble",
-            new BinaryExpression(
-                new LiteralExpression(2) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
-                new Token(TokenKind.Plus, "+", null, 1),
-                new LiteralExpression(2.2) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
-            ) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
-        },
-        {
             "chainAddition",
             new BinaryExpression(
                 new BinaryExpression(
@@ -388,14 +380,6 @@ public static class Binary
             new BinaryExpression(
                 new LiteralExpression(1.1d) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
                 new Token(TokenKind.GreaterThan, ">", null, 1),
-                new LiteralExpression(3.2d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
-            ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
-        },
-        {
-            "compareIntAndDouble",
-            new BinaryExpression(
-                new LiteralExpression(1) { Type = new WarblerType(ExpressionType.Double), Line = 1 },
-                new Token(TokenKind.LessEqual, "<=", null, 1),
                 new LiteralExpression(3.2d) { Type = new WarblerType(ExpressionType.Double), Line = 1 }
             ) { Type = new WarblerType(ExpressionType.Boolean), Line = 1 }
         },

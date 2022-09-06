@@ -34,4 +34,10 @@
         <value>{0} 
 [line {1}]</value>
     </data>
+    <data name="InterpreterInfoExit" xml:space="preserve">
+        <value>Type 'exit' to close the interpreter.</value>
+    </data>
+    <data name="InterpreterInfo" xml:space="preserve">
+        <value>Interactive warbler interpreter v0.0.1 (2022)</value>
+    </data>
 </root>

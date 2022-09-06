@@ -27,4 +27,10 @@
         <value>{0} 
 [строка {1}]</value>
     </data>
+    <data name="InterpreterInfoExit" xml:space="preserve">
+        <value>Введите 'exit', чтобы завершить работу.</value>
+    </data>
+    <data name="InterpreterInfo" xml:space="preserve">
+        <value>Интерактивный интерпретатор warbler (версия 0.0.1)</value>
+    </data>
 </root>

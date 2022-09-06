@@ -17,11 +17,11 @@ public class Warbler
     private readonly IErrorReporter _errorReporter = new ConsoleReporter();
     private readonly WarblerEnvironment _globalEnvironment = new();
 
-    public void RunFile(string path)
+    public void RunFile(string path, bool verbose)
     {
         using (var reader = new StreamReader(path))
         {
-            Run(reader.ReadToEnd());
+            Run(reader.ReadToEnd(), verbose);
         }
 
         if (_errorReporter.HadError)
@@ -30,7 +30,7 @@ public class Warbler
         }
     }
 
-    public void RunInteractive()
+    public void RunInteractive(bool verbose)
     {
         while (true)
         {
@@ -41,7 +41,7 @@ public class Warbler
                 break;
             }
 
-            Run(input);
+            Run(input, verbose);
             _errorReporter.Reset();
         }
     }
@@ -68,7 +68,7 @@ public class Warbler
         }
     }
 
-    private void Run(string input)
+    private void Run(string input, bool verbose)
     {
         var tokens = Scan(input);
         if (!Parse(tokens, out var expressions))
@@ -77,19 +77,27 @@ public class Warbler
             return;
         if (!Resolve(expressions, out var resolvedLocals))
             return;
-        Interpret(resolvedLocals, expressions);
+        Interpret(resolvedLocals, expressions, verbose);
     }
 
-    private void Interpret(Dictionary<Expression, int?> resolvedLocals, List<Expression> expressions)
+    private void Interpret(Dictionary<Expression, int?> resolvedLocals, List<Expression> expressions, bool verbose)
     {
         var interpreter = new WarblerInterpreter(_errorReporter, _globalEnvironment, resolvedLocals);
         foreach (var expression in expressions)
         {
             Debug.Assert(expression != null, nameof(expression) + " != null");
             var value = interpreter.Interpret(expression);
-            if (value is not null)
+            var canPrint = value is not null && (verbose || Printable(expression));
+            if (canPrint)
                 Console.WriteLine(value);
         }
+    }
+
+    private bool Printable(Expression expression)
+    {
+        return expression is not FunctionDeclarationExpression &&
+               expression is not VariableDeclarationExpression &&
+               expression is not AssignmentExpression;
     }
 
     private bool Resolve(List<Expression> expressions, out Dictionary<Expression, int?> resolvedLocals)
