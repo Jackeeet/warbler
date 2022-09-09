@@ -60,7 +60,7 @@ functionType      = "fn", "(", [typeArguments], ")", ":", type;
 
 typeArguments     = type, {",", type};
 
-id                = {character}-;
+id                = "_" | alpha, {character};
 
 character         = "_" | digit | alpha
 
